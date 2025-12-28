@@ -1,0 +1,1613 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Support House — Patient Intake</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #7c3aed;
+      --primary-dark: #6d28d9;
+      --primary-light: #a78bfa;
+      --primary-bg: #f5f3ff;
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --text-secondary: #6b7280;
+      --success: #059669;
+      --danger: #dc2626;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 40px;
+      border-radius: var(--radius);
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      opacity: 0.95;
+      font-size: 15px;
+    }
+
+    .alert {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: #92400e;
+    }
+
+    form {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .section {
+      padding: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--primary-bg);
+    }
+
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-bg);
+      color: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+
+    .col-12 { grid-column: span 12; }
+    .col-8 { grid-column: span 8; }
+    .col-6 { grid-column: span 6; }
+    .col-5 { grid-column: span 5; }
+    .col-4 { grid-column: span 4; }
+    .col-3 { grid-column: span 3; }
+    .col-2 { grid-column: span 2; }
+
+    @media (max-width: 768px) {
+      .col-8, .col-6, .col-5, .col-4, .col-3, .col-2 { grid-column: span 12; }
+      header { padding: 24px; }
+      header h1 { font-size: 24px; }
+      .section { padding: 20px; }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    label.required::after {
+      content: " *";
+      color: var(--danger);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      background: white;
+      transition: all 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 12px center;
+      background-repeat: no-repeat;
+      background-size: 20px;
+      padding-right: 40px;
+      appearance: none;
+    }
+
+    .radio-group,
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .radio-option,
+    .checkbox-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 10px 16px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+
+    .radio-option:hover,
+    .checkbox-option:hover {
+      border-color: var(--primary-light);
+      background: var(--primary-bg);
+    }
+
+    .radio-option input[type="radio"],
+    .checkbox-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .minor-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(124, 58, 237, 0.05);
+      border: 1.5px solid rgba(124, 58, 237, 0.2);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .conditional-section {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .conditional-section.visible {
+      display: block;
+    }
+
+    .minor-entry {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .minor-entry:last-child {
+      margin-bottom: 0;
+    }
+
+    .minor-label {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+    }
+
+    .btn-remove {
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .btn-remove:hover {
+      background: rgba(220, 38, 38, 0.1);
+    }
+
+    .btn-add {
+      background: var(--primary-bg);
+      color: var(--primary);
+      border: 2px dashed var(--primary-light);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .btn-add:hover {
+      background: var(--primary-light);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .certification-box {
+      background: var(--primary-bg);
+      border: 2px solid var(--primary-light);
+      border-radius: 8px;
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      padding: 12px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .checkbox-label:hover {
+      background: var(--bg);
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      margin-top: 2px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 24px 32px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+
+    button {
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .status-msg {
+      font-size: 14px;
+      color: var(--success);
+      margin-left: auto;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+      grid-column: 1 / -1;
+    }
+
+    .subsection-title {
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 15px;
+      margin-bottom: 12px;
+      grid-column: 1 / -1;
+    }
+
+    .assistance-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .search-dropdown {
+      position: relative;
+    }
+
+    .search-input {
+      position: relative;
+    }
+
+    .dropdown-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 2px solid var(--primary);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .dropdown-list.visible {
+      display: block;
+    }
+
+    .dropdown-item {
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+      background: var(--primary-bg);
+    }
+
+    .dropdown-item.selected {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .surgery-entry {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .surgery-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .surgery-number {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Patient Intake Form</h1>
+      <p>Please complete all required fields. Information is kept confidential.</p>
+    </header>
+
+    <div class="alert">
+      ⚠️ Internal use only. Do not collect Social Security numbers.
+    </div>
+
+    <form id="intakeForm" autocomplete="on">
+      <!-- Patient Identity -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">1</div>
+          <h2>Patient Identity</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-5 form-group">
+            <label for="firstName" class="required">First Name</label>
+            <input id="firstName" name="first_name" type="text" required />
+          </div>
+          <div class="col-2 form-group">
+            <label for="middleInitial">Middle Initial</label>
+            <input id="middleInitial" name="middle_initial" type="text" maxlength="1" style="max-width: 80px;" />
+          </div>
+          <div class="col-5 form-group">
+            <label for="lastName" class="required">Last Name</label>
+            <input id="lastName" name="last_name" type="text" required />
+          </div>
+
+          <div class="col-4 form-group">
+            <label for="dob" class="required">Date of Birth</label>
+            <input id="dob" name="dob" type="date" required />
+          </div>
+          <div class="col-4 form-group">
+            <label for="initialVisitDate">Initial Visit Date</label>
+            <input id="initialVisitDate" name="initial_visit_date" type="date" />
+          </div>
+          <div class="col-4 form-group">
+            <label for="recentVisitDate">Most Recent Visit</label>
+            <input id="recentVisitDate" name="recent_visit_date" type="date" />
+          </div>
+
+          <div class="col-8 form-group">
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" />
+          </div>
+          <div class="col-4 form-group">
+            <label for="phone">Phone Number</label>
+            <input id="phone" name="phone" type="tel" placeholder="(###) ###-####" />
+          </div>
+
+          <div class="col-12 form-group">
+            <label class="required">Gender</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="gender" value="male" required />
+                <span>Male</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="gender" value="female" required />
+                <span>Female</span>
+              </label>
+            </div>
+            <div class="minor-indicator" id="minorIndicator" style="display: none;">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink: 0;">
+                <circle cx="8" cy="8" r="7" fill="#7c3aed" fill-opacity="0.1" stroke="#7c3aed" stroke-width="1.5"/>
+                <path d="M8 5v3m0 3h.01" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>Patient is a minor (under 18)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guardian Section -->
+      <div class="section conditional-section" id="guardianSection">
+        <div class="section-header">
+          <div class="section-icon">👤</div>
+          <h2>Parent / Guardian Information</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-6 form-group">
+            <label for="guardianName">Parent / Guardian Name</label>
+            <input id="guardianName" name="guardian_name" type="text" />
+          </div>
+          <div class="col-6 form-group">
+            <label for="guardianRelationship">Relationship to Child</label>
+            <input id="guardianRelationship" name="guardian_relationship" type="text" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Address -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">📍</div>
+          <h2>Address</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-12 form-group">
+            <label for="addressLine1">Street Address</label>
+            <input id="addressLine1" name="address_line1" type="text" />
+          </div>
+
+          <div class="col-4 form-group">
+            <label for="city" class="required">City</label>
+            <input id="city" name="city" type="text" required />
+          </div>
+          <div class="col-4 form-group">
+            <label for="county" class="required">County</label>
+            <input id="county" name="county" type="text" required />
+          </div>
+          <div class="col-2 form-group">
+            <label for="state" class="required">State</label>
+            <select id="state" name="state" required></select>
+          </div>
+          <div class="col-2 form-group">
+            <label for="zip">ZIP Code</label>
+            <input id="zip" name="zip" type="text" maxlength="10" placeholder="#####" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Demographics -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">2</div>
+          <h2>Demographics</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-6 form-group">
+            <label for="ethnicity" class="required">Ethnicity</label>
+            <select id="ethnicity" name="ethnicity" required>
+              <option value="">— Select —</option>
+              <option>White</option>
+              <option>Black</option>
+              <option>Hispanic</option>
+              <option>Vietnamese</option>
+              <option>American Indian</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="col-6 form-group">
+            <label for="preferredLanguage">Preferred Language</label>
+            <select id="preferredLanguage" name="preferred_language">
+              <option value="">— Select —</option>
+              <option>English</option>
+              <option>Spanish</option>
+              <option>Vietnamese</option>
+              <option>Laotian</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="col-12 form-group">
+            <label for="educationLevel">Highest Education Level</label>
+            <select id="educationLevel" name="education_level">
+              <option value="">— Select —</option>
+              <option>Less than High School</option>
+              <option>GED</option>
+              <option>High School Graduate</option>
+              <option>Some College</option>
+              <option>Associate's</option>
+              <option>Bachelor's</option>
+              <option>Post Graduate</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insurance & Veteran -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">🏥</div>
+          <h2>Insurance & Veteran Status</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-6 form-group">
+            <label class="required">Do you have insurance?</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="insurance_has" value="yes" required />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="insurance_has" value="no" required />
+                <span>No</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="col-6 form-group conditional-section" id="insuranceTypeSection">
+            <label for="insuranceType" class="required">Insurance Type</label>
+            <select id="insuranceType" name="insurance_type">
+              <option value="">— Select —</option>
+              <option>Private</option>
+              <option>Medicaid</option>
+              <option>Medicare</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="col-12 form-group">
+            <label class="required">Are you a Veteran?</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="veteran" value="yes" required />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="veteran" value="no" required />
+                <span>No</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employment -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">💼</div>
+          <h2>Employment</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-12 form-group">
+            <label for="employmentStatus" class="required">Employment Status</label>
+            <select id="employmentStatus" name="employment_status" required>
+              <option value="">— Select —</option>
+              <option>Employed</option>
+              <option>Retired</option>
+              <option>Disabled</option>
+              <option>Unemployed</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="col-12 conditional-section" id="employmentDetailsSection">
+            <div class="form-grid">
+              <div class="col-6 form-group">
+                <label for="employerName" class="required">Employer Name</label>
+                <input id="employerName" name="employer_name" type="text" />
+              </div>
+              <div class="col-6 form-group">
+                <label for="occupation" class="required">Occupation</label>
+                <input id="occupation" name="occupation" type="text" />
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 form-group">
+            <label>Is at least one other person in the home employed?</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="other_home_employed" value="yes" />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="other_home_employed" value="no" />
+                <span>No</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="other_home_employed" value="unknown" />
+                <span>Unknown</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Marital Status -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">💑</div>
+          <h2>Marital Status</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-12 form-group">
+            <label for="maritalStatus" class="required">Marital Status</label>
+            <select id="maritalStatus" name="marital_status" required>
+              <option value="">— Select —</option>
+              <option>Married</option>
+              <option>Single</option>
+              <option>Widowed</option>
+              <option>Separated</option>
+              <option>Divorced</option>
+            </select>
+          </div>
+
+          <div class="col-12 conditional-section" id="spouseSection">
+            <div class="form-grid">
+              <div class="col-6 form-group">
+                <label for="spouseName" class="required">Spouse Name</label>
+                <input id="spouseName" name="spouse_name" type="text" />
+              </div>
+              <div class="col-6 form-group">
+                <label for="spousePhone" class="required">Spouse Phone</label>
+                <input id="spousePhone" name="spouse_phone" type="tel" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Minors -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">👶</div>
+          <h2>Minors Living in the Home</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-12 form-group">
+            <label>Do you have minors living in your home?</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="has_minors" value="yes" />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="has_minors" value="no" />
+                <span>No</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="col-12 conditional-section" id="minorsSection">
+            <div id="minorsList"></div>
+            <button type="button" class="btn-add" id="addMinorBtn">+ Add Another Minor</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency Contact -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">🚨</div>
+          <h2>Emergency Contact</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-8 form-group">
+            <label for="emergName">Name</label>
+            <input id="emergName" name="emergency_contact[name]" type="text" />
+          </div>
+          <div class="col-4 form-group">
+            <label for="emergPhone">Phone</label>
+            <input id="emergPhone" name="emergency_contact[phone]" type="tel" />
+          </div>
+
+          <div class="col-6 form-group">
+            <label for="emergRelationship">Relationship</label>
+            <select id="emergRelationship" name="emergency_contact[relationship]">
+              <option value="">— Select —</option>
+              <option>Spouse</option>
+              <option>Parent</option>
+              <option>Sibling</option>
+              <option>Child</option>
+              <option>Partner</option>
+              <option>Friend</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="col-6 form-group" id="emergRelOtherWrap" style="display:none;">
+            <label for="emergRelationshipOther">If "Other", specify</label>
+            <input id="emergRelationshipOther" name="emergency_contact[relationship_other]" type="text" />
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="col-8 form-group">
+            <label for="emergAddr">Address</label>
+            <input id="emergAddr" name="emergency_contact[address_line1]" type="text" />
+          </div>
+          <div class="col-4 form-group">
+            <label for="emergCity">City</label>
+            <input id="emergCity" name="emergency_contact[city]" type="text" />
+          </div>
+
+          <div class="col-6 form-group">
+            <label for="emergState">State</label>
+            <select id="emergState" name="emergency_contact[state]"></select>
+          </div>
+          <div class="col-6 form-group">
+            <label for="emergZip">ZIP Code</label>
+            <input id="emergZip" name="emergency_contact[zip]" type="text" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Referral -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">📢</div>
+          <h2>How Did You Hear About Us?</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-6 form-group">
+            <label for="referralSource">Referral Source</label>
+            <select id="referralSource" name="referral_source">
+              <option value="">— Select —</option>
+              <option>Hospital / Clinic Staff</option>
+              <option>Friend / Family</option>
+              <option>Newspaper</option>
+              <option>Clinic Gift Bag</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="col-6 form-group">
+            <label for="referralOther">If "Other", please specify</label>
+            <input id="referralOther" name="referral_other" type="text" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Assistance Needed -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">🤝</div>
+          <h2>Type of Assistance Needed</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-12 form-group">
+            <label>Select all that apply</label>
+            <div class="assistance-grid">
+              <label class="checkbox-option">
+                <input type="checkbox" name="assistance[]" value="wigs" />
+                <span>Wigs</span>
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="assistance[]" value="food" />
+                <span>Food</span>
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="assistance[]" value="medical_supplies" />
+                <span>Medical Supplies</span>
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="assistance[]" value="liquid_nutrition" />
+                <span>Liquid Nutrition</span>
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="assistance[]" value="incontinence_supplies" />
+                <span>Incontinence Supplies</span>
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="assistance[]" value="clothing" />
+                <span>Clothing</span>
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="assistance[]" value="gas_card" />
+                <span>Gas Card</span>
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="assistance[]" value="support_group" />
+                <span>Support Group</span>
+              </label>
+              <label class="checkbox-option">
+                <input type="checkbox" name="assistance[]" value="other" />
+                <span>Other</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="col-12 form-group">
+            <label for="assistanceNotes">Additional Notes / Other Assistance Details</label>
+            <textarea id="assistanceNotes" name="assistance_notes"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Medical Information -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">⚕️</div>
+          <h2>Medical Information</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-12 form-group">
+            <label for="primaryCancerType" class="required">Primary Cancer Type</label>
+            <div class="search-dropdown">
+              <input 
+                id="primaryCancerType" 
+                name="primary_cancer_type" 
+                type="text" 
+                placeholder="Search or select cancer type..." 
+                autocomplete="off"
+                required
+              />
+              <div class="dropdown-list" id="cancerTypeDropdown"></div>
+            </div>
+          </div>
+
+          <div class="col-6 form-group">
+            <label>Has it metastasized?</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="metastasized" value="yes" />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="metastasized" value="no" />
+                <span>No</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="metastasized" value="unknown" />
+                <span>Unknown</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="col-6 form-group">
+            <label for="dateOfDiagnosis" class="required">Date of Diagnosis</label>
+            <input id="dateOfDiagnosis" name="date_of_diagnosis" type="date" required />
+          </div>
+
+          <div class="col-12 form-group">
+            <label for="oncologist">Oncologist Name</label>
+            <input id="oncologist" name="oncologist" type="text" />
+          </div>
+
+          <div class="col-6 form-group">
+            <label for="radiationOncologist">Radiation Oncologist</label>
+            <input id="radiationOncologist" name="radiation_oncologist" type="text" />
+          </div>
+          <div class="col-6 form-group">
+            <label for="surgeon">Surgeon (if applicable)</label>
+            <input id="surgeon" name="surgeon" type="text" />
+          </div>
+
+          <div class="col-12 form-group">
+            <label for="generalDoctor">General / Primary Care Doctor</label>
+            <input id="generalDoctor" name="general_doctor" type="text" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Treatment -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">💊</div>
+          <h2>Treatment History</h2>
+        </div>
+        <div class="form-grid">
+          <div class="subsection-title">Surgery</div>
+          <div class="col-12" id="surgeriesContainer"></div>
+          <div class="col-12">
+            <button type="button" class="btn-add" id="addSurgeryBtn">+ Add Surgery</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="subsection-title">Chemotherapy</div>
+          <div class="col-12 form-group">
+            <label>Started Chemotherapy?</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="started_chemo" value="yes" />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="started_chemo" value="no" />
+                <span>No</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="col-12 conditional-section" id="chemoDetailsSection">
+            <div class="form-grid">
+              <div class="col-4 form-group">
+                <label for="chemoStart">Start Date</label>
+                <input id="chemoStart" name="chemo_start" type="date" />
+              </div>
+              <div class="col-4 form-group">
+                <label for="chemoEnd">End Date</label>
+                <input id="chemoEnd" name="chemo_end" type="date" />
+              </div>
+              <div class="col-4 form-group">
+                <label for="chemoNotes">Notes</label>
+                <input id="chemoNotes" name="chemo_notes" type="text" />
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="subsection-title">Radiation</div>
+          <div class="col-12 form-group">
+            <label>Started Radiation?</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="started_radiation" value="yes" />
+                <span>Yes</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="started_radiation" value="no" />
+                <span>No</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="col-12 conditional-section" id="radiationDetailsSection">
+            <div class="form-grid">
+              <div class="col-4 form-group">
+                <label for="radStart">Start Date</label>
+                <input id="radStart" name="radiation_start" type="date" />
+              </div>
+              <div class="col-4 form-group">
+                <label for="radEnd">End Date</label>
+                <input id="radEnd" name="radiation_end" type="date" />
+              </div>
+              <div class="col-4 form-group">
+                <label for="radNotes">Notes</label>
+                <input id="radNotes" name="radiation_notes" type="text" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Authorization -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">📋</div>
+          <h2>Medical Information Disclosure</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-12 form-group">
+            <label for="roiNotes">Authorization Notes</label>
+            <textarea id="roiNotes" name="roi_notes" placeholder="Example: faxed to Dr. Smith on 2024-03-15; request treatment plan." style="min-height: 100px;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Certification -->
+      <div class="section">
+        <div class="section-header">
+          <div class="section-icon">✓</div>
+          <h2>Certification & Authorization</h2>
+        </div>
+        <div class="form-grid">
+          <div class="col-12">
+            <div class="certification-box">
+              I certify that these answers are true and complete to the best of my knowledge. I authorize the Support House to communicate as needed with my family or friends listed above. Furthermore, I authorize my physicians to release or disclose medical information to and communicate with the Support House to assist me with my continuum of care and/or offer me appropriate access to programs and resources.
+            </div>
+          </div>
+
+          <div class="col-12">
+            <label class="checkbox-label">
+              <input type="checkbox" name="certify_acknowledge" required />
+              <span>I agree to and acknowledge the above certification</span>
+            </label>
+          </div>
+
+          <div class="col-6 form-group">
+            <label for="signatureName" class="required">Signature (type full name)</label>
+            <input id="signatureName" name="signature_name" type="text" required />
+          </div>
+          <div class="col-3 form-group">
+            <label for="signatureDate" class="required">Date</label>
+            <input id="signatureDate" name="signature_date" type="date" required />
+          </div>
+          <div class="col-3 form-group">
+            <label for="interviewedBy">Interviewed By</label>
+            <input id="interviewedBy" name="interviewed_by" type="text" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-primary" type="submit">Submit Intake Form</button>
+        <button class="btn-secondary" type="button" id="saveDraftBtn">Save Draft</button>
+        <span class="status-msg" id="statusMsg"></span>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // State variables
+    let isMinor = false;
+    let hasInsurance = false;
+    let isEmployed = false;
+    let isMarried = false;
+    let hasMinors = false;
+    let minorCount = 0;
+    let surgeryCount = 0;
+
+    // Cancer types - most common first, then alphabetical
+    const cancerTypes = [
+      'Breast Cancer',
+      'Colon Cancer',
+      'Esophageal Cancer',
+      'Liver Cancer',
+      'Lung Cancer',
+      'Bladder Cancer',
+      'Brain Cancer',
+      'Cervical Cancer',
+      'Colorectal Cancer',
+      'Endometrial Cancer',
+      'Gastric Cancer',
+      'Head and Neck Cancer',
+      'Kidney Cancer',
+      'Leukemia',
+      'Lymphoma',
+      'Melanoma',
+      'Multiple Myeloma',
+      'Ovarian Cancer',
+      'Pancreatic Cancer',
+      'Prostate Cancer',
+      'Rectal Cancer',
+      'Skin Cancer',
+      'Stomach Cancer',
+      'Testicular Cancer',
+      'Thyroid Cancer',
+      'Uterine Cancer'
+    ];
+
+    // State options
+    const states = [
+      {value: 'AR', label: 'Arkansas'},
+      {value: 'OK', label: 'Oklahoma'},
+      {value: 'AL', label: 'Alabama'},
+      {value: 'AK', label: 'Alaska'},
+      {value: 'AZ', label: 'Arizona'},
+      {value: 'CA', label: 'California'},
+      {value: 'CO', label: 'Colorado'},
+      {value: 'CT', label: 'Connecticut'},
+      {value: 'DE', label: 'Delaware'},
+      {value: 'FL', label: 'Florida'},
+      {value: 'GA', label: 'Georgia'},
+      {value: 'HI', label: 'Hawaii'},
+      {value: 'ID', label: 'Idaho'},
+      {value: 'IL', label: 'Illinois'},
+      {value: 'IN', label: 'Indiana'},
+      {value: 'IA', label: 'Iowa'},
+      {value: 'KS', label: 'Kansas'},
+      {value: 'KY', label: 'Kentucky'},
+      {value: 'LA', label: 'Louisiana'},
+      {value: 'ME', label: 'Maine'},
+      {value: 'MD', label: 'Maryland'},
+      {value: 'MA', label: 'Massachusetts'},
+      {value: 'MI', label: 'Michigan'},
+      {value: 'MN', label: 'Minnesota'},
+      {value: 'MS', label: 'Mississippi'},
+      {value: 'MO', label: 'Missouri'},
+      {value: 'MT', label: 'Montana'},
+      {value: 'NE', label: 'Nebraska'},
+      {value: 'NV', label: 'Nevada'},
+      {value: 'NH', label: 'New Hampshire'},
+      {value: 'NJ', label: 'New Jersey'},
+      {value: 'NM', label: 'New Mexico'},
+      {value: 'NY', label: 'New York'},
+      {value: 'NC', label: 'North Carolina'},
+      {value: 'ND', label: 'North Dakota'},
+      {value: 'OH', label: 'Ohio'},
+      {value: 'OR', label: 'Oregon'},
+      {value: 'PA', label: 'Pennsylvania'},
+      {value: 'RI', label: 'Rhode Island'},
+      {value: 'SC', label: 'South Carolina'},
+      {value: 'SD', label: 'South Dakota'},
+      {value: 'TN', label: 'Tennessee'},
+      {value: 'TX', label: 'Texas'},
+      {value: 'UT', label: 'Utah'},
+      {value: 'VT', label: 'Vermont'},
+      {value: 'VA', label: 'Virginia'},
+      {value: 'WA', label: 'Washington'},
+      {value: 'WV', label: 'West Virginia'},
+      {value: 'WI', label: 'Wisconsin'},
+      {value: 'WY', label: 'Wyoming'}
+    ];
+
+    // Populate state dropdowns
+    const stateSelects = document.querySelectorAll('#state, #emergState');
+    stateSelects.forEach(select => {
+      select.innerHTML = '<option value="">— Select —</option>' + 
+        states.map(s => `<option value="${s.value}">${s.label}</option>`).join('');
+    });
+
+    // Cancer type search dropdown
+    const cancerInput = document.getElementById('primaryCancerType');
+    const cancerDropdown = document.getElementById('cancerTypeDropdown');
+
+    function populateCancerDropdown(filter = '') {
+      const filtered = filter 
+        ? cancerTypes.filter(type => type.toLowerCase().includes(filter.toLowerCase()))
+        : cancerTypes;
+      
+      cancerDropdown.innerHTML = filtered.map(type => 
+        `<div class="dropdown-item" data-value="${type}">${type}</div>`
+      ).join('');
+      
+      if (filtered.length > 0) {
+        cancerDropdown.classList.add('visible');
+      } else {
+        cancerDropdown.classList.remove('visible');
+      }
+    }
+
+    cancerInput.addEventListener('focus', () => populateCancerDropdown(cancerInput.value));
+    cancerInput.addEventListener('input', (e) => populateCancerDropdown(e.target.value));
+    
+    cancerDropdown.addEventListener('click', (e) => {
+      if (e.target.classList.contains('dropdown-item')) {
+        cancerInput.value = e.target.dataset.value;
+        cancerDropdown.classList.remove('visible');
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!cancerInput.contains(e.target) && !cancerDropdown.contains(e.target)) {
+        cancerDropdown.classList.remove('visible');
+      }
+    });
+
+    // Check if patient is a minor based on DOB
+    const dobInput = document.getElementById('dob');
+    const minorIndicator = document.getElementById('minorIndicator');
+    const guardianSection = document.getElementById('guardianSection');
+    
+    function checkIfMinor() {
+      const dob = dobInput.value;
+      if (!dob) {
+        isMinor = false;
+        minorIndicator.style.display = 'none';
+        guardianSection.classList.remove('visible');
+        return;
+      }
+      
+      const birthDate = new Date(dob);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      
+      isMinor = age < 18;
+      
+      if (isMinor) {
+        minorIndicator.style.display = 'flex';
+        guardianSection.classList.add('visible');
+      } else {
+        minorIndicator.style.display = 'none';
+        guardianSection.classList.remove('visible');
+      }
+      
+      console.log('isMinor:', isMinor, '| Age:', age);
+    }
+    
+    dobInput.addEventListener('change', checkIfMinor);
+    dobInput.addEventListener('blur', checkIfMinor);
+
+    // Insurance toggle
+    const insuranceRadios = document.querySelectorAll('input[name="insurance_has"]');
+    const insuranceTypeSection = document.getElementById('insuranceTypeSection');
+    
+    insuranceRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        hasInsurance = e.target.value === 'yes';
+        if (hasInsurance) {
+          insuranceTypeSection.classList.add('visible');
+          document.getElementById('insuranceType').required = true;
+        } else {
+          insuranceTypeSection.classList.remove('visible');
+          document.getElementById('insuranceType').required = false;
+        }
+        console.log('hasInsurance:', hasInsurance);
+      });
+    });
+
+    // Employment toggle
+    const employmentSelect = document.getElementById('employmentStatus');
+    const employmentDetailsSection = document.getElementById('employmentDetailsSection');
+    
+    employmentSelect.addEventListener('change', (e) => {
+      isEmployed = e.target.value === 'Employed';
+      if (isEmployed) {
+        employmentDetailsSection.classList.add('visible');
+        document.getElementById('employerName').required = true;
+        document.getElementById('occupation').required = true;
+      } else {
+        employmentDetailsSection.classList.remove('visible');
+        document.getElementById('employerName').required = false;
+        document.getElementById('occupation').required = false;
+      }
+      console.log('isEmployed:', isEmployed);
+    });
+
+    // Marital status toggle
+    const maritalSelect = document.getElementById('maritalStatus');
+    const spouseSection = document.getElementById('spouseSection');
+    
+    maritalSelect.addEventListener('change', (e) => {
+      isMarried = e.target.value === 'Married';
+      if (isMarried) {
+        spouseSection.classList.add('visible');
+        document.getElementById('spouseName').required = true;
+        document.getElementById('spousePhone').required = true;
+      } else {
+        spouseSection.classList.remove('visible');
+        document.getElementById('spouseName').required = false;
+        document.getElementById('spousePhone').required = false;
+      }
+      console.log('isMarried:', isMarried);
+    });
+
+    // Minors toggle and management
+    const hasMinorsRadios = document.querySelectorAll('input[name="has_minors"]');
+    const minorsSection = document.getElementById('minorsSection');
+    const minorsList = document.getElementById('minorsList');
+    const addMinorBtn = document.getElementById('addMinorBtn');
+    
+    hasMinorsRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        hasMinors = e.target.value === 'yes';
+        if (hasMinors) {
+          minorsSection.classList.add('visible');
+          if (minorCount === 0) addMinor();
+        } else {
+          minorsSection.classList.remove('visible');
+        }
+        console.log('hasMinors:', hasMinors);
+      });
+    });
+
+    function addMinor() {
+      minorCount++;
+      const minorDiv = document.createElement('div');
+      minorDiv.className = 'minor-entry';
+      minorDiv.id = `minor-${minorCount}`;
+      minorDiv.innerHTML = `
+        <div class="minor-label">
+          <span>Minor #${minorCount}</span>
+          <button type="button" class="btn-remove" onclick="removeMinor(${minorCount})">Remove</button>
+        </div>
+        <div class="form-grid">
+          <div class="col-6 form-group">
+            <label for="minor${minorCount}Name">Name</label>
+            <input id="minor${minorCount}Name" name="minors[${minorCount-1}][name]" type="text" />
+          </div>
+          <div class="col-3 form-group">
+            <label for="minor${minorCount}Dob">Date of Birth</label>
+            <input id="minor${minorCount}Dob" name="minors[${minorCount-1}][dob]" type="date" />
+          </div>
+          <div class="col-3 form-group">
+            <label>Gender</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="minors[${minorCount-1}][gender]" value="male" />
+                <span>Male</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="minors[${minorCount-1}][gender]" value="female" />
+                <span>Female</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      `;
+      minorsList.appendChild(minorDiv);
+      console.log('minorCount:', minorCount);
+    }
+
+    window.removeMinor = function(id) {
+      const minorDiv = document.getElementById(`minor-${id}`);
+      if (minorDiv) {
+        minorDiv.remove();
+        // Renumber remaining minors
+        const remainingMinors = minorsList.querySelectorAll('.minor-entry');
+        minorCount = remainingMinors.length;
+        remainingMinors.forEach((minor, index) => {
+          const label = minor.querySelector('.minor-label span');
+          if (label) label.textContent = `Minor #${index + 1}`;
+        });
+        console.log('minorCount:', minorCount);
+      }
+    };
+
+    addMinorBtn.addEventListener('click', addMinor);
+
+    // Surgery management
+    const surgeriesContainer = document.getElementById('surgeriesContainer');
+    const addSurgeryBtn = document.getElementById('addSurgeryBtn');
+
+    function addSurgery() {
+      surgeryCount++;
+      const surgeryDiv = document.createElement('div');
+      surgeryDiv.className = 'surgery-entry';
+      surgeryDiv.id = `surgery-${surgeryCount}`;
+      surgeryDiv.innerHTML = `
+        <div class="surgery-header">
+          <span class="surgery-number">Surgery #${surgeryCount}</span>
+          <button type="button" class="btn-remove" onclick="removeSurgery(${surgeryCount})">Remove</button>
+        </div>
+        <div class="form-grid">
+          <div class="col-6 form-group">
+            <label for="surgery${surgeryCount}Date">Surgery Date</label>
+            <input id="surgery${surgeryCount}Date" name="surgeries[${surgeryCount-1}][date]" type="date" />
+          </div>
+          <div class="col-6 form-group">
+            <label for="surgery${surgeryCount}Reason">Reason / Type</label>
+            <input id="surgery${surgeryCount}Reason" name="surgeries[${surgeryCount-1}][reason]" type="text" />
+          </div>
+        </div>
+      `;
+      surgeriesContainer.appendChild(surgeryDiv);
+      console.log('surgeryCount:', surgeryCount);
+    }
+
+    window.removeSurgery = function(id) {
+      const surgeryDiv = document.getElementById(`surgery-${id}`);
+      if (surgeryDiv) {
+        surgeryDiv.remove();
+        // Renumber remaining surgeries
+        const remainingSurgeries = surgeriesContainer.querySelectorAll('.surgery-entry');
+        surgeryCount = remainingSurgeries.length;
+        remainingSurgeries.forEach((surgery, index) => {
+          const label = surgery.querySelector('.surgery-number');
+          if (label) label.textContent = `Surgery #${index + 1}`;
+        });
+        console.log('surgeryCount:', surgeryCount);
+      }
+    };
+
+    addSurgeryBtn.addEventListener('click', addSurgery);
+
+    // Chemo toggle
+    const chemoRadios = document.querySelectorAll('input[name="started_chemo"]');
+    const chemoDetailsSection = document.getElementById('chemoDetailsSection');
+    
+    chemoRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.value === 'yes') {
+          chemoDetailsSection.classList.add('visible');
+        } else {
+          chemoDetailsSection.classList.remove('visible');
+        }
+      });
+    });
+
+    // Radiation toggle
+    const radiationRadios = document.querySelectorAll('input[name="started_radiation"]');
+    const radiationDetailsSection = document.getElementById('radiationDetailsSection');
+    
+    radiationRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.value === 'yes') {
+          radiationDetailsSection.classList.add('visible');
+        } else {
+          radiationDetailsSection.classList.remove('visible');
+        }
+      });
+    });
+
+    // Emergency relationship "Other" toggle
+    const emergRelSelect = document.getElementById('emergRelationship');
+    const emergRelOtherWrap = document.getElementById('emergRelOtherWrap');
+    
+    function updateEmergRelOther() {
+      emergRelOtherWrap.style.display = emergRelSelect.value === 'Other' ? 'block' : 'none';
+    }
+    
+    emergRelSelect.addEventListener('change', updateEmergRelOther);
+
+    // Form serialization
+    function formToObject(form) {
+      const data = new FormData(form);
+      const obj = {};
+      for (const [k, v] of data.entries()) {
+        if (k.endsWith('[]')) {
+          const key = k.slice(0, -2);
+          obj[key] = obj[key] || [];
+          obj[key].push(v);
+        } else {
+          if (obj[k] !== undefined) {
+            obj[k] = Array.isArray(obj[k]) ? obj[k] : [obj[k]];
+            obj[k].push(v);
+          } else {
+            obj[k] = v;
+          }
+        }
+      }
+      // Add counts
+      obj.isMinor = isMinor;
+      obj.minorCount = minorCount;
+      obj.surgeryCount = surgeryCount;
+      return obj;
+    }
+
+    // Form submission
+    const form = document.getElementById('intakeForm');
+    const statusMsg = document.getElementById('statusMsg');
+    const saveDraftBtn = document.getElementById('saveDraftBtn');
+    const DRAFT_KEY = 'support_house_intake_draft_v1';
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const payload = formToObject(form);
+      console.log('INTAKE_PAYLOAD', payload);
+      statusMsg.textContent = '✓ Form submitted successfully';
+      setTimeout(() => statusMsg.textContent = '', 3000);
+    });
+
+    // Draft save
+    saveDraftBtn.addEventListener('click', () => {
+      const payload = formToObject(form);
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
+        statusMsg.textContent = '✓ Draft saved';
+      } catch (e) {
+        statusMsg.textContent = 'Error saving draft';
+      }
+      setTimeout(() => statusMsg.textContent = '', 3000);
+    });
+
+    // Set today's date for signature date
+    document.getElementById('signatureDate').valueAsDate = new Date();
+  </script>
+</body>
+</html>

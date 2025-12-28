@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Support House — Patient Intake (MVP)</title>
+  <style>
+    :root {
+      --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      --space-sm: 6px;
+      --space-md: 12px;
+      --space-lg: 20px;
+      --radius-md: 10px;
+      --color-bg: #f3eff8; /* very light lavender tint */
+      --color-card: #ffffff;
+      --color-border: #e6e0ee;
+      --color-muted: #6b7280;
+      --color-primary: #5b21b6; /* deep purple */
+      --color-primary-600: #4c1d95;
+      --danger: #b91c1c;
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0; padding: var(--space-lg); background: var(--color-bg);
+      font-family: var(--font-sans);
+      color: #1f2937;
+    }
+
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+    h1 { margin: 0 0 6px; font-size: 22px; }
+
+    /* Top small helper / callout */
+    .sub { margin: 0 0 var(--space-lg); color: var(--color-muted); font-size: 14px; }
+    .callout {
+      background: rgba(91,33,182,0.06); border: 1px solid rgba(91,33,182,0.08);
+      padding: 10px 12px; border-radius: 8px; color: var(--color-primary-600);
+      font-size: 13px; margin-bottom: var(--space-lg);
+    }
+
+    /* Form card */
+    form {
+      background: var(--color-card); border: 1px solid var(--color-border);
+      border-radius: 14px; padding: 28px; box-shadow: 0 6px 24px rgba(18,18,26,0.06);
+    }
+
+    /* Section cards (fieldset) */
+    fieldset {
+      border: 1px solid var(--color-border); border-radius: 10px; padding: 0; margin: 0 0 var(--space-lg);
+      overflow: visible;
+    }
+    legend {
+      display: block; padding: 10px 14px; font-weight: 700; background: rgba(91,33,182,0.04);
+      border-radius: 10px 10px 0 0; margin-bottom: 8px; color: var(--color-primary-600);
+    }
+
+    /* Base grid system (keeps existing col-* API) */
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--space-md); align-items: start; }
+    .col-12 { grid-column: span 12; }
+    .col-9  { grid-column: span 9; }
+    .col-8  { grid-column: span 8; }
+    .col-6  { grid-column: span 6; }
+    .col-5  { grid-column: span 5; }
+    .col-4  { grid-column: span 4; }
+    .col-3  { grid-column: span 3; }
+    .col-2  { grid-column: span 2; }
+
+    @media (max-width: 860px) {
+      .col-9,.col-8,.col-6,.col-5,.col-4,.col-3,.col-2 { grid-column: span 12; }
+    }
+
+    label { display: block; font-size: 13px; color: #374151; margin: 0 0 var(--space-sm); }
+    /* Inline option labels (radios/checkboxes) should be full-row clickable */
+    .inline label { display: flex; align-items: center; gap: 10px; cursor: pointer; margin: 0; }
+
+    /* Inputs: consistent height and visuals */
+    input, select, textarea { width: 100%; box-sizing: border-box; border: 1px solid var(--color-border); border-radius: 8px; padding: 10px 12px; font-size: 14px; background: #fff; height:44px; }
+    textarea { min-height: 96px; resize: vertical; height: auto; }
+
+    /* Compact controls: dates, small fields */
+    input[type="date"] { padding: 6px 10px; height:36px; max-width:160px; }
+    input[type="tel"] { max-width:140px; }
+    /* Specific small: middle initial */
+    #middleInitial { max-width:64px; }
+
+    /* City / State / ZIP: City flexible, State fixed, ZIP medium */
+    #state, #emergState { max-width:120px; }
+    #zip, #emergZip { max-width:120px; }
+
+    /* Assistance (checkboxes) grid */
+    .assistance-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+    .assistance-grid label { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border-radius:6px; }
+
+    /* Minors: row styling */
+    .minor-row { border-top: 1px solid rgba(16,24,40,0.04); padding-top: 10px; margin-top: 10px; }
+    .minor-row .col-8 { padding-right: 6px; }
+    .minor-row .col-2 { padding-left: 6px; }
+
+    .hint { font-size: 12px; color: var(--color-muted); margin-top: 6px; min-height: 18px; }
+
+    .row-actions { display: flex; gap: 12px; align-items: center; justify-content: flex-end; margin-top: var(--space-lg); }
+
+    /* Buttons */
+    .btn { border-radius: 10px; padding: 10px 16px; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
+    .btn.primary { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+    .btn.secondary { background: transparent; color: var(--color-primary); border: 1px solid var(--color-primary); }
+
+    .muted { color: var(--color-muted); font-size: 12px; }
+
+    .divider { height: 1px; background: var(--color-border); margin: 12px 0; }
+
+    /* Focus and validation states */
+    input:focus, select:focus, textarea:focus { outline: none; box-shadow: 0 0 0 3px rgba(91,33,182,0.12); border-color: var(--color-primary-600); }
+    input:invalid, select:invalid, textarea:invalid { border-color: var(--danger); }
+    .label-required::after { content: " *"; color: var(--danger); margin-left: 2px; }
+
+    /* Certification panel */
+    .panel { background: #faf9ff; border: 1px solid rgba(91,33,182,0.06); padding: 10px; border-radius: 8px; max-height: 88px; overflow: auto; }
+
+    /* Textarea sizes for predictable layout */
+    #diagnosis { min-height: 140px; }
+    #assistanceNotes { min-height: 140px; }
+    #roiNotes { min-height: 120px; }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Patient Intake Form (MVP)</h1>
+    <p class="sub callout">Internal use only. Do not collect Social Security numbers.</p>
+
+    <form id="intakeForm" autocomplete="on">
+      <!-- Shared state options template: AR and OK first, then other states alphabetically -->
+      <template id="stateOptions">
+        <option value="AR">Arkansas</option>
+        <option value="OK">Oklahoma</option>
+        <option value="AL">Alabama</option>
+        <option value="AK">Alaska</option>
+        <option value="AZ">Arizona</option>
+        <option value="CA">California</option>
+        <option value="CO">Colorado</option>
+        <option value="CT">Connecticut</option>
+        <option value="DE">Delaware</option>
+        <option value="FL">Florida</option>
+        <option value="GA">Georgia</option>
+        <option value="HI">Hawaii</option>
+        <option value="ID">Idaho</option>
+        <option value="IL">Illinois</option>
+        <option value="IN">Indiana</option>
+        <option value="IA">Iowa</option>
+        <option value="KS">Kansas</option>
+        <option value="KY">Kentucky</option>
+        <option value="LA">Louisiana</option>
+        <option value="ME">Maine</option>
+        <option value="MD">Maryland</option>
+        <option value="MA">Massachusetts</option>
+        <option value="MI">Michigan</option>
+        <option value="MN">Minnesota</option>
+        <option value="MS">Mississippi</option>
+        <option value="MO">Missouri</option>
+        <option value="MT">Montana</option>
+        <option value="NE">Nebraska</option>
+        <option value="NV">Nevada</option>
+        <option value="NH">New Hampshire</option>
+        <option value="NJ">New Jersey</option>
+        <option value="NM">New Mexico</option>
+        <option value="NY">New York</option>
+        <option value="NC">North Carolina</option>
+        <option value="ND">North Dakota</option>
+        <option value="OH">Ohio</option>
+        <option value="OR">Oregon</option>
+        <option value="PA">Pennsylvania</option>
+        <option value="RI">Rhode Island</option>
+        <option value="SC">South Carolina</option>
+        <option value="SD">South Dakota</option>
+        <option value="TN">Tennessee</option>
+        <option value="TX">Texas</option>
+        <option value="UT">Utah</option>
+        <option value="VT">Vermont</option>
+        <option value="VA">Virginia</option>
+        <option value="WA">Washington</option>
+        <option value="WV">West Virginia</option>
+        <option value="WI">Wisconsin</option>
+        <option value="WY">Wyoming</option>
+      </template>
+      <!-- =========================
+           PAGE 1 — PATIENT INFO
+      ========================== -->
+      <fieldset>
+        <legend>Patient Identity</legend>
+        <div class="grid">
+          <div class="col-5">
+            <label for="firstName">First Name</label>
+            <input id="firstName" name="first_name" type="text" required />
+          </div>
+          <div class="col-2">
+            <label for="middleInitial">Middle Initial</label>
+            <input id="middleInitial" name="middle_initial" type="text" maxlength="1" />
+          </div>
+          <div class="col-5">
+            <label for="lastName">Last Name</label>
+            <input id="lastName" name="last_name" type="text" required />
+          </div>
+          <div class="col-2">
+            <label for="dob">DOB</label>
+            <input id="dob" name="dob" type="date" required />
+          </div>
+
+          <div class="col-3">
+            <label for="initialVisitDate">Initial Visit Date</label>
+            <input id="initialVisitDate" name="initial_visit_date" type="date" />
+          </div>
+          <div class="col-3">
+            <label for="recentVisitDate">Most Recent Visit Date</label>
+            <input id="recentVisitDate" name="recent_visit_date" type="date" />
+          </div>
+
+          <div class="col-8">
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" />
+          </div>
+
+          <div class="col-4">
+            <label for="phone">Phone Number</label>
+            <input id="phone" name="phone" type="tel" placeholder="(###) ###-####" />
+          </div>
+
+          <div class="col-12">
+            <label>Status</label>
+            <div class="inline" role="group" aria-label="status">
+              <label><input type="radio" name="status" value="male" /> Male</label>
+              <label><input type="radio" name="status" value="female" /> Female</label>
+              <label><input type="radio" name="status" value="child" /> Child</label>
+            </div>
+            <div class="hint">If “Child”, fill in Guardian details below.</div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset id="guardianFieldset">
+        <legend>Guardian (Child Only)</legend>
+        <div class="grid">
+          <div class="col-6">
+            <label for="guardianName">Parent / Guardian Name</label>
+            <input id="guardianName" name="guardian_name" type="text" />
+          </div>
+          <div class="col-6">
+            <label for="guardianRelationship">Relationship to Child</label>
+            <input id="guardianRelationship" name="guardian_relationship" type="text" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Address</legend>
+        <div class="grid">
+          <div class="col-8">
+            <label for="addressLine1">Address</label>
+            <input id="addressLine1" name="address_line1" type="text" />
+          </div>
+          <div class="col-4">
+            <label for="county">County</label>
+            <input id="county" name="county" type="text" />
+          </div>
+
+          <div class="col-8">
+            <label for="city">City</label>
+            <input id="city" name="city" type="text" />
+          </div>
+          <div class="col-2">
+            <label for="state">State</label>
+            <select id="state" name="state">
+              <option value="">— Select —</option>
+            </select>
+          </div>
+          <div class="col-2">
+            <label for="zip">ZIP</label>
+            <input id="zip" name="zip" type="text" maxlength="10" placeholder="##### or #####-####" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Demographics</legend>
+        <div class="grid">
+          <div class="col-6">
+            <label for="ethnicity">Ethnicity</label>
+            <select id="ethnicity" name="ethnicity">
+              <option value="">— Select —</option>
+              <option>White</option>
+              <option>Black</option>
+              <option>Hispanic</option>
+              <option>Vietnamese</option>
+              <option>American Indian</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label for="preferredLanguage">Preferred Language</label>
+            <select id="preferredLanguage" name="preferred_language">
+              <option value="">— Select —</option>
+              <option>English</option>
+              <option>Spanish</option>
+              <option>Vietnamese</option>
+              <option>Laotian</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Education</legend>
+        <div class="grid">
+          <div class="col-12">
+            <label for="educationLevel">Highest Education Level</label>
+            <select id="educationLevel" name="education_level">
+              <option value="">— Select —</option>
+              <option>Less than High School</option>
+              <option>GED</option>
+              <option>High School Graduate</option>
+              <option>Some College</option>
+              <option>Associate's</option>
+              <option>Bachelor's</option>
+              <option>Post Graduate</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Insurance / Veteran</legend>
+        <div class="grid">
+          <div class="col-6">
+            <label>Insurance?</label>
+            <div class="inline">
+              <label><input type="radio" name="insurance_has" value="yes" /> Yes</label>
+              <label><input type="radio" name="insurance_has" value="no" /> No</label>
+            </div>
+            <div class="hint">If yes, choose type below.</div>
+          </div>
+          <div class="col-6">
+            <label for="insuranceType">Insurance Type</label>
+            <select id="insuranceType" name="insurance_type">
+              <option value="">— Select —</option>
+              <option>Private</option>
+              <option>Medicaid</option>
+              <option>Medicare</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label>Are you a Veteran?</label>
+            <div class="inline">
+              <label><input type="radio" name="veteran" value="yes" /> Yes</label>
+              <label><input type="radio" name="veteran" value="no" /> No</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Employment</legend>
+        <div class="grid">
+          <div class="col-12">
+            <label for="employmentStatus">Employment Status</label>
+            <select id="employmentStatus" name="employment_status">
+              <option value="">— Select —</option>
+              <option>Employed</option>
+              <option>Retired</option>
+              <option>Disabled</option>
+              <option>Other</option>
+              <option>Unemployed</option>
+            </select>
+            <div class="hint">If employed, provide employer + occupation.</div>
+          </div>
+
+          <div class="col-6">
+            <label for="employerName">Employer</label>
+            <input id="employerName" name="employer_name" type="text" />
+          </div>
+          <div class="col-6">
+            <label for="occupation">Occupation</label>
+            <input id="occupation" name="occupation" type="text" />
+          </div>
+
+          <div class="col-12">
+            <label>Is at least one other person in the home employed?</label>
+            <div class="inline">
+              <label><input type="radio" name="other_home_employed" value="yes" /> Yes</label>
+              <label><input type="radio" name="other_home_employed" value="no" /> No</label>
+              <label><input type="radio" name="other_home_employed" value="unknown" /> Unknown</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Marital Status / Spouse</legend>
+        <div class="grid">
+          <div class="col-6">
+            <label for="maritalStatus">Marital Status</label>
+            <select id="maritalStatus" name="marital_status">
+              <option value="">— Select —</option>
+              <option>Married</option>
+              <option>Single</option>
+              <option>Widowed</option>
+              <option>Separated</option>
+              <option>Divorced</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="muted">If married, fill spouse info</label>
+          </div>
+
+          <div class="col-6">
+            <label for="spouseName">Spouse Name</label>
+            <input id="spouseName" name="spouse_name" type="text" />
+          </div>
+          <div class="col-6">
+            <label for="spousePhone">Spouse Phone</label>
+            <input id="spousePhone" name="spouse_phone" type="tel" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Minors Living in the Home (Optional)</legend>
+        <div class="grid">
+          <div class="col-12">
+            <p class="muted">MVP: 3 rows. (Later: dynamic “Add Minor” button.)</p>
+          </div>
+
+          <!-- Minor 1 -->
+          <div class="col-12 minor-row">
+            <div class="grid">
+              <div class="col-8">
+                <label for="minor1Name">Minor #1 Name</label>
+                <input id="minor1Name" name="minors[0][name]" type="text" />
+              </div>
+              <div class="col-2">
+                <label for="minor1Dob">Minor #1 DOB</label>
+                <input id="minor1Dob" name="minors[0][dob]" type="date" />
+              </div>
+              <div class="col-2">
+                <label for="minor1Gender">Minor #1 Gender</label>
+                <input id="minor1Gender" name="minors[0][gender]" type="text" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Minor 2 -->
+          <div class="col-12 minor-row">
+            <div class="grid">
+              <div class="col-8">
+                <label for="minor2Name">Minor #2 Name</label>
+                <input id="minor2Name" name="minors[1][name]" type="text" />
+              </div>
+              <div class="col-2">
+                <label for="minor2Dob">Minor #2 DOB</label>
+                <input id="minor2Dob" name="minors[1][dob]" type="date" />
+              </div>
+              <div class="col-2">
+                <label for="minor2Gender">Minor #2 Gender</label>
+                <input id="minor2Gender" name="minors[1][gender]" type="text" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Minor 3 -->
+          <div class="col-12 minor-row">
+            <div class="grid">
+              <div class="col-8">
+                <label for="minor3Name">Minor #3 Name</label>
+                <input id="minor3Name" name="minors[2][name]" type="text" />
+              </div>
+              <div class="col-2">
+                <label for="minor3Dob">Minor #3 DOB</label>
+                <input id="minor3Dob" name="minors[2][dob]" type="date" />
+              </div>
+              <div class="col-2">
+                <label for="minor3Gender">Minor #3 Gender</label>
+                <input id="minor3Gender" name="minors[2][gender]" type="text" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Emergency Contact</legend>
+        <div class="grid">
+          <div class="col-8">
+            <label for="emergName">Name</label>
+            <input id="emergName" name="emergency_contact[name]" type="text" />
+          </div>
+          <div class="col-4">
+            <label for="emergPhone">Phone</label>
+            <input id="emergPhone" name="emergency_contact[phone]" type="tel" />
+          </div>
+          <div class="col-6">
+            <label for="emergRelationship">Relationship</label>
+            <select id="emergRelationship" name="emergency_contact[relationship]">
+              <option value="">— Select —</option>
+              <option>Spouse</option>
+              <option>Parent</option>
+              <option>Sibling</option>
+              <option>Child</option>
+              <option>Partner</option>
+              <option>Friend</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="col-6" id="emergRelationshipOtherWrap" style="display:none;">
+            <label for="emergRelationshipOther">If "Other", specify</label>
+            <input id="emergRelationshipOther" name="emergency_contact[relationship_other]" type="text" />
+          </div>
+
+          <div class="col-12 divider"></div>
+
+          <div class="col-8">
+            <label for="emergAddr">Address</label>
+            <input id="emergAddr" name="emergency_contact[address_line1]" type="text" />
+          </div>
+          <div class="col-4">
+            <label for="emergZip">ZIP</label>
+            <input id="emergZip" name="emergency_contact[zip]" type="text" />
+          </div>
+          <div class="col-8">
+            <label for="emergCity">City</label>
+            <input id="emergCity" name="emergency_contact[city]" type="text" />
+          </div>
+          <div class="col-2">
+            <label for="emergState">State</label>
+            <select id="emergState" name="emergency_contact[state]">
+              <option value="">— Select —</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>How did you hear about us?</legend>
+        <div class="grid">
+          <div class="col-6">
+            <label for="referralSource">Referral Source</label>
+            <select id="referralSource" name="referral_source">
+              <option value="">— Select —</option>
+              <option>Hospital / Clinic Staff</option>
+              <option>Friend / Family</option>
+              <option>Newspaper</option>
+              <option>Clinic Gift Bag</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label for="referralOther">If “Other”, specify</label>
+            <input id="referralOther" name="referral_other" type="text" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Type of Assistance Needed (Select all that apply)</legend>
+        <div class="grid">
+          <div class="col-12">
+            <div class="assistance-grid">
+              <label><input type="checkbox" name="assistance[]" value="wigs" /> Wigs</label>
+              <label><input type="checkbox" name="assistance[]" value="food" /> Food</label>
+              <label><input type="checkbox" name="assistance[]" value="medical_supplies_ostomy_prosthetic" /> Medical supplies (ostomy/prosthetic)</label>
+              <label><input type="checkbox" name="assistance[]" value="liquid_nutrition" /> Liquid nutrition</label>
+              <label><input type="checkbox" name="assistance[]" value="incontinence_supplies" /> Incontinence supplies</label>
+              <label><input type="checkbox" name="assistance[]" value="clothing" /> Clothing</label>
+              <label><input type="checkbox" name="assistance[]" value="gas_card" /> Gas card</label>
+              <label><input type="checkbox" name="assistance[]" value="support_group" /> Support group</label>
+              <label><input type="checkbox" name="assistance[]" value="other" /> Other</label>
+            </div>
+            <div class="hint">MVP: “Other” can be captured in notes below.</div>
+          </div>
+          <div class="col-12">
+            <label for="assistanceNotes">Notes / Other Assistance Details</label>
+            <textarea id="assistanceNotes" name="assistance_notes"></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Certification & Authorization</legend>
+        <div class="grid">
+          <div class="col-12">
+            <div class="muted panel">
+              I certify that these answers are true and complete to the best of my knowledge.
+              I authorize the Support House to communicate as needed with my family or friends listed above.
+              Furthermore, I authorize my physicians to release or disclose medical information to and communicate with the Support House
+              to assist me with my continuum of care and/or offer me appropriate access to programs and resources.
+              (For volunteer/staff use.)
+            </div>
+          </div>
+          <div class="col-12">
+            <label>
+              <input type="checkbox" name="certify_acknowledge" required />
+              I agree / acknowledge the above
+            </label>
+          </div>
+
+          <div class="col-6">
+            <label for="signatureName">Signature (typed name)</label>
+            <input id="signatureName" name="signature_name" type="text" required />
+          </div>
+          <div class="col-3">
+            <label for="signatureDate">Date</label>
+            <input id="signatureDate" name="signature_date" type="date" required />
+          </div>
+          <div class="col-3">
+            <label for="interviewedBy">Interviewed By</label>
+            <input id="interviewedBy" name="interviewed_by" type="text" />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- =========================
+           PAGE 2 — MEDICAL INFO
+      ========================== -->
+      <fieldset>
+        <legend>Medical Information</legend>
+        <div class="grid">
+          <div class="col-12">
+            <label for="diagnosis">Diagnosis</label>
+            <textarea id="diagnosis" name="medical[diagnosis]"></textarea>
+          </div>
+
+          <div class="col-6">
+            <label for="primaryCancerType">Primary Cancer Type</label>
+            <input id="primaryCancerType" name="medical[primary_cancer_type]" type="text" />
+          </div>
+
+          <div class="col-6">
+            <label>Has it metastasized?</label>
+            <div class="inline">
+              <label><input type="radio" name="medical[metastasized]" value="yes" /> Yes</label>
+              <label><input type="radio" name="medical[metastasized]" value="no" /> No</label>
+              <label><input type="radio" name="medical[metastasized]" value="unknown" /> Unknown</label>
+            </div>
+          </div>
+
+          <div class="col-4">
+            <label for="dateOfDiagnosis">Date of Diagnosis</label>
+            <input id="dateOfDiagnosis" name="medical[date_of_diagnosis]" type="date" />
+          </div>
+
+          <div class="col-8">
+            <label for="oncologist">Oncologist</label>
+            <input id="oncologist" name="medical[oncologist]" type="text" placeholder="Name" />
+          </div>
+
+          <div class="col-8">
+            <label for="radiationOncologist">Radiation Oncologist</label>
+            <input id="radiationOncologist" name="medical[radiation_oncologist]" type="text" placeholder="Name" />
+          </div>
+          <div class="col-4">
+            <label for="surgeon">Surgeon (if applicable)</label>
+            <input id="surgeon" name="medical[surgeon]" type="text" placeholder="Name" />
+          </div>
+
+          <div class="col-12">
+            <label for="generalDoctor">General / Primary Doctor</label>
+            <input id="generalDoctor" name="medical[general_doctor]" type="text" placeholder="Name" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Treatment</legend>
+        <div class="grid">
+          <div class="col-12">
+            <p class="muted">MVP: capture one range per treatment type. (Later: allow multiple entries.)</p>
+          </div>
+
+          <div class="col-12"><strong class="muted">Surgery</strong></div>
+          <div class="col-6">
+            <label for="surgeryDates">Surgery Date(s)</label>
+            <input id="surgeryDates" name="treatment[surgery_dates]" type="text" placeholder="Example: 2024-03-01; 2024-04-15" />
+          </div>
+          <div class="col-6">
+            <label for="surgeryNotes">Surgery Notes</label>
+            <input id="surgeryNotes" name="treatment[surgery_notes]" type="text" />
+          </div>
+
+          <div class="col-12 divider"></div>
+
+          <div class="col-12"><strong class="muted">Chemo</strong></div>
+          <div class="col-3">
+            <label for="chemoStart">Chemo Start</label>
+            <input id="chemoStart" name="treatment[chemo_start]" type="date" />
+          </div>
+          <div class="col-3">
+            <label for="chemoEnd">Chemo End</label>
+            <input id="chemoEnd" name="treatment[chemo_end]" type="date" />
+          </div>
+          <div class="col-6">
+            <label for="chemoNotes">Chemo Notes</label>
+            <input id="chemoNotes" name="treatment[chemo_notes]" type="text" />
+          </div>
+
+          <div class="col-12 divider"></div>
+
+          <div class="col-12"><strong class="muted">Radiation</strong></div>
+          <div class="col-3">
+            <label for="radStart">Radiation Start</label>
+            <input id="radStart" name="treatment[radiation_start]" type="date" />
+          </div>
+          <div class="col-3">
+            <label for="radEnd">Radiation End</label>
+            <input id="radEnd" name="treatment[radiation_end]" type="date" />
+          </div>
+          <div class="col-6">
+            <label for="radNotes">Radiation Notes</label>
+            <input id="radNotes" name="treatment[radiation_notes]" type="text" />
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- =========================
+           PAGE 3 — ROI / AUTH (Placeholder)
+      ========================== -->
+      <fieldset>
+        <legend>Authorization to Disclose Medical Information (Placeholder)</legend>
+        <div class="grid">
+          <div class="col-12">
+            <p class="muted">
+              This section is intentionally minimal for now. Add the remaining fields once your team finalizes the ROI form.
+            </p>
+          </div>
+          <div class="col-12">
+            <label for="roiNotes">ROI / Fax Notes</label>
+            <textarea id="roiNotes" name="roi_notes" placeholder="Example: faxed to Dr. ____ on ____; request treatment plan."></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <div class="row-actions">
+        <button class="btn primary" type="submit">Submit Intake</button>
+        <button class="btn secondary" type="button" id="saveDraftBtn">Save Draft (local)</button>
+        <span class="muted" id="statusMsg"></span>
+      </div>
+
+      <p class="hint">
+        MVP behavior: Submit prints JSON to console (no backend). Save Draft stores locally in the browser.
+      </p>
+    </form>
+  </div>
+
+  <script>
+    // MVP: basic show/hide for Guardian based on Status
+    const statusRadios = document.querySelectorAll('input[name="status"]');
+    const guardianFieldset = document.getElementById('guardianFieldset');
+
+    function updateGuardianVisibility() {
+      const selected = document.querySelector('input[name="status"]:checked')?.value;
+      guardianFieldset.style.display = (selected === 'child') ? 'block' : 'none';
+    }
+    statusRadios.forEach(r => r.addEventListener('change', updateGuardianVisibility));
+    updateGuardianVisibility();
+
+    // Emergency contact relationship "Other" toggle
+    const emergRelSelect = document.getElementById('emergRelationship');
+    const emergRelOtherWrap = document.getElementById('emergRelationshipOtherWrap');
+    function updateEmergRelOther() {
+      if (!emergRelSelect || !emergRelOtherWrap) return;
+      emergRelOtherWrap.style.display = (emergRelSelect.value === 'Other') ? 'block' : 'none';
+    }
+    if (emergRelSelect) {
+      emergRelSelect.addEventListener('change', updateEmergRelOther);
+      updateEmergRelOther();
+    }
+
+    // Populate state selects from shared template
+    (function populateStateSelects(){
+      const tpl = document.getElementById('stateOptions');
+      if (!tpl) return;
+      const optionsHtml = tpl.innerHTML;
+      const selector = 'select[name="state"], select[name="emergency_contact[state]"]';
+      document.querySelectorAll(selector).forEach(s => {
+        // Preserve current value if set; will reapply after setting options
+        const cur = s.value || '';
+        s.innerHTML = '<option value="">— Select —</option>' + optionsHtml;
+        if (cur) s.value = cur;
+      });
+    })();
+
+    // MVP: serialize form data into a JSON-ish object
+    function formToObject(form) {
+      const data = new FormData(form);
+      const obj = {};
+      for (const [k, v] of data.entries()) {
+        // Handle multi-select checkboxes like assistance[]
+        if (k.endsWith('[]')) {
+          const key = k.slice(0, -2);
+          obj[key] = obj[key] || [];
+          obj[key].push(v);
+        } else {
+          // If repeated keys happen, keep array
+          if (obj[k] !== undefined) {
+            obj[k] = Array.isArray(obj[k]) ? obj[k] : [obj[k]];
+            obj[k].push(v);
+          } else {
+            obj[k] = v;
+          }
+        }
+      }
+      return obj;
+    }
+
+    const form = document.getElementById('intakeForm');
+    const statusMsg = document.getElementById('statusMsg');
+    const saveDraftBtn = document.getElementById('saveDraftBtn');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const payload = formToObject(form);
+      console.log('INTAKE_PAYLOAD', payload);
+      statusMsg.textContent = 'Submitted (console log only).';
+    });
+
+    // Local draft save/load
+    const DRAFT_KEY = 'support_house_intake_draft_v1';
+
+    saveDraftBtn.addEventListener('click', () => {
+      const payload = formToObject(form);
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(payload));
+      statusMsg.textContent = 'Draft saved locally.';
+    });
+
+    // Optional: load existing draft on open
+    try {
+      const draft = localStorage.getItem(DRAFT_KEY);
+      if (draft) statusMsg.textContent = 'Draft exists (local).';
+    } catch (_) {}
+
+    // UI polish: mark labels for required inputs and ensure helper hint area exists
+    (function annotateRequiredAndHints(){
+      document.querySelectorAll('#intakeForm [required]').forEach(el => {
+        const id = el.id;
+        if (!id) return;
+        const label = document.querySelector('label[for="'+id+'"]');
+        if (label) label.classList.add('label-required');
+        // ensure a hint/helper area exists after the control
+        const next = el.nextElementSibling;
+        if (!next || !next.classList || !next.classList.contains('hint')) {
+          const helper = document.createElement('div');
+          helper.className = 'hint';
+          helper.textContent = '';
+          el.parentNode.insertBefore(helper, el.nextSibling);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

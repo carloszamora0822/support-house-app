@@ -1,0 +1,1521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Support House — Patient Intake</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --primary: #7c3aed;
+      --primary-dark: #6d28d9;
+      --primary-light: #a78bfa;
+      --primary-bg: #f5f3ff;
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --text-secondary: #6b7280;
+      --success: #059669;
+      --danger: #dc2626;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 40px;
+      border-radius: var(--radius);
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      opacity: 0.95;
+      font-size: 15px;
+    }
+
+    .alert {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: #92400e;
+    }
+
+    form {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .section {
+      padding: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--primary-bg);
+    }
+
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-bg);
+      color: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+
+    .col-12 { grid-column: span 12; }
+    .col-8 { grid-column: span 8; }
+    .col-6 { grid-column: span 6; }
+    .col-5 { grid-column: span 5; }
+    .col-4 { grid-column: span 4; }
+    .col-3 { grid-column: span 3; }
+    .col-2 { grid-column: span 2; }
+
+    @media (max-width: 768px) {
+      .col-8, .col-6, .col-5, .col-4, .col-3, .col-2 { grid-column: span 12; }
+      header { padding: 24px; }
+      header h1 { font-size: 24px; }
+      .section { padding: 20px; }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    label.required::after {
+      content: " *";
+      color: var(--danger);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      background: white;
+      transition: all 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    select {
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 12px center;
+      background-repeat: no-repeat;
+      background-size: 20px;
+      padding-right: 40px;
+      appearance: none;
+    }
+
+    .radio-group,
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .radio-option,
+    .checkbox-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 10px 16px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+
+    .radio-option:hover,
+    .checkbox-option:hover {
+      border-color: var(--primary-light);
+      background: var(--primary-bg);
+    }
+
+    .radio-option input[type="radio"],
+    .checkbox-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    .minor-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: rgba(124, 58, 237, 0.05);
+      border: 1.5px solid rgba(124, 58, 237, 0.2);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .conditional-section {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .conditional-section.visible {
+      display: block;
+    }
+
+    .minor-entry {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .minor-entry:last-child {
+      margin-bottom: 0;
+    }
+
+    .minor-label {
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+    }
+
+    .btn-remove {
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .btn-remove:hover {
+      background: rgba(220, 38, 38, 0.1);
+    }
+
+    .btn-add {
+      background: var(--primary-bg);
+      color: var(--primary);
+      border: 2px dashed var(--primary-light);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .btn-add:hover {
+      background: var(--primary-light);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .certification-box {
+      background: var(--primary-bg);
+      border: 2px solid var(--primary-light);
+      border-radius: 8px;
+      padding: 20px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      padding: 12px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .checkbox-label:hover {
+      background: var(--bg);
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      margin-top: 2px;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 24px 32px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+
+    button {
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .status-msg {
+      font-size: 14px;
+      color: var(--success);
+      margin-left: auto;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+      grid-column: 1 / -1;
+    }
+
+    .subsection-title {
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-size: 15px;
+      margin-bottom: 12px;
+      grid-column: 1 / -1;
+    }
+
+    .assistance-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .search-dropdown {
+      position: relative;
+    }
+
+    .search-input {
+      position: relative;
+    }
+
+    .dropdown-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 2px solid var(--primary);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .dropdown-list.visible {
+      display: block;
+    }
+
+    .dropdown-item {
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+      background: var(--primary-bg);
+    }
+
+    .dropdown-item.selected {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .surgery-entry {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .surgery-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .surgery-number {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Patient Intake Form</h1>
+      <p>Please complete all required fields. Information is kept confidential.</p>
+    </header>
+
+    <div class="alert">
+      ⚠️ Internal use only. Do not collect Social Security numbers.
+    </div>
+
+    <form id="intakeForm" autocomplete="on">
+    <!-- PATIENT INFORMATION SHEET -->
+    <div class="section" id="patient-info">
+      <div class="section-header">
+        <div class="section-icon">1</div>
+        <h2>Patient Information Sheet</h2>
+      </div>
+
+      <!-- top-right box -->
+      <div class="callout" style="margin-bottom: 16px;">
+        <div class="form-grid">
+          <div class="col-4 form-group">
+            <label for="initialVisitDate">Initial Visit Date</label>
+            <input id="initialVisitDate" name="initial_visit_date" type="date" />
+          </div>
+          <div class="col-4 form-group">
+            <label for="timeIn">Time In</label>
+            <input id="timeIn" name="time_in" type="time" />
+          </div>
+          <div class="col-4 form-group">
+            <label for="timeOut">Time Out</label>
+            <input id="timeOut" name="time_out" type="time" />
+          </div>
+          <div class="col-4 form-group">
+            <label for="fileUpdated">File Updated</label>
+            <input id="fileUpdated" name="file_updated_date" type="date" />
+          </div>
+        </div>
+        <div class="small-muted">This box mirrors the “Initial Visit Date / Time In / Time Out / File Updated” panel on the paper form.</div>
+      </div>
+
+      <!-- patient name + DOB -->
+      <div class="form-grid">
+        <div class="col-3 form-group">
+          <label for="firstName" class="required">First (Patient Name)</label>
+          <input id="firstName" name="patient_first_name" type="text" required />
+        </div>
+        <div class="col-3 form-group">
+          <label for="middleName">Middle</label>
+          <input id="middleName" name="patient_middle_name" type="text" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="lastName" class="required">Last</label>
+          <input id="lastName" name="patient_last_name" type="text" required />
+        </div>
+        <div class="col-3 form-group">
+          <label for="goesBy">Goes By</label>
+          <input id="goesBy" name="patient_goes_by" type="text" />
+        </div>
+
+        <div class="col-4 form-group">
+          <label for="dob" class="required">Date of Birth</label>
+          <input id="dob" name="patient_dob" type="date" required />
+        </div>
+        <div class="col-4 form-group">
+          <label for="city">City</label>
+          <input id="city" name="patient_city" type="text" />
+        </div>
+        <div class="col-2 form-group">
+          <label for="state">ST</label>
+          <input id="state" name="patient_state" type="text" maxlength="2" placeholder="AR" />
+        </div>
+        <div class="col-2 form-group">
+          <label for="zip">ZIP</label>
+          <input id="zip" name="patient_zip" type="text" inputmode="numeric" />
+        </div>
+
+        <div class="col-8 form-group">
+          <label for="address">Address</label>
+          <input id="address" name="patient_address" type="text" />
+        </div>
+        <div class="col-4 form-group">
+          <label for="county">County</label>
+          <input id="county" name="patient_county" type="text" />
+        </div>
+
+        <div class="col-6 form-group">
+          <label for="email">E-mail Address</label>
+          <input id="email" name="patient_email" type="email" />
+        </div>
+
+        <div class="col-4 form-group">
+          <label for="phonePrimary">Phone: Primary</label>
+          <input id="phonePrimary" name="phone_primary" type="tel" />
+        </div>
+        <div class="col-4 form-group">
+          <label for="phoneSecond">Phone: 2nd</label>
+          <input id="phoneSecond" name="phone_second" type="tel" />
+        </div>
+        <div class="col-4 form-group">
+          <label for="phoneOther">Phone: Other</label>
+          <input id="phoneOther" name="phone_other" type="tel" />
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- demographics -->
+      <div class="form-grid">
+        <div class="col-12">
+          <div class="small-muted"><strong>DEMOGRAPHICS</strong> (statistical information required for grant funders)</div>
+        </div>
+
+        <div class="col-12 form-group">
+          <label class="required">Status</label>
+          <div class="checkbox-row">
+            <label><input type="radio" name="status" value="female" required /> Female</label>
+            <label><input type="radio" name="status" value="male" /> Male</label>
+            <label><input type="radio" name="status" value="child" /> Child</label>
+          </div>
+        </div>
+
+        <div class="col-6 form-group" id="guardianNameWrap" style="display:none;">
+          <label for="guardianName" class="required">Parent/Guardian Name</label>
+          <input id="guardianName" name="guardian_name" type="text" />
+        </div>
+        <div class="col-6 form-group" id="guardianRelWrap" style="display:none;">
+          <label for="guardianRelationship" class="required">Relationship</label>
+          <input id="guardianRelationship" name="guardian_relationship" type="text" />
+        </div>
+
+        <div class="col-12 form-group">
+          <label>Ethnicity (of patient)</label>
+          <div class="checkbox-row">
+            <label><input type="checkbox" name="ethnicity[]" value="white" /> White</label>
+            <label><input type="checkbox" name="ethnicity[]" value="black" /> Black</label>
+            <label><input type="checkbox" name="ethnicity[]" value="hispanic_latino" /> Hispanic/Latino</label>
+            <label><input type="checkbox" name="ethnicity[]" value="vietnamese" /> Vietnamese</label>
+            <label><input type="checkbox" name="ethnicity[]" value="american_indian" /> American Indian</label>
+            <label><input type="checkbox" name="ethnicity[]" value="other" id="ethOtherChk" /> Other</label>
+          </div>
+        </div>
+        <div class="col-6 form-group" id="ethOtherWrap" style="display:none;">
+          <label for="ethOtherText">Ethnicity (Other)</label>
+          <input id="ethOtherText" name="ethnicity_other" type="text" />
+        </div>
+
+        <div class="col-12 form-group">
+          <label>Language (primary language in home)</label>
+          <div class="checkbox-row">
+            <label><input type="checkbox" name="language[]" value="english" /> English</label>
+            <label><input type="checkbox" name="language[]" value="spanish" /> Spanish</label>
+            <label><input type="checkbox" name="language[]" value="vietnamese" /> Vietnamese</label>
+            <label><input type="checkbox" name="language[]" value="laotian" /> Laotian</label>
+            <label><input type="checkbox" name="language[]" value="other" id="langOtherChk" /> Other</label>
+          </div>
+        </div>
+        <div class="col-6 form-group" id="langOtherWrap" style="display:none;">
+          <label for="langOtherText">Language (Other)</label>
+          <input id="langOtherText" name="language_other" type="text" />
+        </div>
+
+        <div class="col-12 form-group">
+          <label>Education</label>
+          <div class="checkbox-row">
+            <label><input type="radio" name="education" value="less_than_hs" /> Less than high school</label>
+            <label><input type="radio" name="education" value="ged" /> GED</label>
+            <label><input type="radio" name="education" value="hs_grad" /> HS Graduate</label>
+            <label><input type="radio" name="education" value="some_college" /> Some College</label>
+            <label><input type="radio" name="education" value="associate" /> Associate degree</label>
+            <label><input type="radio" name="education" value="bachelors" /> Bachelor’s degree</label>
+            <label><input type="radio" name="education" value="post_grad" /> Post-grad degree</label>
+          </div>
+        </div>
+
+        <div class="col-12 form-group">
+          <label>Insurance</label>
+          <div class="checkbox-row">
+            <label><input type="radio" name="insurance_has" value="no" /> No</label>
+            <label><input type="radio" name="insurance_has" value="yes" /> Yes</label>
+          </div>
+        </div>
+
+        <div class="col-12 form-group" id="insuranceTypeWrap" style="display:none;">
+          <label>Insurance Type (if Yes)</label>
+          <div class="checkbox-row">
+            <label><input type="checkbox" name="insurance_type[]" value="private" /> Private</label>
+            <label><input type="checkbox" name="insurance_type[]" value="medicaid" /> Medicaid</label>
+            <label><input type="checkbox" name="insurance_type[]" value="medicare" /> Medicare</label>
+          </div>
+        </div>
+
+        <div class="col-12 form-group">
+          <label>Are you a veteran?</label>
+          <div class="checkbox-row">
+            <label><input type="radio" name="is_veteran" value="yes" /> Yes</label>
+            <label><input type="radio" name="is_veteran" value="no" /> No</label>
+          </div>
+        </div>
+
+        <div class="col-12 form-group">
+          <label>Employment (patient or parent/guardian)</label>
+          <div class="checkbox-row">
+            <label><input type="radio" name="employment_status" value="employed" /> Employed</label>
+            <label><input type="radio" name="employment_status" value="retired" /> Retired</label>
+            <label><input type="radio" name="employment_status" value="disabled" /> Disabled</label>
+            <label><input type="radio" name="employment_status" value="other" /> Other</label>
+          </div>
+        </div>
+
+        <div class="col-6 form-group" id="employerWrap" style="display:none;">
+          <label for="employer">Employer</label>
+          <input id="employer" name="employer_name" type="text" />
+        </div>
+        <div class="col-6 form-group" id="occupationWrap" style="display:none;">
+          <label for="occupation">Occupation</label>
+          <input id="occupation" name="occupation" type="text" />
+        </div>
+
+        <div class="col-12 form-group">
+          <label>Is at least one person in the home employed?</label>
+          <div class="checkbox-row">
+            <label><input type="radio" name="home_has_employed" value="yes" /> Yes</label>
+            <label><input type="radio" name="home_has_employed" value="no" /> No</label>
+          </div>
+        </div>
+
+        <div class="col-12 form-group">
+          <label>Marital Status</label>
+          <div class="checkbox-row">
+            <label><input type="radio" name="marital_status" value="married" /> Married</label>
+            <label><input type="radio" name="marital_status" value="single" /> Single</label>
+            <label><input type="radio" name="marital_status" value="widowed" /> Widowed</label>
+            <label><input type="radio" name="marital_status" value="separated" /> Separated</label>
+            <label><input type="radio" name="marital_status" value="divorced" /> Divorced</label>
+          </div>
+        </div>
+
+        <div class="col-6 form-group" id="spouseNameWrap" style="display:none;">
+          <label for="spouseName">Married – Spouse’s Name</label>
+          <input id="spouseName" name="spouse_name" type="text" />
+        </div>
+        <div class="col-3 form-group" id="spouseCellWrap" style="display:none;">
+          <label for="spouseCell">Cell</label>
+          <input id="spouseCell" name="spouse_cell" type="tel" />
+        </div>
+        <div class="col-3 form-group" id="spouseWorkWrap" style="display:none;">
+          <label for="spouseWork">Work</label>
+          <input id="spouseWork" name="spouse_work" type="tel" />
+        </div>
+
+        <div class="col-6 form-group">
+          <label for="caregiverName">Co-Survivor/Caregiver Name</label>
+          <input id="caregiverName" name="caregiver_name" type="text" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="caregiverRelation">Relation</label>
+          <input id="caregiverRelation" name="caregiver_relation" type="text" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="caregiverPhone">Phone</label>
+          <input id="caregiverPhone" name="caregiver_phone" type="tel" />
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- minor children in home -->
+      <div class="form-grid">
+        <div class="col-12">
+          <div class="small-muted"><strong>MINOR CHILDREN LIVING IN THE HOME</strong> (circle “M” or “F” for Male/Female)</div>
+        </div>
+
+        <div class="col-12" id="minorChildrenList"></div>
+
+        <div class="col-12" style="display:flex; gap:10px; align-items:center; margin-top:8px;">
+          <button type="button" class="btn secondary" id="addMinorBtn">+ Add Minor Child</button>
+          <span class="small-muted">Add up to 4 entries (matches the paper layout).</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- emergency contact -->
+      <div class="form-grid">
+        <div class="col-12">
+          <h3 style="margin:0;">Emergency Contact</h3>
+        </div>
+        <div class="col-6 form-group">
+          <label for="emergName">Name</label>
+          <input id="emergName" name="emergency_name" type="text" />
+        </div>
+        <div class="col-6 form-group">
+          <label for="emergRelationship">Relationship</label>
+          <input id="emergRelationship" name="emergency_relationship" type="text" />
+        </div>
+        <div class="col-6 form-group">
+          <label for="emergAddress">Address</label>
+          <input id="emergAddress" name="emergency_address" type="text" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="emergCity">City</label>
+          <input id="emergCity" name="emergency_city" type="text" />
+        </div>
+        <div class="col-1 form-group">
+          <label for="emergState">ST</label>
+          <input id="emergState" name="emergency_state" type="text" maxlength="2" />
+        </div>
+        <div class="col-2 form-group">
+          <label for="emergZip">Zip</label>
+          <input id="emergZip" name="emergency_zip" type="text" inputmode="numeric" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="emergPhone">Phone</label>
+          <input id="emergPhone" name="emergency_phone" type="tel" />
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- heard about + assistance -->
+      <div class="form-grid">
+        <div class="col-12">
+          <h3 style="margin:0;">How did you hear about the support house?</h3>
+        </div>
+        <div class="col-12 form-group">
+          <div class="checkbox-row">
+            <label><input type="radio" name="referral_source" value="hospital_clinic_staff" /> Hospital/Clinic Staff</label>
+            <label><input type="radio" name="referral_source" value="friend_family" /> Friend/Family</label>
+            <label><input type="radio" name="referral_source" value="newspaper" /> Newspaper</label>
+            <label><input type="radio" name="referral_source" value="clinic_gift_bags" /> Clinic/Gift Bags</label>
+            <label><input type="radio" name="referral_source" value="other" id="refOtherRad" /> Other</label>
+          </div>
+        </div>
+        <div class="col-6 form-group" id="refOtherWrap" style="display:none;">
+          <label for="refOtherText">Other (please specify)</label>
+          <input id="refOtherText" name="referral_other" type="text" />
+        </div>
+
+        <div class="col-12">
+          <h3 style="margin:0;">Types of Assistance</h3>
+        </div>
+        <div class="col-12 form-group">
+          <div class="checkbox-row">
+            <label><input type="checkbox" name="assistance[]" value="wigs_salon" /> Wigs/Salon</label>
+            <label><input type="checkbox" name="assistance[]" value="food" /> Food</label>
+            <label><input type="checkbox" name="assistance[]" value="medical_supplies" /> Medical Supplies (Ostomy, Prosthetics, Equipment)</label>
+            <label><input type="checkbox" name="assistance[]" value="liquid_nutrition" /> Liquid Nutrition</label>
+            <label><input type="checkbox" name="assistance[]" value="incontinence_supplies" /> Incontinence Supplies</label>
+            <label><input type="checkbox" name="assistance[]" value="clothing" /> Clothing</label>
+            <label><input type="checkbox" name="assistance[]" value="other" id="assistOtherChk" /> Other</label>
+          </div>
+        </div>
+        <div class="col-6 form-group" id="assistOtherWrap" style="display:none;">
+          <label for="assistOtherText">Assistance (Other)</label>
+          <input id="assistOtherText" name="assistance_other" type="text" />
+        </div>
+
+        <div class="col-12">
+          <div class="callout">
+            <div class="small-muted"><strong>NOTE:</strong> Qualifications vary based on funding source. Consult staff if you have questions. Forms must be completed to qualify.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- certification + signatures -->
+      <div class="form-grid">
+        <div class="col-12">
+          <h3 style="margin:0;">Certification</h3>
+          <p class="small-muted" style="margin-top:6px;">
+            I certify that my answers on this application are true and complete to the best of my knowledge. I authorize the XXX support house to communicate, as needed, with my family/friends listed above. Furthermore, I authorize my physicians to release or disclose medical information to and communicate with the XXX support house, as necessary, to assist me with my continuum of care and/or offer me appropriate access to programs and resources.
+          </p>
+        </div>
+
+        <div class="col-4 form-group">
+          <label for="patientSignature">Signature</label>
+          <input id="patientSignature" name="patient_signature" type="text" placeholder="Type full name" />
+        </div>
+        <div class="col-4 form-group">
+          <label for="patientPrintedName">Printed Name</label>
+          <input id="patientPrintedName" name="patient_printed_name" type="text" />
+        </div>
+        <div class="col-4 form-group">
+          <label for="patientSignedDate">Date</label>
+          <input id="patientSignedDate" name="patient_signature_date" type="date" />
+        </div>
+
+        <div class="col-6 form-group">
+          <label for="interviewedBy">Interviewed By (Full Name of Volunteer/Staff Interviewer)</label>
+          <input id="interviewedBy" name="interviewed_by" type="text" />
+        </div>
+        <div class="col-6 form-group">
+          <label for="interviewedDate">Date</label>
+          <input id="interviewedDate" name="interviewed_date" type="date" />
+        </div>
+      </div>
+    </div>
+
+    <!-- MEDICAL INFORMATION (STAFF USE ONLY) -->
+    <div class="section" id="medical-info">
+      <div class="section-header">
+        <div class="section-icon">2</div>
+        <h2>Medical Information <span class="small-muted">(Staff Use Only)</span></h2>
+      </div>
+
+      <div class="callout" style="margin-bottom: 14px;">
+        <div class="small-muted"><strong>STAFF USE ONLY</strong> — mirrors the “Medical Information” page on paper.</div>
+      </div>
+
+      <div class="form-grid">
+        <div class="col-8 form-group">
+          <label for="dxPrimary">Diagnosis (Primary cancer type)</label>
+          <input id="dxPrimary" name="medical_diagnosis_primary" type="text" />
+        </div>
+        <div class="col-4 form-group">
+          <label for="dxDate">Date of Diagnosis</label>
+          <input id="dxDate" name="medical_diagnosis_date" type="date" />
+        </div>
+
+        <div class="col-8 form-group">
+          <label for="metsTo">Mets to (Cancer spread to other area)</label>
+          <input id="metsTo" name="medical_mets_to" type="text" />
+        </div>
+
+        <div class="col-12">
+          <h3 style="margin:0;">Oncologist</h3>
+        </div>
+
+        <div class="col-12 form-group">
+          <label>MERCY</label>
+          <div class="checkbox-row">
+            <label><input type="checkbox" name="oncologist_mercy[]" value="reddy" /> Reddy</label>
+            <label><input type="checkbox" name="oncologist_mercy[]" value="mackey" /> Mackey</label>
+            <label><input type="checkbox" name="oncologist_mercy[]" value="samman" /> Samman</label>
+            <label><input type="checkbox" name="oncologist_mercy[]" value="shrestha" /> Shrestha</label>
+          </div>
+        </div>
+        <div class="col-12 form-group">
+          <label>BAPTIST HEALTH</label>
+          <div class="checkbox-row">
+            <label><input type="checkbox" name="oncologist_baptist[]" value="arzoumanian" /> Arzoumanian</label>
+          </div>
+        </div>
+        <div class="col-12 form-group">
+          <label for="oncOther">OTHER</label>
+          <input id="oncOther" name="oncologist_other" type="text" />
+        </div>
+
+        <div class="col-12">
+          <h3 style="margin:0;">Radiation Oncologist</h3>
+        </div>
+        <div class="col-4 form-group">
+          <label for="radOncMercy">MERCY</label>
+          <input id="radOncMercy" name="rad_oncologist_mercy" type="text" />
+        </div>
+        <div class="col-4 form-group">
+          <label for="radOncBaptist">BAPTIST HEALTH</label>
+          <input id="radOncBaptist" name="rad_oncologist_baptist" type="text" />
+        </div>
+        <div class="col-4 form-group">
+          <label for="radOncOther">OTHER</label>
+          <input id="radOncOther" name="rad_oncologist_other" type="text" />
+        </div>
+
+        <div class="col-12">
+          <div class="divider" style="margin: 10px 0;"></div>
+        </div>
+
+        <!-- provider rows (Onc/Rad, Surgeon, General) -->
+        <div class="col-3 form-group">
+          <label for="provOtherRole">OTHER (Onc/Rad)</label>
+          <input id="provOtherRole" name="provider_other_role" type="text" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="provOtherLocation">Location</label>
+          <input id="provOtherLocation" name="provider_other_location" type="text" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="provOtherCity">City</label>
+          <input id="provOtherCity" name="provider_other_city" type="text" />
+        </div>
+        <div class="col-1 form-group">
+          <label for="provOtherState">ST</label>
+          <input id="provOtherState" name="provider_other_state" type="text" maxlength="2" />
+        </div>
+
+        <div class="col-3 form-group">
+          <label for="surgeonName">Surgeon</label>
+          <input id="surgeonName" name="surgeon_name" type="text" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="surgeonLocation">Location</label>
+          <input id="surgeonLocation" name="surgeon_location" type="text" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="surgeonCity">City</label>
+          <input id="surgeonCity" name="surgeon_city" type="text" />
+        </div>
+        <div class="col-1 form-group">
+          <label for="surgeonState">ST</label>
+          <input id="surgeonState" name="surgeon_state" type="text" maxlength="2" />
+        </div>
+
+        <div class="col-3 form-group">
+          <label for="generalDoctor">General</label>
+          <input id="generalDoctor" name="general_doctor" type="text" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="generalLocation">Location</label>
+          <input id="generalLocation" name="general_location" type="text" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="generalCity">City</label>
+          <input id="generalCity" name="general_city" type="text" />
+        </div>
+        <div class="col-1 form-group">
+          <label for="generalState">ST</label>
+          <input id="generalState" name="general_state" type="text" maxlength="2" />
+        </div>
+
+        <div class="col-12">
+          <div class="divider" style="margin: 10px 0;"></div>
+        </div>
+
+        <div class="col-12">
+          <h3 style="margin:0;">Treatment</h3>
+        </div>
+
+        <div class="col-12 form-group">
+          <label for="surgeryDates">Surgery – date(s)</label>
+          <input id="surgeryDates" name="treatment_surgery_dates" type="text" placeholder="Example: 01/15/2024; 03/02/2024" />
+        </div>
+
+        <div class="col-3 form-group">
+          <label for="chemoStart1">Chemotherapy – start</label>
+          <input id="chemoStart1" name="treatment_chemo_start_1" type="date" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="chemoEnd1">end</label>
+          <input id="chemoEnd1" name="treatment_chemo_end_1" type="date" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="chemoStart2">start</label>
+          <input id="chemoStart2" name="treatment_chemo_start_2" type="date" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="chemoEnd2">end</label>
+          <input id="chemoEnd2" name="treatment_chemo_end_2" type="date" />
+        </div>
+
+        <div class="col-3 form-group">
+          <label for="radStart">Radiation – start</label>
+          <input id="radStart" name="treatment_radiation_start" type="date" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="radEnd">end</label>
+          <input id="radEnd" name="treatment_radiation_end" type="date" />
+        </div>
+
+        <div class="col-6 form-group">
+          <label for="otherTreatment">Other Treatment</label>
+          <input id="otherTreatment" name="treatment_other" type="text" />
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTHORIZATION TO DISCLOSE MEDICAL INFORMATION (FAX FORM) -->
+    <div class="section" id="disclosure-form">
+      <div class="section-header">
+        <div class="section-icon">3</div>
+        <h2>Authorization to Disclose Medical Information</h2>
+      </div>
+
+      <div class="form-grid">
+        <div class="col-3 form-group">
+          <label for="faxFormDate">Date</label>
+          <input id="faxFormDate" name="fax_form_date" type="date" />
+        </div>
+        <div class="col-9 form-group">
+          <label for="faxToOffice">FAX TO The Office Of</label>
+          <input id="faxToOffice" name="fax_to_office" type="text" />
+        </div>
+
+        <div class="col-12">
+          <div class="callout">
+            <div class="small-muted">
+              <strong>PURPOSE:</strong> The person listed/signed below is hereby authorizing the release of their relevant Medical Information to allow the XXX Cancer Support House to navigate appropriate support services, programs &amp; resources to complement their care plan.
+              <br />
+              <strong>PLEASE RETURN FAX TO:</strong> XXX Cancer Support House (Fax # __________).
+              <br />
+              Thank you in advance for your prompt response to this request.
+            </div>
+          </div>
+        </div>
+
+        <!-- patient block -->
+        <div class="col-8 form-group">
+          <label for="faxPatientName">Patient Name</label>
+          <input id="faxPatientName" name="fax_patient_name" type="text" />
+        </div>
+        <div class="col-4 form-group">
+          <label for="faxPatientDob">D.O.B.</label>
+          <input id="faxPatientDob" name="fax_patient_dob" type="date" />
+        </div>
+
+        <div class="col-12 form-group">
+          <label for="faxAddress">Address</label>
+          <input id="faxAddress" name="fax_patient_address" type="text" />
+        </div>
+
+        <div class="col-5 form-group">
+          <label for="faxCity">City</label>
+          <input id="faxCity" name="fax_patient_city" type="text" />
+        </div>
+        <div class="col-2 form-group">
+          <label for="faxState">State</label>
+          <input id="faxState" name="fax_patient_state" type="text" maxlength="2" />
+        </div>
+        <div class="col-2 form-group">
+          <label for="faxZip">Zip</label>
+          <input id="faxZip" name="fax_patient_zip" type="text" inputmode="numeric" />
+        </div>
+        <div class="col-3 form-group">
+          <label for="faxPhone">Phone #</label>
+          <input id="faxPhone" name="fax_patient_phone" type="tel" />
+        </div>
+
+        <div class="col-12">
+          <div class="callout" style="border-style: solid;">
+            <div class="small-muted" style="margin-bottom:10px; text-align:center;"><strong>TO BE COMPLETED BY MEDICAL OFFICE STAFF ONLY</strong></div>
+
+            <div class="form-grid">
+              <div class="col-9 form-group">
+                <label for="officeDx">Patient’s Diagnosis</label>
+                <input id="officeDx" name="office_patient_diagnosis" type="text" />
+              </div>
+              <div class="col-3 form-group">
+                <label for="officeStage">Stage</label>
+                <input id="officeStage" name="office_stage" type="text" />
+              </div>
+
+              <div class="col-4 form-group">
+                <label for="officeExpectedTreatments">Expected Number of Treatments?</label>
+                <input id="officeExpectedTreatments" name="office_expected_treatments" type="number" min="0" />
+              </div>
+              <div class="col-4 form-group">
+                <label for="officeTxStart">Treatment Start Date</label>
+                <input id="officeTxStart" name="office_treatment_start_date" type="date" />
+              </div>
+              <div class="col-4 form-group">
+                <label for="officeTxEnd">Treatment End Date</label>
+                <input id="officeTxEnd" name="office_treatment_end_date" type="date" />
+              </div>
+
+              <div class="col-12 form-group">
+                <label>Chemo Treatment — To Be Completed by Oncology Staff (Please Check)</label>
+                <div class="checkbox-row">
+                  <label><input type="checkbox" name="office_chemo_type[]" value="iv" /> IV Chemo</label>
+                  <label><input type="checkbox" name="office_chemo_type[]" value="oral" /> Oral Chemo</label>
+                  <label><input type="checkbox" name="office_chemo_type[]" value="pump_bag" /> Pump Bag</label>
+                </div>
+              </div>
+
+              <div class="col-12 form-group">
+                <label>Chemo Frequency (Please Check)</label>
+                <div class="checkbox-row">
+                  <label><input type="radio" name="office_chemo_frequency" value="daily" /> Daily</label>
+                  <label><input type="radio" name="office_chemo_frequency" value="weekly" /> Weekly</label>
+                  <label><input type="radio" name="office_chemo_frequency" value="every" /> Every</label>
+                  <input id="officeChemoEveryWeeks" name="office_chemo_every_weeks" type="number" min="1" style="max-width:90px; display:none;" placeholder="#" />
+                  <span id="officeChemoEveryLabel" class="small-muted" style="display:none;">Week(s)</span>
+                  <label><input type="radio" name="office_chemo_frequency" value="monthly" /> Monthly</label>
+                </div>
+              </div>
+
+              <div class="col-12 form-group">
+                <label>Radiation Treatment — To Be Completed by Radiation Staff (Please Check)</label>
+                <div class="checkbox-row">
+                  <label><input type="radio" name="office_radiation_frequency" value="daily" /> Daily</label>
+                  <label><input type="radio" name="office_radiation_frequency" value="weekly" /> Weekly</label>
+                  <label><input type="radio" name="office_radiation_frequency" value="every" /> Every</label>
+                  <input id="officeRadEveryWeeks" name="office_radiation_every_weeks" type="number" min="1" style="max-width:90px; display:none;" placeholder="#" />
+                  <span id="officeRadEveryLabel" class="small-muted" style="display:none;">Week(s)</span>
+                  <label><input type="radio" name="office_radiation_frequency" value="monthly" /> Monthly</label>
+                </div>
+              </div>
+
+              <div class="col-12 form-group">
+                <div class="checkbox-row">
+                  <label><input type="checkbox" name="office_status_flags[]" value="not_in_treatment" /> Not In Treatment</label>
+                  <label><input type="checkbox" name="office_status_flags[]" value="treatment_pending" /> Treatment Pending</label>
+                  <label><input type="checkbox" name="office_status_flags[]" value="terminal_prognosis" /> Terminal Prognosis</label>
+                  <label><input type="checkbox" name="office_status_flags[]" value="treatment_ended" /> Treatment Ended</label>
+                </div>
+              </div>
+
+              <div class="col-9 form-group">
+                <label for="officeStaffSignature">Signature of Medical Office Staff</label>
+                <input id="officeStaffSignature" name="office_staff_signature" type="text" />
+              </div>
+              <div class="col-3 form-group">
+                <label for="officeStaffSigDate">Date</label>
+                <input id="officeStaffSigDate" name="office_staff_signature_date" type="date" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="callout">
+            <div class="small-muted"><strong>The Undersigned Patient Agreement:</strong></div>
+            <ul class="small-muted" style="margin:8px 0 0 18px;">
+              <li>I understand that I have the right to revoke this authorization at any time. I further understand that a revocation of this authorization is not effective to the extent that the XXX Cancer Support House has taken action in reliance on this authorization.</li>
+              <li>I understand that the XXX Cancer Support House will not condition my treatment on whether I provide authorization for the requested use or disclosure if to do so would be prohibited by federal or state law.</li>
+              <li>I understand that there is a potential for information used or disclosed pursuant to this authorization to be subject to re-disclosure by the recipient if the recipient is not required by law to protect the privacy of the information.</li>
+              <li>I hereby authorize the use or disclosure of my Medical (health) Information as described in this form.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-8 form-group">
+          <label for="faxPatientSig">Signature of Patient or Patient’s Representative</label>
+          <input id="faxPatientSig" name="fax_patient_signature" type="text" />
+        </div>
+        <div class="col-4 form-group">
+          <label for="faxPatientSigDate">Date</label>
+          <input id="faxPatientSigDate" name="fax_patient_signature_date" type="date" />
+        </div>
+
+        <div class="col-8 form-group">
+          <label for="faxPrintedName">Printed Name of Patient or Patient’s Representative</label>
+          <input id="faxPrintedName" name="fax_patient_printed_name" type="text" />
+        </div>
+        <div class="col-4 form-group">
+          <label for="faxRepRelationship">Relationship of Representative</label>
+          <input id="faxRepRelationship" name="fax_rep_relationship" type="text" />
+        </div>
+
+        <div class="col-12">
+          <div class="small-muted" style="text-align:center; margin-top:10px;">
+            PLEASE FAX COMPLETED FORM BACK TO: XXX CANCER SUPPORT HOUSE (Fax # __________).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn primary">Submit</button>
+      <button type="button" id="resetBtn" class="btn secondary">Reset</button>
+      <button type="button" id="downloadJsonBtn" class="btn secondary">Download JSON</button>
+    </div>
+</form>
+  </div>
+
+  
+  <script>
+    // ===== Access Migration Intake Template (v3) =====
+    // This script focuses on UX toggles and small conveniences.
+    // It does NOT send data anywhere by default.
+
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+    // ---------- Minor children dynamic rows (max 4, matches paper) ----------
+    const minorContainer = $("#minorChildrenList");
+    const addMinorBtn = $("#addMinorBtn");
+    let minorCount = 0;
+    const MINOR_MAX = 4;
+
+    function minorRowTemplate(idx) {
+      return `
+        <div class="callout" style="padding:12px; margin-bottom:10px;">
+          <div class="form-grid" style="row-gap:10px;">
+            <div class="col-3 form-group">
+              <label>DOB</label>
+              <input type="date" name="minor_children[${idx}][dob]" />
+            </div>
+            <div class="col-2 form-group">
+              <label>M/F</label>
+              <select name="minor_children[${idx}][sex]">
+                <option value="">—</option>
+                <option value="M">M</option>
+                <option value="F">F</option>
+              </select>
+            </div>
+            <div class="col-7 form-group">
+              <label>Name</label>
+              <input type="text" name="minor_children[${idx}][name]" />
+            </div>
+            <div class="col-12" style="display:flex; justify-content:flex-end;">
+              <button type="button" class="btn secondary" data-remove-minor="${idx}">Remove</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function addMinorRow() {
+      if (minorCount >= MINOR_MAX) return;
+      minorContainer.insertAdjacentHTML("beforeend", minorRowTemplate(minorCount));
+      minorCount++;
+
+      if (minorCount >= MINOR_MAX) {
+        addMinorBtn.disabled = true;
+        addMinorBtn.classList.add("disabled");
+      }
+    }
+
+    function removeMinorRow(idx) {
+      const btn = minorContainer.querySelector(`[data-remove-minor="${idx}"]`);
+      if (!btn) return;
+      const wrapper = btn.closest(".callout");
+      if (wrapper) wrapper.remove();
+
+      // re-enable add button if we drop below max
+      if ($$("#minorChildrenList .callout").length < MINOR_MAX) {
+        addMinorBtn.disabled = false;
+        addMinorBtn.classList.remove("disabled");
+      }
+    }
+
+    addMinorBtn?.addEventListener("click", addMinorRow);
+    minorContainer?.addEventListener("click", (e) => {
+      const t = e.target;
+      if (!(t instanceof HTMLElement)) return;
+      const idx = t.getAttribute("data-remove-minor");
+      if (idx !== null) removeMinorRow(idx);
+    });
+
+    // Add 2 rows by default to mimic the paper's immediate lines
+    addMinorRow();
+    addMinorRow();
+
+    // ---------- Conditional UX ----------
+    function toggleChildGuardianFields() {
+      const status = ($$('input[name="status"]:checked')[0]?.value) || "";
+      const show = status === "child";
+      const nameWrap = $("#guardianNameWrap");
+      const relWrap = $("#guardianRelWrap");
+      const name = $("#guardianName");
+      const rel = $("#guardianRelationship");
+
+      if (show) {
+        nameWrap.style.display = "";
+        relWrap.style.display = "";
+        name.setAttribute("required", "required");
+        rel.setAttribute("required", "required");
+      } else {
+        nameWrap.style.display = "none";
+        relWrap.style.display = "none";
+        name.removeAttribute("required");
+        rel.removeAttribute("required");
+        name.value = "";
+        rel.value = "";
+      }
+    }
+
+    function toggleInsuranceTypes() {
+      const has = ($$('input[name="insurance_has"]:checked')[0]?.value) || "";
+      const wrap = $("#insuranceTypeWrap");
+      if (has === "yes") {
+        wrap.style.display = "";
+      } else {
+        wrap.style.display = "none";
+        $$('input[name="insurance_type[]"]', wrap).forEach((c) => (c.checked = false));
+      }
+    }
+
+    function toggleEmploymentDetails() {
+      const status = ($$('input[name="employment_status"]:checked')[0]?.value) || "";
+      const show = status === "employed";
+      $("#employerWrap").style.display = show ? "" : "none";
+      $("#occupationWrap").style.display = show ? "" : "none";
+
+      if (!show) {
+        $("#employer").value = "";
+        $("#occupation").value = "";
+      }
+    }
+
+    function toggleMarriedDetails() {
+      const status = ($$('input[name="marital_status"]:checked')[0]?.value) || "";
+      const show = status === "married";
+      $("#spouseNameWrap").style.display = show ? "" : "none";
+      $("#spouseCellWrap").style.display = show ? "" : "none";
+      $("#spouseWorkWrap").style.display = show ? "" : "none";
+
+      if (!show) {
+        $("#spouseName").value = "";
+        $("#spouseCell").value = "";
+        $("#spouseWork").value = "";
+      }
+    }
+
+    function toggleOtherText(chkId, wrapId, inputId) {
+      const chk = $(chkId);
+      const wrap = $(wrapId);
+      const input = $(inputId);
+      if (!chk || !wrap || !input) return;
+
+      if (chk.checked) {
+        wrap.style.display = "";
+        input.focus();
+      } else {
+        wrap.style.display = "none";
+        input.value = "";
+      }
+    }
+
+    function toggleReferralOther() {
+      const otherSelected = $("#refOtherRad")?.checked;
+      const wrap = $("#refOtherWrap");
+      const input = $("#refOtherText");
+      if (!wrap || !input) return;
+      if (otherSelected) {
+        wrap.style.display = "";
+        input.focus();
+      } else {
+        wrap.style.display = "none";
+        input.value = "";
+      }
+    }
+
+    function toggleEveryWeeks(radioName, inputId, labelId) {
+      const every = $$(`input[name="${radioName}"]:checked`)[0]?.value === "every";
+      const input = $("#" + inputId);
+      const label = $("#" + labelId);
+      if (!input || !label) return;
+      input.style.display = every ? "" : "none";
+      label.style.display = every ? "" : "none";
+      if (!every) input.value = "";
+    }
+
+    // Wire up listeners
+    $$('input[name="status"]').forEach((r) => r.addEventListener("change", toggleChildGuardianFields));
+    $$('input[name="insurance_has"]').forEach((r) => r.addEventListener("change", toggleInsuranceTypes));
+    $$('input[name="employment_status"]').forEach((r) => r.addEventListener("change", toggleEmploymentDetails));
+    $$('input[name="marital_status"]').forEach((r) => r.addEventListener("change", toggleMarriedDetails));
+
+    $("#ethOtherChk")?.addEventListener("change", () => toggleOtherText("#ethOtherChk", "#ethOtherWrap", "#ethOtherText"));
+    $("#langOtherChk")?.addEventListener("change", () => toggleOtherText("#langOtherChk", "#langOtherWrap", "#langOtherText"));
+    $("#assistOtherChk")?.addEventListener("change", () => toggleOtherText("#assistOtherChk", "#assistOtherWrap", "#assistOtherText"));
+
+    $$('input[name="referral_source"]').forEach((r) => r.addEventListener("change", toggleReferralOther));
+
+    $$('input[name="office_chemo_frequency"]').forEach((r) => r.addEventListener("change", () => toggleEveryWeeks("office_chemo_frequency", "officeChemoEveryWeeks", "officeChemoEveryLabel")));
+    $$('input[name="office_radiation_frequency"]').forEach((r) => r.addEventListener("change", () => toggleEveryWeeks("office_radiation_frequency", "officeRadEveryWeeks", "officeRadEveryLabel")));
+
+    // Initialize toggles
+    toggleChildGuardianFields();
+    toggleInsuranceTypes();
+    toggleEmploymentDetails();
+    toggleMarriedDetails();
+    toggleReferralOther();
+    toggleEveryWeeks("office_chemo_frequency", "officeChemoEveryWeeks", "officeChemoEveryLabel");
+    toggleEveryWeeks("office_radiation_frequency", "officeRadEveryWeeks", "officeRadEveryLabel");
+
+    // ---------- Form actions ----------
+    const form = $("#intakeForm");
+    const resetBtn = $("#resetBtn");
+    const downloadJsonBtn = $("#downloadJsonBtn");
+
+    function formToJSON(formEl) {
+      const data = {};
+      const fd = new FormData(formEl);
+
+      // Handle multiple values (checkbox arrays) and bracketed keys simply.
+      for (const [key, value] of fd.entries()) {
+        if (data[key] === undefined) data[key] = value;
+        else if (Array.isArray(data[key])) data[key].push(value);
+        else data[key] = [data[key], value];
+      }
+
+      // include unchecked checkboxes/radios? (optional) — keep as-is for MVP.
+      return data;
+    }
+
+    function download(filename, text) {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    downloadJsonBtn?.addEventListener("click", () => {
+      if (!form) return;
+      const payload = formToJSON(form);
+      download("intake_payload.json", JSON.stringify(payload, null, 2));
+    });
+
+    resetBtn?.addEventListener("click", () => {
+      form?.reset();
+      // re-initialize dynamic bits
+      minorContainer.innerHTML = "";
+      minorCount = 0;
+      addMinorBtn.disabled = false;
+      addMinorBtn.classList.remove("disabled");
+      addMinorRow();
+      addMinorRow();
+
+      toggleChildGuardianFields();
+      toggleInsuranceTypes();
+      toggleEmploymentDetails();
+      toggleMarriedDetails();
+      toggleReferralOther();
+      toggleEveryWeeks("office_chemo_frequency", "officeChemoEveryWeeks", "officeChemoEveryLabel");
+      toggleEveryWeeks("office_radiation_frequency", "officeRadEveryWeeks", "officeRadEveryLabel");
+      $("#ethOtherWrap").style.display = "none";
+      $("#langOtherWrap").style.display = "none";
+      $("#assistOtherWrap").style.display = "none";
+    });
+
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const payload = formToJSON(form);
+
+      // For now, just show a confirmation and log. Wire this to your backend later.
+      console.log("Form payload:", payload);
+      alert("Saved locally (no backend wired). Use “Download JSON” to export.");
+    });
+  </script>
+
+
+</body>
+</html>
