@@ -27,8 +27,9 @@ export const DashboardPage = () => {
       icon: '📝',
       color: 'from-pink-500 to-pink-600',
       bgColor: 'from-white to-pink-50',
-      available: false,
-      comingSoon: 'Sprint 4'
+      available: true,
+      route: '/intake',
+      badge: '✨ Sprint 4'
     },
     {
       title: 'Check-In Patient',

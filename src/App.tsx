@@ -5,6 +5,7 @@ import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { SearchPage } from '@/pages/SearchPage';
 import { PatientDetailPage } from '@/pages/PatientDetailPage';
+import { PatientIntakePage } from '@/pages/PatientIntakePage';
 import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
 
 function App() {
@@ -34,6 +35,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <PatientDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/intake"
+            element={
+              <ProtectedRoute>
+                <PatientIntakePage />
               </ProtectedRoute>
             }
           />
