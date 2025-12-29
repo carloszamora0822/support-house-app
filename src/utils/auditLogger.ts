@@ -1,5 +1,8 @@
 // Audit logging for HIPAA compliance
 // Tracks all access to PHI (Protected Health Information)
+// Now with server-side storage in Supabase!
+
+import { supabase } from '@/lib/supabase';
 
 export type AuditEventType =
   | 'LOGIN'
@@ -15,7 +18,10 @@ export type AuditEventType =
   | 'VISIT_UPDATED'
   | 'FORM_SUBMITTED'
   | 'DATA_EXPORTED'
-  | 'UNAUTHORIZED_ACCESS';
+  | 'UNAUTHORIZED_ACCESS'
+  | '2FA_ENABLED'
+  | '2FA_DISABLED'
+  | '2FA_VERIFIED';
 
 export interface AuditEvent {
   id: string;
@@ -118,17 +124,45 @@ export const auditLogger = {
       success: options.success ?? true,
     };
 
-    // Save to localStorage
+    // Save to localStorage (backup)
     const logs = getLocalLogs();
     logs.push(event);
     saveLocalLogs(logs);
 
-    // In production, also send to server/Supabase
-    // await this.sendToServer(event);
+    // Send to Supabase for server-side storage
+    try {
+      await this.sendToServer(event);
+    } catch (error) {
+      console.error('Failed to send audit log to server:', error);
+      // Log still saved locally as backup
+    }
 
     // Log to console in development
     if (import.meta.env.DEV) {
       console.log('[AUDIT]', eventType, action, event);
+    }
+  },
+
+  /**
+   * Send audit log to Supabase (server-side storage)
+   */
+  async sendToServer(event: AuditEvent): Promise<void> {
+    const { error } = await supabase.from('audit_logs').insert({
+      event_type: event.eventType,
+      action: event.action,
+      success: event.success,
+      user_id: event.userId || null,
+      user_email: event.userEmail || null,
+      user_name: event.userName || null,
+      resource_type: event.resourceType || null,
+      resource_id: event.resourceId || null,
+      ip_address: event.ipAddress || null,
+      user_agent: event.userAgent || null,
+      details: event.details || null,
+    });
+
+    if (error) {
+      throw error;
     }
   },
 

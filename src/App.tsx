@@ -6,6 +6,7 @@ import { DashboardPage } from '@/pages/DashboardPage';
 import { SearchPage } from '@/pages/SearchPage';
 import { PatientDetailPage } from '@/pages/PatientDetailPage';
 import { PatientIntakePage } from '@/pages/PatientIntakePage';
+import { IntakeFormContainer } from '@/features/forms/intake/IntakeFormContainer';
 import { ProtectedRoute } from '@/features/auth/components/ProtectedRoute';
 
 function App() {
@@ -43,6 +44,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <PatientIntakePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/intake/new"
+            element={
+              <ProtectedRoute>
+                <IntakeFormContainer />
               </ProtectedRoute>
             }
           />

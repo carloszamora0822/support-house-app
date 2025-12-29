@@ -291,11 +291,81 @@ ORDER BY column_name;
 
 ---
 
+---
+
+## 📝 Step 5: Fix Visit Count Discrepancy (Optional but Recommended)
+
+If you notice patient visit counts are incorrect (e.g., showing 17 visits when they only have 5):
+
+1. Click **"New Query"** again
+2. Copy and paste the content from **`FIX_VISIT_COUNT.sql`** (in project root):
+
+```sql
+-- Recalculate visit_count from actual visits
+UPDATE patients
+SET visit_count = (
+  SELECT COUNT(*)
+  FROM visits
+  WHERE visits.patient_id = patients.id
+);
+
+-- Update last_visit_date to match most recent visit
+UPDATE patients
+SET last_visit_date = (
+  SELECT DATE(MAX(check_in_timestamp))
+  FROM visits
+  WHERE visits.patient_id = patients.id
+)
+WHERE EXISTS (
+  SELECT 1
+  FROM visits
+  WHERE visits.patient_id = patients.id
+);
+
+-- Verify the fix
+SELECT 
+  p.id,
+  p.first_name,
+  p.last_name,
+  p.visit_count as "Current Count",
+  (SELECT COUNT(*) FROM visits WHERE patient_id = p.id) as "Actual Visits",
+  p.last_visit_date
+FROM patients p
+WHERE p.visit_count > 0
+ORDER BY p.visit_count DESC
+LIMIT 10;
+```
+
+3. Click **"Run"**
+4. Check the verification query results - "Current Count" should now match "Actual Visits"
+5. Refresh your patient detail pages to see corrected counts
+
+---
+
+## 📝 Step 6: Apply Audit Logs Migration (HIPAA Compliance)
+
+For full observability and HIPAA compliance:
+
+1. Click **"New Query"** again
+2. Copy and paste the content from **`supabase/migrations/016_create_audit_logs_table.sql`**
+3. Click **"Run"**
+4. This creates the `audit_logs` table with all necessary indexes and functions
+
+**What this enables:**
+- ✅ Server-side audit logging
+- ✅ Track all PHI access (HIPAA requirement)
+- ✅ Admin audit log viewer
+- ✅ Security monitoring
+
+---
+
 ## 🎉 Done!
 
-Once both migrations are applied successfully:
+Once all migrations are applied successfully:
 1. ✅ DELETE RLS policies are in place
 2. ✅ NOT NULL constraints match your Zod schemas
-3. ✅ Database security is significantly improved
+3. ✅ Visit counts are accurate
+4. ✅ Audit logging is enabled (HIPAA compliance)
+5. ✅ Database security is significantly improved
 
 You can now proceed with testing the application!

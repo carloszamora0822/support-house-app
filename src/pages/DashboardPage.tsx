@@ -78,6 +78,38 @@ export const DashboardPage = () => {
           <p className="text-sm text-purple-500 mt-2">🚧 MVP Dashboard - Full analytics coming in future sprint</p>
         </div>
 
+        {/* TEMPORARY: Quick Feature Navigation Buttons */}
+        <div className="mb-8 p-6 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-2xl">🚧</span>
+            <h3 className="text-lg font-bold text-yellow-900">TEMPORARY: Feature Testing Navigation</h3>
+          </div>
+          <p className="text-sm text-yellow-800 mb-4">Quick links to test all completed features (remove before production)</p>
+          <div className="flex flex-wrap gap-3">
+            <Button 
+              onClick={() => navigate('/search')}
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              🔍 Patient Search (Sprint 2)
+            </Button>
+            <Button 
+              onClick={() => navigate('/intake')}
+              className="bg-pink-600 hover:bg-pink-700 text-white"
+            >
+              📝 Intake Form Status (Sprint 4)
+            </Button>
+            <Button 
+              onClick={() => navigate('/search')}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              ✅ Check-In (Sprint 3 - via Search)
+            </Button>
+          </div>
+          <p className="text-xs text-yellow-700 mt-3">
+            💡 Tip: Search for a patient first, then use the "Check In This Patient" button on their detail page
+          </p>
+        </div>
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
           {quickActions.map((action) => (
             <Card 

@@ -9,6 +9,7 @@ import { formatPhoneNumber } from '@/utils/formatters';
 import { formatDate, formatDateTime } from '@/utils/dateUtils';
 import { CheckInModal } from '@/features/checkin/components/CheckInModal';
 import { Toaster } from 'react-hot-toast';
+import { ASSISTANCE_TYPES } from '@/constants/assistanceTypes';
 
 export const PatientDetailPage = () => {
   const { patientId } = useParams<{ patientId: string }>();
@@ -18,6 +19,11 @@ export const PatientDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
+
+  const formatAssistanceType = (value: string): string => {
+    const type = ASSISTANCE_TYPES.find(t => t.value === value);
+    return type ? type.label : value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
 
   const loadPatient = async () => {
     if (!patientId) return;
@@ -159,22 +165,33 @@ export const PatientDetailPage = () => {
           </h3>
           {patient.visits && patient.visits.length > 0 ? (
             <div className="space-y-3">
-              {patient.visits.map((visit) => (
-                <div key={visit.id} className="border-l-4 border-purple-500 pl-4 py-2">
-                  <div className="font-medium text-gray-900">{formatDateTime(visit.check_in_timestamp)}</div>
-                  <div className="text-sm text-gray-600">Staff: {visit.staff_name || 'Unknown'}</div>
-                  {visit.assistance_requested && visit.assistance_requested.length > 0 && (
-                    <div className="text-sm text-gray-600">
-                      Assistance: {Array.isArray(visit.assistance_requested) 
-                        ? visit.assistance_requested.join(', ') 
-                        : visit.assistance_requested}
-                    </div>
-                  )}
-                  {visit.visit_notes && (
-                    <div className="text-sm text-gray-600 mt-1">Notes: {visit.visit_notes}</div>
-                  )}
-                </div>
-              ))}
+              {patient.visits.map((visit) => {
+                const assistanceList = Array.isArray(visit.assistance_requested) 
+                  ? visit.assistance_requested 
+                  : [];
+                const hasOther = assistanceList.includes('other');
+                const formattedAssistance = assistanceList
+                  .map(type => formatAssistanceType(type))
+                  .join(', ');
+
+                return (
+                  <div key={visit.id} className="border-l-4 border-purple-500 pl-4 py-2">
+                    <div className="font-medium text-gray-900">{formatDateTime(visit.check_in_timestamp)}</div>
+                    <div className="text-sm text-gray-600">Staff: {visit.staff_name || 'Unknown'}</div>
+                    {assistanceList.length > 0 && (
+                      <div className="text-sm text-gray-600">
+                        Assistance: {formattedAssistance}
+                      </div>
+                    )}
+                    {visit.visit_notes && (
+                      <div className="text-sm text-gray-600 mt-1">
+                        <span className="font-medium">{hasOther ? 'Other Details: ' : 'Notes: '}</span>
+                        {visit.visit_notes}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <p className="text-gray-600 text-center py-4">No visits recorded</p>
