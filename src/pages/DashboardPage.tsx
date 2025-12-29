@@ -32,12 +32,13 @@ export const DashboardPage = () => {
     },
     {
       title: 'Check-In Patient',
-      description: 'Check in a patient for today',
+      description: 'Search for patient, then check them in',
       icon: '✅',
       color: 'from-accent-500 to-accent-600',
       bgColor: 'from-white to-accent-50',
-      available: false,
-      comingSoon: 'Sprint 3'
+      available: true,
+      route: '/search',
+      badge: '✨ Sprint 3'
     },
   ];
 
@@ -73,6 +74,7 @@ export const DashboardPage = () => {
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {user?.full_name?.split(' ')[0]}! 👋</h2>
           <p className="text-purple-600">What would you like to do today?</p>
+          <p className="text-sm text-purple-500 mt-2">🚧 MVP Dashboard - Full analytics coming in future sprint</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
@@ -93,6 +95,11 @@ export const DashboardPage = () => {
                 {!action.available && action.comingSoon && (
                   <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-full">
                     {action.comingSoon}
+                  </span>
+                )}
+                {action.available && action.badge && (
+                  <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
+                    {action.badge}
                   </span>
                 )}
               </div>
