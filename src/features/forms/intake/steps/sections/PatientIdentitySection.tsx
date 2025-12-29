@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormField } from '@/components/forms/FormField';
+import { STATES } from '@/constants/states';
 
 interface PatientIdentitySectionProps {
   formData: {
@@ -23,7 +24,7 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
   onChange,
   errors,
 }) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     onChange(e.target.name, e.target.value);
   };
 
@@ -109,14 +110,29 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           required
           error={errors.county}
         />
-        <FormField
-          label="State"
-          name="state"
-          value={formData.state}
-          onChange={handleChange}
-          required
-          error={errors.state}
-        />
+        <div>
+          <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
+            State <span className="text-red-500">*</span>
+          </label>
+          <select
+            id="state"
+            name="state"
+            value={formData.state}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            required
+          >
+            <option value="">Select State</option>
+            {STATES.map((state) => (
+              <option key={state.value} value={state.value}>
+                {state.label}
+              </option>
+            ))}
+          </select>
+          {errors.state && (
+            <p className="mt-1 text-sm text-red-600">{errors.state}</p>
+          )}
+        </div>
         <FormField
           label="ZIP"
           name="zip"
