@@ -93,10 +93,10 @@ export const DashboardPage = () => {
               🔍 Patient Search (Sprint 2)
             </Button>
             <Button 
-              onClick={() => navigate('/intake')}
+              onClick={() => navigate('/intake/new')}
               className="bg-pink-600 hover:bg-pink-700 text-white"
             >
-              📝 Intake Form Status (Sprint 4)
+              📝 New Patient Intake Form (Sprint 5)
             </Button>
             <Button 
               onClick={() => navigate('/search')}
@@ -106,7 +106,7 @@ export const DashboardPage = () => {
             </Button>
           </div>
           <p className="text-xs text-yellow-700 mt-3">
-            💡 Tip: Search for a patient first, then use the "Check In This Patient" button on their detail page
+            💡 Tip: For check-in, search for a patient first, then use the "Check In This Patient" button on their detail page
           </p>
         </div>
 
