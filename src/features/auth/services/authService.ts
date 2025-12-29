@@ -13,15 +13,11 @@ export const authService = {
       throw new Error(error?.message || 'Login failed');
     }
 
-    console.log('Auth user ID:', data.user.id);
-
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
       .eq('id', data.user.id)
       .maybeSingle();
-
-    console.log('User query result:', { userData, userError });
 
     if (userError) {
       throw new Error(userError?.message || 'Failed to fetch user data');

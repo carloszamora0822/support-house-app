@@ -27,26 +27,29 @@ describe('authService', () => {
 
   describe('login', () => {
     it('returns user and session on valid credentials', async () => {
-      const mockUser = { id: '123', email: 'test@example.com' };
-      const mockSession = { access_token: 'token123' };
-      const mockUserData = { 
-        id: '123', 
-        email: 'test@example.com', 
-        role: 'staff',
+      const mockUser = {
+        id: '123',
+        email: 'test@example.com',
+        role: 'staff' as const,
         full_name: 'Test User',
+        created_at: '2024-01-01',
+        last_login: null,
         is_active: true,
       };
 
       vi.mocked(supabase.auth.signInWithPassword).mockResolvedValue({
-        data: { user: mockUser, session: mockSession },
+        data: {
+          user: { id: '123', email: 'test@example.com' } as any,
+          session: { access_token: 'token' } as any,
+        },
         error: null,
-      } as any);
+      });
 
       vi.mocked(supabase.from).mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: mockUserData,
+            maybeSingle: vi.fn().mockResolvedValue({
+              data: mockUser,
               error: null,
             }),
           }),
@@ -58,7 +61,7 @@ describe('authService', () => {
         password: 'password123',
       });
 
-      expect(result).toEqual(mockUserData);
+      expect(result).toEqual(mockUser);
       expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'password123',
@@ -131,7 +134,7 @@ describe('authService', () => {
       vi.mocked(supabase.from).mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
+            maybeSingle: vi.fn().mockResolvedValue({
               data: mockUserData,
               error: null,
             }),

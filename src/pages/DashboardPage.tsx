@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { Button } from '@/components/common/Button';
 import { Card } from '@/components/common/Card';
 
 export const DashboardPage = () => {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
 
   const handleLogout = async () => {
@@ -16,8 +18,8 @@ export const DashboardPage = () => {
       icon: '🔍',
       color: 'from-purple-500 to-purple-600',
       bgColor: 'from-white to-purple-50',
-      available: false,
-      comingSoon: 'Sprint 2'
+      available: true,
+      route: '/search'
     },
     {
       title: 'New Patient Intake',
@@ -77,6 +79,7 @@ export const DashboardPage = () => {
           {quickActions.map((action) => (
             <Card 
               key={action.title}
+              onClick={() => action.available && action.route && navigate(action.route)}
               className={`border-purple-100 transition-all bg-gradient-to-br ${action.bgColor} ${
                 action.available 
                   ? 'hover:shadow-lg cursor-pointer hover:-translate-y-1' 
@@ -87,7 +90,7 @@ export const DashboardPage = () => {
                 <div className={`p-3 bg-gradient-to-br ${action.color} rounded-xl shadow-md`}>
                   <span className="text-3xl">{action.icon}</span>
                 </div>
-                {!action.available && (
+                {!action.available && action.comingSoon && (
                   <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-full">
                     {action.comingSoon}
                   </span>
