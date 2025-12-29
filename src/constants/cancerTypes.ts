@@ -1,0 +1,28 @@
+export const CANCER_TYPES = [
+  { value: 'bladder', label: 'Bladder' },
+  { value: 'bone', label: 'Bone' },
+  { value: 'brain', label: 'Brain' },
+  { value: 'breast', label: 'Breast' },
+  { value: 'cervical', label: 'Cervical' },
+  { value: 'colon', label: 'Colon' },
+  { value: 'esophageal', label: 'Esophageal' },
+  { value: 'kidney', label: 'Kidney' },
+  { value: 'leukemia', label: 'Leukemia' },
+  { value: 'liver', label: 'Liver' },
+  { value: 'lung', label: 'Lung' },
+  { value: 'lymphoma', label: 'Lymphoma' },
+  { value: 'melanoma', label: 'Melanoma' },
+  { value: 'multiple_myeloma', label: 'Multiple Myeloma' },
+  { value: 'ovarian', label: 'Ovarian' },
+  { value: 'pancreatic', label: 'Pancreatic' },
+  { value: 'prostate', label: 'Prostate' },
+  { value: 'rectal', label: 'Rectal' },
+  { value: 'skin', label: 'Skin' },
+  { value: 'stomach', label: 'Stomach' },
+  { value: 'testicular', label: 'Testicular' },
+  { value: 'thyroid', label: 'Thyroid' },
+  { value: 'uterine', label: 'Uterine' },
+  { value: 'other', label: 'Other' },
+] as const;
+
+export type CancerType = typeof CANCER_TYPES[number]['value'];

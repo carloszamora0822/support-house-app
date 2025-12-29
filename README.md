@@ -1,123 +1,73 @@
-# Support House Patient Management System
+# React + TypeScript + Vite
 
-A comprehensive patient management system for cancer support services with intake forms, visit tracking, and grant-ready analytics.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 🎯 Project Overview
+Currently, two official plugins are available:
 
-This application helps support house staff manage patient information, track physical visits, and generate reports for grant applications. Built with React, TypeScript, and Supabase.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-### Key Features
-- **Patient Intake**: Multi-step form with progress indicator
-- **Patient Lookup**: Fast search by name, phone, DOB, email, ZIP
-- **Manual Check-In**: Track physical visits with timestamps
-- **Visit History**: Timeline of all patient interactions
-- **Analytics Dashboard**: Grant-driven metrics and visualizations
-- **Reporting**: Pre-built templates with CSV/PDF export
+## React Compiler
 
-## 📚 Documentation
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Complete technical architecture
-- **[IMPLEMENTATION_SUMMARY.md](./IMPLEMENTATION_SUMMARY.md)** - Executive summary
-- **[sprints/README.md](./sprints/README.md)** - Sprint planning overview
-- **[coding_practices/](./coding_practices/)** - Development standards
+## Expanding the ESLint configuration
 
-## 🚀 Quick Start
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-### Prerequisites
-- Node.js 18+
-- npm or yarn
-- Supabase account
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-### Installation
-```bash
-# Clone repository
-git clone <repository-url>
-cd XXX_Website
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-# Install dependencies (after Sprint 1)
-npm install
-
-# Set up environment variables
-cp .env.example .env
-# Add your Supabase credentials
-
-# Run development server
-npm run dev
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-## 🧪 Testing
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```bash
-# Run all tests
-npm test
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-# Run tests with coverage
-npm run test:coverage
-
-# Run E2E tests
-npm run test:e2e
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
-
-## 📦 Project Structure
-
-```
-support-house-app/
-├── src/
-│   ├── components/       # Reusable UI components
-│   ├── features/         # Feature-based modules
-│   ├── constants/        # All constants (NO hardcoding)
-│   ├── lib/             # Third-party integrations
-│   ├── types/           # TypeScript type definitions
-│   └── utils/           # Utility functions
-├── __mocks__/           # Mock data for testing
-├── sprints/             # Sprint documentation
-├── coding_practices/    # Development standards
-└── supabase/           # Database migrations
-```
-
-## 🎯 Development Workflow
-
-This project follows **Test-Driven Development (TDD)**:
-
-1. Write tests FIRST
-2. Run tests (they fail - red)
-3. Implement feature (minimal code)
-4. Run tests (they pass - green)
-5. Refactor (keep tests green)
-6. Commit (verbose message)
-
-See [DEVELOPMENT_PRACTICES.md](./coding_practices/DEVELOPMENT_PRACTICES.md) for details.
-
-## 📋 Sprint Progress
-
-- [ ] Sprint 1: Foundation & Auth
-- [ ] Sprint 2: Patient Search & Lookup
-- [ ] Sprint 3: Manual Check-In
-- [ ] Sprint 4: Patient Intake (Part 1)
-- [ ] Sprint 5: Patient Intake (Part 2)
-- [ ] Sprint 6: Analytics Dashboard
-- [ ] Sprint 7: Reporting & Export
-- [ ] Sprint 8: Polish & Production
-
-## 🤝 Contributing
-
-1. Read sprint documentation in `sprints/`
-2. Follow TDD workflow
-3. Use verbose commit messages (see `coding_practices/GIT_COMMIT_GUIDELINES.md`)
-4. Ensure all tests pass
-5. Check Definition of Done before PR
-
-## 📄 License
-
-[Add license information]
-
-## 👥 Team
-
-[Add team information]
-
-## 🔗 Links
-
-- **Production**: [Add production URL]
-- **Staging**: [Add staging URL]
-- **Supabase**: [Add Supabase project URL]
-- **Documentation**: [Add docs URL]
