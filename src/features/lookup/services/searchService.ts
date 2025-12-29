@@ -52,15 +52,41 @@ export const searchService = {
       return [];
     }
 
-    const searchTerm = `%${term}%`;
+    const searchTerm = term.toLowerCase();
     const phoneSearch = term.replace(/\D/g, '');
+
+    // Build OR conditions for search
+    const conditions: string[] = [];
+    
+    // Name search (case-insensitive partial match)
+    conditions.push(`first_name.ilike.%${searchTerm}%`);
+    conditions.push(`last_name.ilike.%${searchTerm}%`);
+    conditions.push(`goes_by.ilike.%${searchTerm}%`);
+    
+    // Email search
+    if (term.includes('@')) {
+      conditions.push(`email.ilike.%${searchTerm}%`);
+    }
+    
+    // Phone search (if contains digits)
+    if (phoneSearch.length > 0) {
+      conditions.push(`phone_primary.ilike.%${phoneSearch}%`);
+      conditions.push(`phone_second.ilike.%${phoneSearch}%`);
+      conditions.push(`phone_other.ilike.%${phoneSearch}%`);
+    }
+    
+    // ZIP search (exact match if 5 digits)
+    if (/^\d{5}$/.test(term)) {
+      conditions.push(`zip.eq.${term}`);
+    }
+    
+    // City search
+    conditions.push(`city.ilike.%${searchTerm}%`);
 
     const { data, error } = await supabase
       .from('patients')
       .select('*')
-      .or(
-        `first_name.ilike.${searchTerm},last_name.ilike.${searchTerm},goes_by.ilike.${searchTerm},email.ilike.${searchTerm},phone_primary.ilike.%${phoneSearch}%,phone_second.ilike.%${phoneSearch}%,phone_other.ilike.%${phoneSearch}%,zip.eq.${term}`
-      )
+      .or(conditions.join(','))
       .order('last_visit_date', { ascending: false, nullsFirst: false })
       .limit(limit);
 
