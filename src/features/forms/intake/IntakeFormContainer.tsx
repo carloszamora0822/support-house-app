@@ -13,8 +13,31 @@ export const IntakeFormContainer = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     patientData: {},
-    medicalData: {},
-    disclosureData: {},
+    medicalData: {
+      diagnosis_primary: '',
+      diagnosis_date: '',
+      oncologist_mercy: [],
+      oncologist_baptist: [],
+      rad_oncologist_mercy: '',
+      rad_oncologist_baptist: '',
+    },
+    disclosureData: {
+      fax_form_date: '',
+      fax_to_office: '',
+      fax_patient_name: '',
+      fax_patient_dob: '',
+      fax_patient_address: '',
+      fax_patient_city: '',
+      fax_patient_state: '',
+      fax_patient_zip: '',
+      fax_patient_phone: '',
+      office_patient_diagnosis: '',
+      office_staff_signature: '',
+      office_staff_signature_date: '',
+      fax_patient_signature: '',
+      fax_patient_signature_date: '',
+      fax_patient_printed_name: '',
+    },
   });
   const [errors] = useState<Record<string, string>>({});
   const { isSubmitting, submitForm } = useFormSubmit();
