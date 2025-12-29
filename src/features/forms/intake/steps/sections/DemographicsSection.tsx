@@ -3,6 +3,7 @@ import { FormField } from '@/components/forms/FormField';
 import { RadioGroup } from '@/components/forms/RadioGroup';
 import { CheckboxGroup } from '@/components/forms/CheckboxGroup';
 import { ConditionalSection } from '@/components/forms/ConditionalSection';
+import { EDUCATION_LEVELS } from '@/constants/educationLevels';
 
 const STATUS_OPTIONS = [
   { value: 'female', label: 'Female' },
@@ -48,7 +49,7 @@ export const DemographicsSection: React.FC<DemographicsSectionProps> = ({
   onChange,
   errors,
 }) => {
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     onChange(e.target.name, e.target.value);
   };
 
@@ -132,13 +133,34 @@ export const DemographicsSection: React.FC<DemographicsSectionProps> = ({
       </ConditionalSection>
 
       {/* Education */}
-      <FormField
-        label="Education Level"
-        name="education"
-        value={formData.education || ''}
-        onChange={handleInputChange}
-        error={errors.education}
-      />
+      <div>
+        <label htmlFor="education" className="block text-sm font-medium text-gray-700 mb-1">
+          Education Level
+        </label>
+        <select
+          id="education"
+          name="education"
+          value={formData.education || ''}
+          onChange={handleInputChange}
+          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            errors.education ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
+          }`}
+          aria-invalid={errors.education ? 'true' : 'false'}
+          aria-describedby={errors.education ? 'education-error' : undefined}
+        >
+          <option value="">Select Education Level</option>
+          {EDUCATION_LEVELS.map((level) => (
+            <option key={level.value} value={level.value}>
+              {level.label}
+            </option>
+          ))}
+        </select>
+        {errors.education && (
+          <p id="education-error" className="mt-1 text-sm text-red-600" role="alert">
+            {errors.education}
+          </p>
+        )}
+      </div>
     </div>
   );
 };
