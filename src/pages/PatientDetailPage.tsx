@@ -7,29 +7,36 @@ import { Button } from '@/components/common/Button';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { formatPhoneNumber } from '@/utils/formatters';
 import { formatDate, formatDateTime } from '@/utils/dateUtils';
+import { CheckInModal } from '@/features/checkin/components/CheckInModal';
+import toast, { Toaster } from 'react-hot-toast';
 
 export const PatientDetailPage = () => {
   const { patientId } = useParams<{ patientId: string }>();
   const navigate = useNavigate();
+  const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
   const { user, logout } = useAuth();
   const [patient, setPatient] = useState<PatientWithVisits | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const loadPatient = async () => {
-      if (!patientId) return;
+  const { data, isLoading: isLoadingQuery, error: errorQuery, refetch } = useQuery({
+    queryKey: ['patient', patientId],
+    queryFn: () => patientService.getPatientWithVisits(patientId!),
+    enabled: !!patientId,
+  });
 
-      try {
-        setIsLoading(true);
-        const data = await patientService.getPatientWithVisits(patientId);
-        setPatient(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load patient');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const handleCheckInSuccess = () => {
+    refetch();
+  };
+
+  useEffect(() => {
+    if (!patientId) return;
+
+    if (errorQuery) {
+      setError(errorQuery instanceof Error ? errorQuery.message : 'Failed to load patient');
+    } else if (data) {
+      setPatient(data);
+    }
 
     loadPatient();
   }, [patientId]);
@@ -170,6 +177,17 @@ export const PatientDetailPage = () => {
           )}
         </Card>
       </main>
+
+      {patient && (
+        <CheckInModal
+          isOpen={isCheckInModalOpen}
+          onClose={() => setIsCheckInModalOpen(false)}
+          patientId={patient.id}
+          patientName={`${patient.first_name} ${patient.last_name}`}
+          lastVisitDate={patient.last_visit_date}
+          onSuccess={handleCheckInSuccess}
+        />
+      )}
     </div>
   );
 };
