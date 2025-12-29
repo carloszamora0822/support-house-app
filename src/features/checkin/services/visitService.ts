@@ -19,7 +19,8 @@ export const visitService = {
       .maybeSingle();
 
     if (staffError || !staffUser) {
-      throw new Error('Staff user not found');
+      console.error('Staff user lookup failed:', staffError?.message);
+      throw new Error('Unable to verify staff credentials. Please log in again.');
     }
 
     // Check if patient already checked in today

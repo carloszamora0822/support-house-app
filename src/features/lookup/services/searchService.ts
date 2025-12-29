@@ -41,7 +41,8 @@ export const searchService = {
     const { data, error } = await supabaseQuery;
 
     if (error) {
-      throw new Error(error.message);
+      console.error('Patient search error:', error.message);
+      throw new Error('Unable to search patients. Please try again.');
     }
 
     return (data as Patient[]) || [];
@@ -91,7 +92,8 @@ export const searchService = {
       .limit(limit);
 
     if (error) {
-      throw new Error(error.message);
+      console.error('Quick search error:', error.message);
+      throw new Error('Unable to search patients. Please try again.');
     }
 
     return (data as Patient[]) || [];

@@ -7,14 +7,8 @@ import { ZodError } from 'zod';
 const DRAFT_KEY = 'patient-intake';
 const AUTO_SAVE_INTERVAL = 30000; // 30 seconds
 
-const getInitialFormData = (): PatientInformationInput => {
-  const draft = formService.loadDraft<PatientInformationInput>(DRAFT_KEY);
-  
-  if (draft) {
-    return draft;
-  }
-
-  return {
+export const useIntakeForm = () => {
+  const [formData, setFormData] = useState<PatientInformationInput>({
     first_name: '',
     middle_name: '',
     last_name: '',
@@ -70,22 +64,33 @@ const getInitialFormData = (): PatientInformationInput => {
     patient_signature_date: '',
     interviewed_by: '',
     interviewed_date: '',
-  };
-};
-
-export const useIntakeForm = () => {
-  const [formData, setFormData] = useState<PatientInformationInput>(getInitialFormData);
+  });
   const [currentStep, setCurrentStep] = useState(1);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load draft on mount
+  useEffect(() => {
+    const loadDraft = async () => {
+      const draft = await formService.loadDraft<PatientInformationInput>(DRAFT_KEY);
+      if (draft) {
+        setFormData(draft);
+      }
+      setIsLoading(false);
+    };
+    loadDraft();
+  }, []);
 
   // Auto-save draft every 30 seconds
   useEffect(() => {
-    const interval = setInterval(() => {
-      formService.saveDraft(DRAFT_KEY, formData);
+    if (isLoading) return;
+    
+    const interval = setInterval(async () => {
+      await formService.saveDraft(DRAFT_KEY, formData);
     }, AUTO_SAVE_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [formData]);
+  }, [formData, isLoading]);
 
   const updateField = useCallback(<K extends keyof PatientInformationInput>(
     field: K,
@@ -123,7 +128,7 @@ export const useIntakeForm = () => {
     const isValid = await validateStep(currentStep);
     if (isValid) {
       setCurrentStep(prev => prev + 1);
-      formService.saveDraft(DRAFT_KEY, formData);
+      await formService.saveDraft(DRAFT_KEY, formData);
     }
   }, [currentStep, validateStep, formData]);
 
@@ -131,8 +136,8 @@ export const useIntakeForm = () => {
     setCurrentStep(prev => Math.max(1, prev - 1));
   }, []);
 
-  const saveDraft = useCallback(() => {
-    formService.saveDraft(DRAFT_KEY, formData);
+  const saveDraft = useCallback(async () => {
+    await formService.saveDraft(DRAFT_KEY, formData);
   }, [formData]);
 
   const clearDraft = useCallback(() => {
@@ -143,6 +148,7 @@ export const useIntakeForm = () => {
     formData,
     currentStep,
     errors,
+    isLoading,
     updateField,
     validateStep,
     nextStep,

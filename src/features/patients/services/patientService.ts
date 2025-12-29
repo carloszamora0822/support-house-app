@@ -12,7 +12,8 @@ export const patientService = {
       .single();
 
     if (error || !patient) {
-      throw new Error(error?.message || 'Patient not found');
+      console.error('Patient lookup error:', error?.message);
+      throw new Error('Unable to load patient information. Please try again.');
     }
 
     // Fetch emergency contact
@@ -56,7 +57,8 @@ export const patientService = {
       .limit(limit);
 
     if (visitsError) {
-      throw new Error(visitsError.message);
+      console.error('Visit history error:', visitsError.message);
+      throw new Error('Unable to load visit history. Please try again.');
     }
 
     return {

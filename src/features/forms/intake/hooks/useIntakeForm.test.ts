@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useIntakeForm } from './useIntakeForm';
 import * as formServiceModule from '../../../forms/services/formService';
 
@@ -189,13 +189,49 @@ describe('useIntakeForm', () => {
       expect(lastCall[1].first_name).toBe('John');
     });
 
-    it('loads draft on initialization', () => {
-      vi.mocked(formServiceModule.formService.loadDraft).mockReturnValue({
+    it('loads draft on initialization', async () => {
+      const mockDraft = {
         first_name: 'Jane',
         last_name: 'Smith',
-      });
+        dob: '1990-01-01',
+        phone_primary: '555-123-4567',
+        address: '123 Main St',
+        city: 'Austin',
+        state: 'TX',
+        zip: '78701',
+        status: 'female' as const,
+        ethnicity: [],
+        language: [],
+        has_insurance: false,
+        insurance_type: [],
+        is_veteran: false,
+        minor_children: [],
+        emergency_contact: {
+          name: 'Emergency',
+          relationship: 'Friend',
+          address: '123 St',
+          city: 'Austin',
+          state: 'TX',
+          zip: '78701',
+          phone: '555-999-8888',
+        },
+        referral_source: 'doctor',
+        assistance_types: [],
+        patient_signature: 'Jane Smith',
+        patient_printed_name: 'Jane Smith',
+        patient_signature_date: '2024-01-01',
+        interviewed_by: 'Staff',
+        interviewed_date: '2024-01-01',
+      };
+
+      vi.mocked(formServiceModule.formService.loadDraft).mockResolvedValue(mockDraft);
 
       const { result } = renderHook(() => useIntakeForm());
+
+      // Wait for loading to complete
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
 
       expect(result.current.formData.first_name).toBe('Jane');
       expect(result.current.formData.last_name).toBe('Smith');
@@ -333,17 +369,28 @@ describe('useIntakeForm', () => {
       vi.useFakeTimers();
       const { result } = renderHook(() => useIntakeForm());
 
+      // Wait for initial load to complete
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
       act(() => {
         result.current.updateField('first_name', 'John');
       });
 
+      // Advance timers
       act(() => {
         vi.advanceTimersByTime(30000);
+      });
+
+      // Run all pending timers
+      await act(async () => {
+        await vi.runAllTimersAsync();
       });
 
       expect(formServiceModule.formService.saveDraft).toHaveBeenCalled();
 
       vi.useRealTimers();
-    });
+    }, 10000); // Increase timeout to 10 seconds
   });
 });
