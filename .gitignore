@@ -7,6 +7,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Testing
+coverage
+coverage/.tmp
+*.lcov
+
 node_modules
 dist
 dist-ssr
