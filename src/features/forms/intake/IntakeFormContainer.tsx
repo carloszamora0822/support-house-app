@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Step1_PatientInformation } from './steps/Step1_PatientInformation';
 import { Step2_MedicalInformation } from './steps/Step2_MedicalInformation';
 import { Step3_DisclosureAuthorization } from './steps/Step3_DisclosureAuthorization';
 import { Step4_ReviewSubmit } from './steps/Step4_ReviewSubmit';
@@ -12,7 +13,25 @@ export const IntakeFormContainer = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    patientData: {},
+    patientData: {
+      first_name: '',
+      last_name: '',
+      dob: '',
+      phone_primary: '',
+      address: '',
+      city: '',
+      state: '',
+      zip: '',
+      patient_status: 'female',
+      ethnicity: [],
+      language: [],
+      insurance: false,
+      veteran: false,
+      marital_status: '',
+      minor_children_count: 0,
+      employment_status: '',
+      referral_source: '',
+    },
     medicalData: {
       diagnosis_primary: '',
       diagnosis_date: '',
@@ -43,7 +62,7 @@ export const IntakeFormContainer = () => {
   const { isSubmitting, submitForm } = useFormSubmit();
 
   const handleFieldChange = (step: 'patientData' | 'medicalData' | 'disclosureData') => 
-    (field: string, value: string | string[] | number) => {
+    (field: string, value: any) => {
       setFormData((prev) => ({
         ...prev,
         [step]: {
@@ -83,11 +102,11 @@ export const IntakeFormContainer = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">Patient Information</h2>
-            <p className="text-gray-600">Step 1 from Sprint 4 - Will be integrated in future</p>
-            <p className="text-sm text-gray-500">For now, click Next to proceed to Medical Information</p>
-          </div>
+          <Step1_PatientInformation
+            formData={formData.patientData}
+            onChange={handleFieldChange('patientData')}
+            errors={errors}
+          />
         );
       case 2:
         return (
