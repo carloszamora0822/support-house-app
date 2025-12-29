@@ -74,6 +74,22 @@ export const IntakeFormContainer = () => {
 
   const handleNext = () => {
     if (currentStep < 4) {
+      // Auto-fill Step 3 patient info from Step 1 when moving to Step 3
+      if (currentStep === 2) {
+        setFormData((prev) => ({
+          ...prev,
+          disclosureData: {
+            ...prev.disclosureData,
+            fax_patient_name: `${prev.patientData.first_name || ''} ${prev.patientData.last_name || ''}`.trim(),
+            fax_patient_dob: prev.patientData.dob || '',
+            fax_patient_address: prev.patientData.address || '',
+            fax_patient_city: prev.patientData.city || '',
+            fax_patient_state: prev.patientData.state || '',
+            fax_patient_zip: prev.patientData.zip || '',
+            fax_patient_phone: prev.patientData.phone_primary || '',
+          },
+        }));
+      }
       setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
     }
