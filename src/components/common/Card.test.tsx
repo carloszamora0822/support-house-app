@@ -9,14 +9,14 @@ describe('Card', () => {
   });
 
   it('applies custom className', () => {
-    render(<Card className="custom-class">Content</Card>);
-    const card = screen.getByText('Content').parentElement;
+    const { container } = render(<Card className="custom-class">Content</Card>);
+    const card = container.firstChild as HTMLElement;
     expect(card).toHaveClass('custom-class');
   });
 
   it('applies default card styles', () => {
-    render(<Card>Content</Card>);
-    const card = screen.getByText('Content').parentElement;
+    const { container } = render(<Card>Content</Card>);
+    const card = container.firstChild as HTMLElement;
     expect(card).toHaveClass('rounded-lg', 'border', 'bg-white');
   });
 });

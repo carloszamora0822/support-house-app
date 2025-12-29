@@ -13,14 +13,22 @@ export const authService = {
       throw new Error(error?.message || 'Login failed');
     }
 
+    console.log('Auth user ID:', data.user.id);
+
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')
       .eq('id', data.user.id)
-      .single();
+      .maybeSingle();
 
-    if (userError || !userData) {
+    console.log('User query result:', { userData, userError });
+
+    if (userError) {
       throw new Error(userError?.message || 'Failed to fetch user data');
+    }
+
+    if (!userData) {
+      throw new Error(`User record not found for ID: ${data.user.id}. Please contact an administrator.`);
     }
 
     return userData as User;
@@ -44,7 +52,7 @@ export const authService = {
       .from('users')
       .select('*')
       .eq('id', data.user.id)
-      .single();
+      .maybeSingle();
 
     if (userError || !userData) {
       return null;

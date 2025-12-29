@@ -68,13 +68,13 @@ describe('ProtectedRoute', () => {
     expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
   });
 
-  it('checks user role when allowedRoles is provided', () => {
+  it('shows access denied when user role not in allowedRoles', async () => {
     mockUseAuth.mockReturnValue({
       user: { id: '123', email: 'test@example.com', role: 'staff' },
       isLoading: false,
     });
 
-    renderWithRouter(
+    render(
       <ProtectedRoute allowedRoles={['admin']}>
         <TestComponent />
       </ProtectedRoute>
@@ -84,13 +84,13 @@ describe('ProtectedRoute', () => {
     expect(screen.getByText(/access denied/i)).toBeInTheDocument();
   });
 
-  it('renders children when user has allowed role', () => {
+  it('renders children when user has allowed role', async () => {
     mockUseAuth.mockReturnValue({
       user: { id: '123', email: 'test@example.com', role: 'admin' },
       isLoading: false,
     });
 
-    renderWithRouter(
+    render(
       <ProtectedRoute allowedRoles={['admin', 'staff']}>
         <TestComponent />
       </ProtectedRoute>

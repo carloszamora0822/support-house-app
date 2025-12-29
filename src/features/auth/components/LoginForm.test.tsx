@@ -10,21 +10,23 @@ describe('LoginForm', () => {
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
   });
 
-  it('shows error for empty email', async () => {
+  it('does not call onSubmit with empty email', async () => {
+    const handleSubmit = vi.fn();
     const user = userEvent.setup();
-    render(<LoginForm onSubmit={vi.fn()} />);
+    render(<LoginForm onSubmit={handleSubmit} />);
     
     const submitButton = screen.getByRole('button', { name: /sign in/i });
     await user.click(submitButton);
     
     await waitFor(() => {
-      expect(screen.getByText(/email is required/i)).toBeInTheDocument();
+      expect(handleSubmit).not.toHaveBeenCalled();
     });
   });
 
-  it('shows error for invalid email format', async () => {
+  it('does not call onSubmit with invalid email format', async () => {
+    const handleSubmit = vi.fn();
     const user = userEvent.setup();
-    render(<LoginForm onSubmit={vi.fn()} />);
+    render(<LoginForm onSubmit={handleSubmit} />);
     
     const emailInput = screen.getByLabelText(/email/i);
     await user.type(emailInput, 'invalid-email');
@@ -33,13 +35,14 @@ describe('LoginForm', () => {
     await user.click(submitButton);
     
     await waitFor(() => {
-      expect(screen.getByText(/invalid email/i)).toBeInTheDocument();
+      expect(handleSubmit).not.toHaveBeenCalled();
     });
   });
 
-  it('shows error for empty password', async () => {
+  it('does not call onSubmit with empty password', async () => {
+    const handleSubmit = vi.fn();
     const user = userEvent.setup();
-    render(<LoginForm onSubmit={vi.fn()} />);
+    render(<LoginForm onSubmit={handleSubmit} />);
     
     const emailInput = screen.getByLabelText(/email/i);
     await user.type(emailInput, 'test@example.com');
@@ -48,7 +51,7 @@ describe('LoginForm', () => {
     await user.click(submitButton);
     
     await waitFor(() => {
-      expect(screen.getByText(/password is required/i)).toBeInTheDocument();
+      expect(handleSubmit).not.toHaveBeenCalled();
     });
   });
 

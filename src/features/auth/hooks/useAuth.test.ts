@@ -107,9 +107,19 @@ describe('useAuth', () => {
   });
 
   it('isLoading is true during login', async () => {
+    const mockUser = {
+      id: '123',
+      email: 'test@example.com',
+      role: 'staff' as const,
+      full_name: 'Test User',
+      created_at: '2024-01-01',
+      last_login: null,
+      is_active: true,
+    };
+
     vi.mocked(authService.getCurrentUser).mockResolvedValue(null);
     vi.mocked(authService.login).mockImplementation(
-      () => new Promise((resolve) => setTimeout(resolve, 100))
+      () => new Promise((resolve) => setTimeout(() => resolve(mockUser), 100))
     );
 
     const { result } = renderHook(() => useAuth());
@@ -118,14 +128,18 @@ describe('useAuth', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    const loginPromise = result.current.login({
+    result.current.login({
       email: 'test@example.com',
       password: 'password123',
     });
 
-    expect(result.current.isLoading).toBe(true);
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(true);
+    });
 
-    await loginPromise;
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
   });
 
   it('error is set on login failure', async () => {
