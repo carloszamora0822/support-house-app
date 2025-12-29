@@ -29,8 +29,18 @@ export const IntakeFormContainer = () => {
       veteran: false,
       marital_status: '',
       minor_children_count: 0,
+      minor_children: [],
       employment_status: '',
       referral_source: '',
+      emergency_contact: {
+        name: '',
+        relationship: '',
+        address: '',
+        city: '',
+        state: '',
+        zip: '',
+        phone: '',
+      },
     },
     medicalData: {
       diagnosis_primary: '',
