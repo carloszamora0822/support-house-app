@@ -14,7 +14,7 @@ export const DashboardPage = () => {
   const quickActions = [
     {
       title: 'Patient Search',
-      description: 'Search for existing patients',
+      description: 'Search for existing patients by name, phone, or DOB',
       icon: '🔍',
       color: 'from-purple-500 to-purple-600',
       bgColor: 'from-white to-purple-50',
@@ -23,23 +23,21 @@ export const DashboardPage = () => {
     },
     {
       title: 'New Patient Intake',
-      description: 'Register a new patient',
+      description: 'Complete multi-step patient registration form',
       icon: '📝',
       color: 'from-pink-500 to-pink-600',
       bgColor: 'from-white to-pink-50',
       available: true,
-      route: '/intake',
-      badge: '✨ Sprint 4'
+      route: '/intake/new'
     },
     {
       title: 'Check-In Patient',
-      description: 'Search for patient, then check them in',
+      description: 'Record patient visit with assistance tracking',
       icon: '✅',
-      color: 'from-accent-500 to-accent-600',
-      bgColor: 'from-white to-accent-50',
+      color: 'from-green-500 to-green-600',
+      bgColor: 'from-white to-green-50',
       available: true,
-      route: '/search',
-      badge: '✨ Sprint 3'
+      route: '/search'
     },
   ];
 
@@ -75,39 +73,6 @@ export const DashboardPage = () => {
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, {user?.full_name?.split(' ')[0]}! 👋</h2>
           <p className="text-purple-600">What would you like to do today?</p>
-          <p className="text-sm text-purple-500 mt-2">🚧 MVP Dashboard - Full analytics coming in future sprint</p>
-        </div>
-
-        {/* TEMPORARY: Quick Feature Navigation Buttons */}
-        <div className="mb-8 p-6 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-2xl">🚧</span>
-            <h3 className="text-lg font-bold text-yellow-900">TEMPORARY: Feature Testing Navigation</h3>
-          </div>
-          <p className="text-sm text-yellow-800 mb-4">Quick links to test all completed features (remove before production)</p>
-          <div className="flex flex-wrap gap-3">
-            <Button 
-              onClick={() => navigate('/search')}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-            >
-              🔍 Patient Search (Sprint 2)
-            </Button>
-            <Button 
-              onClick={() => navigate('/intake/new')}
-              className="bg-pink-600 hover:bg-pink-700 text-white"
-            >
-              📝 New Patient Intake Form (Sprint 5)
-            </Button>
-            <Button 
-              onClick={() => navigate('/search')}
-              className="bg-green-600 hover:bg-green-700 text-white"
-            >
-              ✅ Check-In (Sprint 3 - via Search)
-            </Button>
-          </div>
-          <p className="text-xs text-yellow-700 mt-3">
-            💡 Tip: For check-in, search for a patient first, then use the "Check In This Patient" button on their detail page
-          </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
@@ -125,16 +90,6 @@ export const DashboardPage = () => {
                 <div className={`p-3 bg-gradient-to-br ${action.color} rounded-xl shadow-md`}>
                   <span className="text-3xl">{action.icon}</span>
                 </div>
-                {!action.available && action.comingSoon && (
-                  <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-full">
-                    {action.comingSoon}
-                  </span>
-                )}
-                {action.available && action.badge && (
-                  <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
-                    {action.badge}
-                  </span>
-                )}
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">{action.title}</h3>
               <p className="text-sm text-gray-600">{action.description}</p>
@@ -169,29 +124,29 @@ export const DashboardPage = () => {
 
           <Card className="border-purple-100 bg-gradient-to-br from-white to-purple-50">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="text-2xl">🚀</span>
-              Coming Soon
+              <span className="text-2xl">💡</span>
+              Quick Tips
             </h3>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">
                 <span className="text-purple-500 mt-0.5">▸</span>
                 <div>
-                  <span className="font-medium text-gray-900">Patient Search & Lookup</span>
-                  <p className="text-gray-600 text-xs mt-0.5">Find patients by name, phone, or ID</p>
+                  <span className="font-medium text-gray-900">Patient Check-In</span>
+                  <p className="text-gray-600 text-xs mt-0.5">Search for a patient first, then click "Check In This Patient" on their detail page</p>
                 </div>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-purple-500 mt-0.5">▸</span>
                 <div>
-                  <span className="font-medium text-gray-900">Quick Check-In</span>
-                  <p className="text-gray-600 text-xs mt-0.5">Fast patient check-in with assistance tracking</p>
+                  <span className="font-medium text-gray-900">New Patient Registration</span>
+                  <p className="text-gray-600 text-xs mt-0.5">Complete all 4 steps of the intake form to register a new patient</p>
                 </div>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-purple-500 mt-0.5">▸</span>
                 <div>
-                  <span className="font-medium text-gray-900">Multi-Step Intake Forms</span>
-                  <p className="text-gray-600 text-xs mt-0.5">Complete patient registration workflow</p>
+                  <span className="font-medium text-gray-900">Patient Search</span>
+                  <p className="text-gray-600 text-xs mt-0.5">Search by name, phone number, email, or date of birth</p>
                 </div>
               </li>
             </ul>
