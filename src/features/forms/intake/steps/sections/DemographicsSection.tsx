@@ -1,9 +1,11 @@
 import React from 'react';
 import { FormField } from '@/components/forms/FormField';
+import { SelectField } from '@/components/forms/SelectField';
 import { RadioGroup } from '@/components/forms/RadioGroup';
 import { CheckboxGroup } from '@/components/forms/CheckboxGroup';
 import { ConditionalSection } from '@/components/forms/ConditionalSection';
 import { EDUCATION_LEVELS } from '@/constants/educationLevels';
+import { RELATIONSHIPS } from '@/constants/relationships';
 
 const STATUS_OPTIONS = [
   { value: 'female', label: 'Female' },
@@ -79,11 +81,13 @@ export const DemographicsSection: React.FC<DemographicsSectionProps> = ({
             required
             error={errors.guardian_name}
           />
-          <FormField
+          <SelectField
             label="Guardian Relationship"
             name="guardian_relationship"
             value={formData.guardian_relationship || ''}
             onChange={handleInputChange}
+            options={RELATIONSHIPS}
+            placeholder="Select Relationship"
             required
             error={errors.guardian_relationship}
           />
