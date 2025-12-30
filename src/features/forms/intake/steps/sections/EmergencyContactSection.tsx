@@ -2,6 +2,7 @@ import React from 'react';
 import { FormField } from '@/components/forms/FormField';
 import { SelectField } from '@/components/forms/SelectField';
 import { STATES } from '@/constants/states';
+import { RELATIONSHIPS } from '@/constants/relationships';
 import type { EmergencyContact } from '../../types';
 
 interface EmergencyContactSectionProps {
@@ -37,11 +38,13 @@ export const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = (
           required
           error={errors['emergency_contact.name']}
         />
-        <FormField
+        <SelectField
           label="Relationship"
           name="emergency_contact.relationship"
           value={formData.emergency_contact.relationship}
           onChange={(e) => handleFieldChange('relationship', e.target.value)}
+          options={RELATIONSHIPS}
+          placeholder="Select Relationship"
           required
           error={errors['emergency_contact.relationship']}
         />

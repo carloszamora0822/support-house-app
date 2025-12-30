@@ -1,7 +1,9 @@
 import React from 'react';
 import { FormField } from '@/components/forms/FormField';
+import { SelectField } from '@/components/forms/SelectField';
 import { CheckboxGroup } from '@/components/forms/CheckboxGroup';
 import { ConditionalSection } from '@/components/forms/ConditionalSection';
+import { REFERRAL_SOURCES } from '@/constants/referralSources';
 
 const ASSISTANCE_TYPES = [
   { value: 'food', label: 'Food' },
@@ -28,7 +30,7 @@ export const ReferralSection: React.FC<ReferralSectionProps> = ({
   onChange,
   errors,
 }) => {
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     onChange(e.target.name, e.target.value);
   };
 
@@ -36,11 +38,13 @@ export const ReferralSection: React.FC<ReferralSectionProps> = ({
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">Referral & Assistance</h3>
 
-      <FormField
+      <SelectField
         label="Referral Source"
         name="referral_source"
         value={formData.referral_source}
         onChange={handleInputChange}
+        options={REFERRAL_SOURCES}
+        placeholder="Select Referral Source"
         required
         error={errors.referral_source}
       />

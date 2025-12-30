@@ -1,6 +1,8 @@
 import React from 'react';
 import { FormField } from '@/components/forms/FormField';
+import { SelectField } from '@/components/forms/SelectField';
 import { ConditionalSection } from '@/components/forms/ConditionalSection';
+import { MARITAL_STATUSES } from '@/constants/maritalStatuses';
 
 interface MaritalStatusSectionProps {
   formData: {
@@ -18,7 +20,7 @@ export const MaritalStatusSection: React.FC<MaritalStatusSectionProps> = ({
   onChange,
   errors,
 }) => {
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     onChange(e.target.name, e.target.value);
   };
 
@@ -26,11 +28,13 @@ export const MaritalStatusSection: React.FC<MaritalStatusSectionProps> = ({
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">Marital Status</h3>
 
-      <FormField
+      <SelectField
         label="Marital Status"
         name="marital_status"
         value={formData.marital_status || ''}
         onChange={handleInputChange}
+        options={MARITAL_STATUSES}
+        placeholder="Select Marital Status"
         error={errors.marital_status}
       />
 
