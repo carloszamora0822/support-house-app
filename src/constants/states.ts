@@ -1,8 +1,9 @@
 export const STATES = [
+  { value: 'AR', label: 'Arkansas', region: 'South' },
+  { value: 'OK', label: 'Oklahoma', region: 'South' },
   { value: 'AL', label: 'Alabama', region: 'South' },
   { value: 'AK', label: 'Alaska', region: 'West' },
   { value: 'AZ', label: 'Arizona', region: 'West' },
-  { value: 'AR', label: 'Arkansas', region: 'South' },
   { value: 'CA', label: 'California', region: 'West' },
   { value: 'CO', label: 'Colorado', region: 'West' },
   { value: 'CT', label: 'Connecticut', region: 'Northeast' },
@@ -34,7 +35,6 @@ export const STATES = [
   { value: 'NC', label: 'North Carolina', region: 'South' },
   { value: 'ND', label: 'North Dakota', region: 'Midwest' },
   { value: 'OH', label: 'Ohio', region: 'Midwest' },
-  { value: 'OK', label: 'Oklahoma', region: 'South' },
   { value: 'OR', label: 'Oregon', region: 'West' },
   { value: 'PA', label: 'Pennsylvania', region: 'Northeast' },
   { value: 'RI', label: 'Rhode Island', region: 'Northeast' },

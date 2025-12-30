@@ -1,6 +1,8 @@
 import React from 'react';
 import { FormField } from '@/components/forms/FormField';
-import { Checkbox } from '@/components/common/Checkbox';
+import { SelectField } from '@/components/forms/SelectField';
+import { RadioGroup } from '@/components/forms/RadioGroup';
+import { ConditionalSection } from '@/components/forms/ConditionalSection';
 import { EMPLOYMENT_STATUSES } from '@/constants/employmentStatuses';
 
 interface EmploymentSectionProps {
@@ -14,6 +16,11 @@ interface EmploymentSectionProps {
   errors: Record<string, string>;
 }
 
+const YES_NO_OPTIONS = [
+  { value: 'true', label: 'Yes' },
+  { value: 'false', label: 'No' },
+];
+
 export const EmploymentSection: React.FC<EmploymentSectionProps> = ({
   formData,
   onChange,
@@ -23,66 +30,53 @@ export const EmploymentSection: React.FC<EmploymentSectionProps> = ({
     onChange(e.target.name, e.target.value);
   };
 
+  const isEmployed = formData.employment_status === 'employed';
+
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">Employment</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="employment_status" className="block text-sm font-medium text-gray-700 mb-1">
-            Employment Status
-          </label>
-          <select
-            id="employment_status"
-            name="employment_status"
-            value={formData.employment_status || ''}
-            onChange={handleInputChange}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.employment_status ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
-            }`}
-            aria-invalid={errors.employment_status ? 'true' : 'false'}
-            aria-describedby={errors.employment_status ? 'employment_status-error' : undefined}
-          >
-            <option value="">Select Employment Status</option>
-            {EMPLOYMENT_STATUSES.map((status) => (
-              <option key={status.value} value={status.value}>
-                {status.label}
-              </option>
-            ))}
-          </select>
-          {errors.employment_status && (
-            <p id="employment_status-error" className="mt-1 text-sm text-red-600" role="alert">
-              {errors.employment_status}
-            </p>
-          )}
-        </div>
-        <FormField
-          label="Employer Name"
-          name="employer_name"
-          value={formData.employer_name || ''}
-          onChange={handleInputChange}
-          error={errors.employer_name}
-        />
-      </div>
+      <SelectField
+        label="Employment Status"
+        name="employment_status"
+        value={formData.employment_status || ''}
+        onChange={handleInputChange}
+        options={EMPLOYMENT_STATUSES}
+        placeholder="Select Employment Status"
+        error={errors.employment_status}
+      />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField
-          label="Occupation"
-          name="occupation"
-          value={formData.occupation || ''}
-          onChange={handleInputChange}
-          error={errors.occupation}
-        />
-        <div className="flex items-center pt-8">
-          <Checkbox
-            id="home_has_employed"
-            checked={formData.home_has_employed || false}
-            onChange={(e) => onChange('home_has_employed', e.target.checked)}
-          />
-          <label htmlFor="home_has_employed" className="ml-2 text-sm text-gray-700">
-            Home Has Employed
-          </label>
+      <ConditionalSection condition={isEmployed}>
+        <div className="p-4 bg-blue-50 rounded-md space-y-4">
+          <p className="text-sm font-medium text-blue-900 mb-3">Employment Details</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <FormField
+              label="Employer Name"
+              name="employer_name"
+              value={formData.employer_name || ''}
+              onChange={handleInputChange}
+              error={errors.employer_name}
+            />
+            <FormField
+              label="Occupation"
+              name="occupation"
+              value={formData.occupation || ''}
+              onChange={handleInputChange}
+              error={errors.occupation}
+            />
+          </div>
         </div>
+      </ConditionalSection>
+
+      <div className="border-t pt-6">
+        <RadioGroup
+          label="Does your home have anyone employed?"
+          options={YES_NO_OPTIONS}
+          value={formData.home_has_employed ? 'true' : 'false'}
+          onChange={(value) => onChange('home_has_employed', value === 'true')}
+          error={errors.home_has_employed}
+          horizontal
+        />
       </div>
     </div>
   );

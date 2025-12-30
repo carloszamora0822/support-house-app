@@ -1,13 +1,18 @@
 import React from 'react';
 import { CheckboxGroup } from '@/components/forms/CheckboxGroup';
+import { RadioGroup } from '@/components/forms/RadioGroup';
 import { ConditionalSection } from '@/components/forms/ConditionalSection';
-import { Checkbox } from '@/components/common/Checkbox';
 
 const INSURANCE_TYPES = [
   { value: 'medicare', label: 'Medicare' },
   { value: 'medicaid', label: 'Medicaid' },
   { value: 'private', label: 'Private Insurance' },
   { value: 'other', label: 'Other' },
+];
+
+const YES_NO_OPTIONS = [
+  { value: 'true', label: 'Yes' },
+  { value: 'false', label: 'No' },
 ];
 
 interface InsuranceSectionProps {
@@ -29,39 +34,36 @@ export const InsuranceSection: React.FC<InsuranceSectionProps> = ({
     <div className="space-y-6">
       <h3 className="text-lg font-semibold text-gray-900">Insurance</h3>
 
-      {/* Has Insurance */}
-      <div className="flex items-center">
-        <Checkbox
-          id="has_insurance"
-          checked={formData.has_insurance}
-          onChange={(e) => onChange('has_insurance', e.target.checked)}
-        />
-        <label htmlFor="has_insurance" className="ml-2 text-sm text-gray-700">
-          Has Insurance
-        </label>
-      </div>
+      <RadioGroup
+        label="Do you have insurance?"
+        options={YES_NO_OPTIONS}
+        value={formData.has_insurance ? 'true' : 'false'}
+        onChange={(value) => onChange('has_insurance', value === 'true')}
+        error={errors.has_insurance}
+        horizontal
+      />
 
-      {/* Insurance Types (conditional) */}
       <ConditionalSection condition={formData.has_insurance}>
-        <CheckboxGroup
-          label="Insurance Type"
-          options={INSURANCE_TYPES}
-          value={formData.insurance_type || []}
-          onChange={(selected) => onChange('insurance_type', selected)}
-          error={errors.insurance_type}
-        />
+        <div className="p-4 bg-blue-50 rounded-md">
+          <CheckboxGroup
+            label="Insurance Type"
+            options={INSURANCE_TYPES}
+            value={formData.insurance_type || []}
+            onChange={(selected) => onChange('insurance_type', selected)}
+            error={errors.insurance_type}
+          />
+        </div>
       </ConditionalSection>
 
-      {/* Veteran Status */}
-      <div className="flex items-center">
-        <Checkbox
-          id="is_veteran"
-          checked={formData.is_veteran}
-          onChange={(e) => onChange('is_veteran', e.target.checked)}
+      <div className="border-t pt-6">
+        <RadioGroup
+          label="Are you a veteran?"
+          options={YES_NO_OPTIONS}
+          value={formData.is_veteran ? 'true' : 'false'}
+          onChange={(value) => onChange('is_veteran', value === 'true')}
+          error={errors.is_veteran}
+          horizontal
         />
-        <label htmlFor="is_veteran" className="ml-2 text-sm text-gray-700">
-          Veteran
-        </label>
       </div>
     </div>
   );

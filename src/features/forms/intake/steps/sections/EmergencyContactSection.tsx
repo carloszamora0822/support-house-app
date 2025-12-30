@@ -1,5 +1,7 @@
 import React from 'react';
 import { FormField } from '@/components/forms/FormField';
+import { SelectField } from '@/components/forms/SelectField';
+import { STATES } from '@/constants/states';
 import type { EmergencyContact } from '../../types';
 
 interface EmergencyContactSectionProps {
@@ -63,11 +65,13 @@ export const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = (
           required
           error={errors['emergency_contact.city']}
         />
-        <FormField
+        <SelectField
           label="State"
           name="emergency_contact.state"
           value={formData.emergency_contact.state}
           onChange={(e) => handleFieldChange('state', e.target.value)}
+          options={STATES}
+          placeholder="Select State"
           required
           error={errors['emergency_contact.state']}
         />
