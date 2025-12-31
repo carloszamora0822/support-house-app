@@ -35,8 +35,20 @@ export const ProfilePage = () => {
   };
 
   const handleDeleteAccount = async () => {
-    notify.warning('Account deletion requested. Admin will review.');
-    setShowDeleteModal(false);
+    try {
+      // In a real app, this would call an API to delete the account
+      // For now, just show a message and log out
+      notify.success('Account deletion requested. Logging out...');
+      setShowDeleteModal(false);
+      
+      // Wait a moment for user to see the message
+      setTimeout(() => {
+        logout();
+      }, 1500);
+    } catch (error) {
+      notify.error('Failed to delete account. Please contact support.');
+      console.error('Delete account error:', error);
+    }
   };
 
   const handleSubmitTicket = async () => {
