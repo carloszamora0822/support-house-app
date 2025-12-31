@@ -33,10 +33,6 @@ export const DashboardPage = () => {
     recentSearches: 0,
   });
 
-  useEffect(() => {
-    loadDashboardData();
-  }, [user]);
-
   const loadDashboardData = async () => {
     if (!user) return;
 
@@ -110,6 +106,10 @@ export const DashboardPage = () => {
       console.error('Error details:', error);
     }
   };
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [user, loadDashboardData]);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
