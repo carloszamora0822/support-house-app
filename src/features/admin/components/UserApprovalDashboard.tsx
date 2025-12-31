@@ -43,16 +43,24 @@ export function UserApprovalDashboard() {
   const loadPendingUsers = async () => {
     setIsLoading(true);
     try {
+      console.log('🔍 Loading pending users...');
       const { data, error } = await supabase
         .from('pending_users')
         .select('*')
         .eq('status', 'pending')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      console.log('📊 Pending users query result:', { data, error });
+      
+      if (error) {
+        console.error('❌ Error loading pending users:', error);
+        throw error;
+      }
+      
+      console.log('✅ Loaded pending users:', data?.length || 0);
       setPendingUsers(data || []);
     } catch (error) {
-      console.error('Error loading pending users:', error);
+      console.error('💥 Error loading pending users:', error);
       toast.error('Failed to load pending users');
     } finally {
       setIsLoading(false);

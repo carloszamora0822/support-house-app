@@ -1,22 +1,49 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserApprovalDashboard } from '@/features/admin/components/UserApprovalDashboard';
 import { UserActivityDashboard } from '@/features/admin/components/UserActivityDashboard';
 import { AuditLogViewer } from '@/features/admin/components/AuditLogViewer';
 import { SystemMetricsOverview } from '@/features/admin/components/SystemMetricsOverview';
 import { UserActivityMetrics } from '@/features/admin/components/UserActivityMetrics';
+import { MFASetupModal } from '@/features/auth/components/MFASetupModal';
+import { mfaService } from '@/features/auth/services/mfaService';
 import { PageShell } from '@/components/patterns/page-shell';
 import { AppHeader } from '@/components/patterns/app-header';
 import { PageContent } from '@/components/patterns/page-content';
 import { SectionHeader } from '@/components/patterns/section-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Activity, FileText, Shield, TrendingUp } from 'lucide-react';
+import { Users, Activity, FileText, Shield, TrendingUp, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
+import toast from 'react-hot-toast';
 
 type TabType = 'approvals' | 'activity' | 'audit' | 'overview';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [showMFASetup, setShowMFASetup] = useState(false);
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [isCheckingMFA, setIsCheckingMFA] = useState(true);
+
+  useEffect(() => {
+    checkMFAStatus();
+  }, []);
+
+  const checkMFAStatus = async () => {
+    try {
+      const enabled = await mfaService.isMFAEnabled();
+      setMfaEnabled(enabled);
+    } catch (error) {
+      console.error('Failed to check MFA status:', error);
+    } finally {
+      setIsCheckingMFA(false);
+    }
+  };
+
+  const handleMFASetupSuccess = () => {
+    setShowMFASetup(false);
+    setMfaEnabled(true);
+    toast.success('Two-factor authentication enabled successfully!');
+  };
 
   const tabs = [
     { id: 'overview' as TabType, label: 'Overview', icon: Shield },
@@ -66,6 +93,36 @@ export default function AdminPage() {
 
               {/* User Activity Leaderboard */}
               <UserActivityMetrics />
+
+              {/* Security Settings - 2FA */}
+              <Card className="p-6">
+                <h3 className="text-heading-md text-text mb-4 flex items-center gap-2">
+                  <Lock className="h-5 w-5 text-red-600" />
+                  Security Settings
+                </h3>
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                  <p className="text-sm text-yellow-800">
+                    <strong>HIPAA Requirement:</strong> Admin accounts must have two-factor authentication enabled.
+                  </p>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-1">Two-Factor Authentication (2FA)</h4>
+                    <p className="text-sm text-gray-600">
+                      {mfaEnabled 
+                        ? '✅ 2FA is enabled on your account' 
+                        : '⚠️ 2FA is not enabled - your account is at risk'}
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setShowMFASetup(true)}
+                    variant={mfaEnabled ? 'outline' : 'primary'}
+                    disabled={isCheckingMFA}
+                  >
+                    {isCheckingMFA ? 'Checking...' : mfaEnabled ? 'Manage 2FA' : 'Enable 2FA'}
+                  </Button>
+                </div>
+              </Card>
 
               {/* Quick Actions */}
               <Card className="p-6">
@@ -199,6 +256,12 @@ export default function AdminPage() {
           {activeTab === 'activity' && <UserActivityDashboard />}
           {activeTab === 'audit' && <AuditLogViewer />}
         </div>
+
+        <MFASetupModal
+          isOpen={showMFASetup}
+          onClose={() => setShowMFASetup(false)}
+          onSuccess={handleMFASetupSuccess}
+        />
       </PageContent>
     </PageShell>
   );
