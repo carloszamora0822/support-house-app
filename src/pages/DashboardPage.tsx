@@ -156,31 +156,25 @@ export const DashboardPage = () => {
           </div>
         </div>
 
-        {/* Operational Stats - Action-Driven Only */}
+        {/* Operational Stats - Informational Only */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <button
-            onClick={() => navigate('/search')}
-            className="text-left p-3 bg-surface border border-border rounded-lg hover:border-green-300 hover:bg-white transition-all"
-          >
+          <div className="p-3 bg-surface border border-border rounded-lg">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-text-muted uppercase tracking-wide">Check-ins Today</span>
               <CheckCircle className="h-4 w-4 text-green-600" />
             </div>
             <p className="text-2xl font-bold text-text mb-0.5">{stats.todayCheckIns}</p>
             <p className="text-xs text-green-600">↑ 4 from yesterday</p>
-          </button>
+          </div>
 
-          <button
-            onClick={() => navigate('/intake/new')}
-            className="text-left p-3 bg-surface border border-border rounded-lg hover:border-orange-300 hover:bg-white transition-all"
-          >
+          <div className="p-3 bg-surface border border-border rounded-lg">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-text-muted uppercase tracking-wide">Pending Forms</span>
               <FileText className="h-4 w-4 text-orange-600" />
             </div>
             <p className="text-2xl font-bold text-text mb-0.5">{stats.pendingForms}</p>
-            <p className="text-xs text-text-muted">Click to start new</p>
-          </button>
+            <p className="text-xs text-text-muted">Forms awaiting completion</p>
+          </div>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-4">
