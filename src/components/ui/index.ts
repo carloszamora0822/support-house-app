@@ -3,6 +3,7 @@ export * from './input';
 export * from './select';
 export * from './checkbox';
 export * from './radio';
+export * from './radio-group';
 export * from './alert';
 export * from './badge';
 export * from './card';

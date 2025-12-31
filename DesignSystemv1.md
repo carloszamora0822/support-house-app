@@ -231,6 +231,49 @@ import { Radio } from '@/components/ui/radio';
 />
 ```
 
+### RadioGroup ✨ NEW
+**Location**: `src/components/ui/radio-group/`
+- **Files**: `radio-group.tsx`, `index.ts`
+- **Features**: Group of radio options with two variants - default (radio circles) and button (button-style selectors)
+- **Variants**: 
+  - `default`: Traditional radio circles with labels
+  - `button`: Modern button-style selectors (Male/Female, Yes/No, etc.)
+- **Props**: `label`, `options`, `value`, `onChange`, `variant`, `orientation`, `required`, `error`, `hint`
+- **Visual**: Button variant has purple background when selected, white when not selected
+
+**Usage (Button Variant)**:
+```tsx
+import { RadioGroup } from '@/components/ui/radio-group';
+<RadioGroup
+  label="Status"
+  variant="button"
+  options={[
+    { value: 'female', label: 'Female' },
+    { value: 'male', label: 'Male' },
+    { value: 'child', label: 'Child' }
+  ]}
+  value={formData.status}
+  onChange={(value) => setFormData({ ...formData, status: value })}
+  required
+/>
+```
+
+**Usage (Default Variant)**:
+```tsx
+<RadioGroup
+  label="Marital Status"
+  variant="default"
+  orientation="vertical"
+  options={[
+    { value: 'single', label: 'Single', description: 'Never married' },
+    { value: 'married', label: 'Married' },
+    { value: 'divorced', label: 'Divorced' }
+  ]}
+  value={formData.maritalStatus}
+  onChange={(value) => setFormData({ ...formData, maritalStatus: value })}
+/>
+```
+
 ---
 
 ## 🏗️ Patterns (Smart Components)

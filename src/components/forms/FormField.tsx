@@ -1,4 +1,5 @@
 import React from 'react';
+import { FormField as DesignSystemFormField } from '@/components/patterns/form-field';
 
 interface FormFieldProps {
   label: string;
@@ -16,6 +17,11 @@ interface FormFieldProps {
   className?: string;
 }
 
+/**
+ * FormField - Wrapper around design system FormField pattern
+ * Provides backward compatibility for existing form code while using the new design system
+ * @deprecated Use @/components/patterns/form-field directly for new code
+ */
 export const FormField: React.FC<FormFieldProps> = ({
   label,
   name,
@@ -31,61 +37,22 @@ export const FormField: React.FC<FormFieldProps> = ({
   rows = 3,
   className = '',
 }) => {
-  const inputClasses = `
-    w-full px-3 py-2 border rounded-md
-    focus:outline-none focus:ring-2 focus:ring-blue-500
-    disabled:bg-gray-100 disabled:cursor-not-allowed
-    ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}
-  `.trim().replace(/\s+/g, ' ');
-
   return (
     <div className={className}>
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-      
-      {multiline ? (
-        <textarea
-          id={name}
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          required={required}
-          disabled={disabled}
-          rows={rows}
-          className={inputClasses}
-          aria-invalid={error ? 'true' : 'false'}
-          aria-describedby={error ? `${name}-error` : undefined}
-        />
-      ) : (
-        <input
-          type={type}
-          id={name}
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          required={required}
-          disabled={disabled}
-          className={inputClasses}
-          aria-invalid={error ? 'true' : 'false'}
-          aria-describedby={error ? `${name}-error` : undefined}
-        />
-      )}
-      
-      {error && (
-        <p id={`${name}-error`} className="mt-1 text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      )}
-      
-      {!error && helperText && (
-        <p className="mt-1 text-sm text-gray-500">
-          {helperText}
-        </p>
-      )}
+      <DesignSystemFormField
+        label={label}
+        name={name}
+        value={value}
+        onChange={onChange}
+        type={type}
+        placeholder={placeholder}
+        required={required}
+        disabled={disabled}
+        error={error}
+        hint={helperText}
+        multiline={multiline}
+        rows={rows}
+      />
     </div>
   );
 };

@@ -3,16 +3,16 @@ import { cva, type VariantProps } from 'class-variance-authority';
 export const selectVariants = cva(
   [
     'flex w-full appearance-none rounded-lg border bg-white',
-    'px-4 py-2.5 pr-10 font-sans font-medium',
+    'px-4 py-2.5 pr-10 font-sans font-normal',
     'focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent',
     'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted',
     'transition-all duration-normal',
     'shadow-sm hover:shadow-md',
     'text-text',
-    // Style the dropdown options
-    '[&>option]:bg-white [&>option]:text-text [&>option]:font-sans [&>option]:py-2',
+    // Style the dropdown options - simpler, less formal
+    '[&>option]:bg-white [&>option]:text-text [&>option]:font-sans [&>option]:font-normal [&>option]:py-2',
     '[&>option]:hover:bg-primary-50',
-    '[&>option:checked]:bg-primary-100 [&>option:checked]:font-semibold',
+    '[&>option:checked]:bg-primary-100',
   ],
   {
     variants: {

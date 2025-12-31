@@ -159,16 +159,10 @@ export const DemographicsSection: React.FC<DemographicsSectionProps> = ({
         onChange={onChange}
         selectSize="lg"
         placeholder="Select Education Level"
+        error={!!errors.education}
+        hint={errors.education}
         options={EDUCATION_LEVELS.map(level => ({ value: level.value, label: level.label }))}
       />
-          ))}
-        </select>
-        {errors.education && (
-          <p id="education-error" className="mt-2 text-sm md:text-base text-red-600" role="alert">
-            {errors.education}
-          </p>
-        )}
-      </div>
     </div>
   );
 };

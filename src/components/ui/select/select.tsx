@@ -20,9 +20,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const selectId = props.id || generatedId;
     
     return (
-      <div className="space-y-2">
+      <div>
         {label && (
-          <label htmlFor={selectId} className="block text-sm font-semibold text-text">
+          <label htmlFor={selectId} className="block text-sm font-semibold text-text mb-2">
             {label}
             {props.required && <span className="text-status-error ml-1 font-bold">*</span>}
           </label>

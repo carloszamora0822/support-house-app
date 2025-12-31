@@ -140,7 +140,6 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           required
           error={errors.address}
-          className="text-base md:text-lg p-4"
         />
       </div>
 
@@ -153,7 +152,6 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           required
           error={errors.city}
-          className="text-base md:text-lg p-4"
         />
         <FormField
           label="County"
@@ -162,27 +160,21 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           required
           error={errors.county}
-          className="text-base md:text-lg p-4"
         />
-        <Select
-          label="State"
-          id="state"
-          name="state"
-          value={formData.state}
-          onChange={onChange}
-          required
-          selectSize="lg"
-          placeholder="Select State"
-          error={!!errors.state}
-          hint={errors.state}
-          options={STATES.map((state) => ({ value: state.value, label: state.label }))}
-        />
-          </select>
-          {errors.state && (
-            <p id="state-error" className="mt-2 text-sm md:text-base text-red-600" role="alert">
-              {errors.state}
-            </p>
-          )}
+        <div>
+          <Select
+            label="State"
+            id="state"
+            name="state"
+            value={formData.state}
+            onChange={onChange}
+            required
+            selectSize="md"
+            placeholder="Select State"
+            error={!!errors.state}
+            hint={errors.state}
+            options={STATES.map((state) => ({ value: state.value, label: state.label }))}
+          />
         </div>
         <FormField
           label="ZIP"
@@ -191,7 +183,6 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           required
           error={errors.zip}
-          className="text-base md:text-lg p-4"
         />
       </div>
     </div>

@@ -40,10 +40,10 @@ export const FormField = ({
   const hintId = `${inputId}-hint`;
 
   return (
-    <div className={cn('space-y-2.5', className)}>
+    <div className={className}>
       <label 
         htmlFor={inputId} 
-        className="block text-sm font-semibold text-text"
+        className="block text-sm font-semibold text-text mb-2"
       >
         {label}
         {required && <span className="text-status-error ml-1 font-bold">*</span>}
@@ -65,8 +65,8 @@ export const FormField = ({
           disabled={disabled}
           rows={rows}
           className={cn(
-            'flex w-full rounded-lg border bg-surface',
-            'px-4 py-3 text-sm font-medium',
+            'flex w-full rounded-lg border bg-white',
+            'px-4 py-3 text-sm font-sans font-normal',
             'placeholder:text-text-subtle placeholder:font-normal',
             'focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent',
             'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-muted',
