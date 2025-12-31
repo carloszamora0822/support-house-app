@@ -4,11 +4,9 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import { PageShell } from '@/components/patterns/page-shell';
 import { AppHeader } from '@/components/patterns/app-header';
 import { PageContent } from '@/components/patterns/page-content';
-import { SectionHeader } from '@/components/patterns/section-header';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, FileText, CheckCircle, TrendingUp, Users } from 'lucide-react';
-import { cn } from '@/lib/utils/cn';
+import { Search, FileText, CheckCircle, Users } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 interface RecentPatient {
@@ -34,7 +32,6 @@ export const DashboardPage = () => {
     pendingForms: 0,
     recentSearches: 0,
   });
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadDashboardData();
@@ -44,7 +41,6 @@ export const DashboardPage = () => {
     if (!user) return;
 
     try {
-      setIsLoading(true);
 
       // Get today's check-ins (all check-ins today, not just by this user)
       const today = new Date();
@@ -112,40 +108,8 @@ export const DashboardPage = () => {
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
       console.error('Error details:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
-
-  const quickActions = [
-    {
-      title: 'Patient Search',
-      description: 'Find existing patients by name, phone, or DOB',
-      icon: Search,
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-gradient-to-br from-purple-50 to-purple-100',
-      route: '/search',
-      badge: stats.recentSearches > 0 ? `${stats.recentSearches} recent` : null,
-    },
-    {
-      title: 'New Patient Intake',
-      description: 'Complete multi-step patient registration form',
-      icon: FileText,
-      color: 'from-pink-500 to-pink-600',
-      bgColor: 'bg-gradient-to-br from-pink-50 to-pink-100',
-      route: '/intake/new',
-      badge: stats.pendingForms > 0 ? `${stats.pendingForms} pending` : null,
-    },
-    {
-      title: 'Check-In Patient',
-      description: 'Record patient visit with assistance tracking',
-      icon: CheckCircle,
-      color: 'from-green-500 to-green-600',
-      bgColor: 'bg-gradient-to-br from-green-50 to-green-100',
-      route: '/search',
-      badge: stats.todayCheckIns > 0 ? `${stats.todayCheckIns} today` : null,
-    },
-  ];
 
   const getGreeting = () => {
     const hour = new Date().getHours();
