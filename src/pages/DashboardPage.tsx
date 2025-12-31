@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { PageShell } from '@/components/patterns/page-shell';
@@ -33,11 +33,10 @@ export const DashboardPage = () => {
     recentSearches: 0,
   });
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     if (!user) return;
 
     try {
-
       // Get today's check-ins (all check-ins today, not just by this user)
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -105,7 +104,7 @@ export const DashboardPage = () => {
       console.error('Failed to load dashboard data:', error);
       console.error('Error details:', error);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     loadDashboardData();
