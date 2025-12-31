@@ -209,7 +209,7 @@ export const patientUpdateService = {
       guardian_name?: string | null;
       guardian_relationship?: string | null;
       referral_source?: string | null;
-      referral_other?: string | null;
+      referral_name?: string | null;
       patient_signature?: string | null;
       patient_printed_name?: string | null;
       patient_signature_date?: string | null;
@@ -219,21 +219,57 @@ export const patientUpdateService = {
     }
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await supabase
+      // Extract emergency_contact from data - it's a separate table
+      const { emergency_contact, ...patientData } = data;
+
+      // Update patients table (without emergency_contact)
+      const { error: patientError } = await supabase
         .from('patients')
-        .update(data)
+        .update(patientData)
         .eq('id', patientId);
 
-      if (error) {
-        console.error('❌ Error updating additional personal data:', error);
-        return { success: false, error: error.message };
+      if (patientError) {
+        console.error('❌ Error updating additional personal data:', patientError);
+        return { success: false, error: patientError.message };
       }
 
-      console.log('✅ Additional personal data updated');
+      // Update emergency_contacts table if data provided
+      if (emergency_contact) {
+        // Check if emergency contact exists
+        const { data: existing } = await supabase
+          .from('emergency_contacts')
+          .select('id')
+          .eq('patient_id', patientId)
+          .maybeSingle();
+
+        if (existing) {
+          // Update existing
+          const { error: emergencyError } = await supabase
+            .from('emergency_contacts')
+            .update(emergency_contact)
+            .eq('patient_id', patientId);
+
+          if (emergencyError) {
+            console.error('❌ Error updating emergency contact:', emergencyError);
+            return { success: false, error: emergencyError.message };
+          }
+        } else {
+          // Insert new
+          const { error: emergencyError } = await supabase
+            .from('emergency_contacts')
+            .insert({ ...emergency_contact, patient_id: patientId });
+
+          if (emergencyError) {
+            console.error('❌ Error creating emergency contact:', emergencyError);
+            return { success: false, error: emergencyError.message };
+          }
+        }
+      }
+
       return { success: true };
     } catch (error) {
-      console.error('❌ Unexpected error:', error);
-      return { success: false, error: 'An unexpected error occurred' };
+      console.error('❌ Error updating additional personal data:', error);
+      return { success: false, error: 'Failed to update additional personal data' };
     }
   },
 };
