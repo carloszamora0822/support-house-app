@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import type { User } from '@/types';
 import type { LoginCredentials } from '../types';
-import { auditLogger } from '@/utils/auditLogger';
+import { auditService } from '@/services/auditService';
 import { sessionManager } from '@/utils/sessionManager';
 
 // SECURITY: Server-side rate limiting to prevent bypass via localStorage clearing
@@ -19,7 +19,7 @@ export const authService = {
     
     if (isLocked) {
       // Log failed attempt due to lockout
-      await auditLogger.logAuth('LOGIN_FAILED', credentials.email, false, {
+      await auditService.logAuth('LOGIN_FAILED', credentials.email, false, {
         reason: 'account_locked',
       });
       
@@ -43,7 +43,7 @@ export const authService = {
       });
       
       // Log failed login
-      await auditLogger.logAuth('LOGIN_FAILED', credentials.email, false, {
+      await auditService.logAuth('LOGIN_FAILED', credentials.email, false, {
         reason: error?.message || 'invalid_credentials',
       });
       
@@ -91,7 +91,7 @@ export const authService = {
     });
     
     // Log successful login
-    await auditLogger.logAuth('LOGIN', credentials.email, true, {
+    await auditService.logAuth('LOGIN', credentials.email, true, {
       userId: userData.id,
       userName: userData.full_name,
     });
@@ -115,7 +115,7 @@ export const authService = {
     
     // Log logout
     if (currentUser) {
-      await auditLogger.logAuth('LOGOUT', currentUser.email, true, {
+      await auditService.logAuth('LOGOUT', currentUser.email, true, {
         userId: currentUser.id,
         userName: currentUser.full_name,
       });

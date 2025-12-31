@@ -12,6 +12,7 @@ import { Alert } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Modal } from '@/components/ui/modal';
 import { notify } from '@/lib/services';
+import { accountService } from '@/services/accountService';
 import { User, Shield, Trash2, MessageSquare, AlertTriangle } from 'lucide-react';
 
 export const ProfilePage = () => {
@@ -36,15 +37,18 @@ export const ProfilePage = () => {
 
   const handleDeleteAccount = async () => {
     try {
-      // In a real app, this would call an API to delete the account
-      // For now, just show a message and log out
-      notify.success('Account deletion requested. Logging out...');
       setShowDeleteModal(false);
+      notify.info('Deleting account...');
       
-      // Wait a moment for user to see the message
-      setTimeout(() => {
-        logout();
-      }, 1500);
+      // Actually delete the account from database
+      const result = await accountService.deleteAccount();
+      
+      if (result.success) {
+        notify.success('Account deleted successfully. You have been logged out.');
+        // User is already logged out by accountService
+      } else {
+        notify.error(result.error || 'Failed to delete account. Please contact support.');
+      }
     } catch (error) {
       notify.error('Failed to delete account. Please contact support.');
       console.error('Delete account error:', error);

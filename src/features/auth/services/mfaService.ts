@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { auditLogger } from '@/utils/auditLogger';
+import { auditService } from '@/services/auditService';
 
 export interface MFAEnrollmentResponse {
   success: boolean;
@@ -41,7 +41,7 @@ export const mfaService = {
 
       const user = await supabase.auth.getUser();
       if (user.data.user) {
-        await auditLogger.logAuth('2FA_ENABLED', user.data.user.email || '', true, {
+        await auditService.logAuth('2FA_ENABLED', user.data.user.email || '', true, {
           userId: user.data.user.id,
         });
       }
@@ -92,7 +92,7 @@ export const mfaService = {
 
       const user = await supabase.auth.getUser();
       if (user.data.user) {
-        await auditLogger.logAuth('2FA_VERIFIED', user.data.user.email || '', true, {
+        await auditService.logAuth('2FA_VERIFIED', user.data.user.email || '', true, {
           userId: user.data.user.id,
         });
       }
@@ -143,7 +143,7 @@ export const mfaService = {
       if (verifyError) {
         const user = await supabase.auth.getUser();
         if (user.data.user) {
-          await auditLogger.logAuth('LOGIN_FAILED', user.data.user.email || '', false, {
+          await auditService.logAuth('LOGIN_FAILED', user.data.user.email || '', false, {
             reason: 'invalid_mfa_code',
           });
         }
@@ -156,7 +156,7 @@ export const mfaService = {
 
       const user = await supabase.auth.getUser();
       if (user.data.user) {
-        await auditLogger.logAuth('2FA_VERIFIED', user.data.user.email || '', true, {
+        await auditService.logAuth('2FA_VERIFIED', user.data.user.email || '', true, {
           userId: user.data.user.id,
         });
       }
@@ -189,7 +189,7 @@ export const mfaService = {
 
       const user = await supabase.auth.getUser();
       if (user.data.user) {
-        await auditLogger.logAuth('2FA_DISABLED', user.data.user.email || '', true, {
+        await auditService.logAuth('2FA_DISABLED', user.data.user.email || '', true, {
           userId: user.data.user.id,
         });
       }

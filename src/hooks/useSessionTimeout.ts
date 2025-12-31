@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { sessionManager } from '@/utils/sessionManager';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '@/features/auth/services/authService';
-import { auditLogger } from '@/utils/auditLogger';
+import { auditService } from '@/services/auditService';
 
 export function useSessionTimeout() {
   const [showWarning, setShowWarning] = useState(false);
@@ -12,7 +12,7 @@ export function useSessionTimeout() {
 
   const handleTimeout = useCallback(async () => {
     // Log session timeout
-    await auditLogger.log('SESSION_TIMEOUT', 'Session expired due to inactivity', {
+    await auditService.logAuth('SESSION_TIMEOUT', 'Session expired due to inactivity', true, {
       success: false,
     });
 
