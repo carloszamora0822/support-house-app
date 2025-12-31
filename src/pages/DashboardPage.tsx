@@ -108,7 +108,8 @@ export const DashboardPage = () => {
 
   useEffect(() => {
     loadDashboardData();
-  }, [loadDashboardData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getGreeting = () => {
     const hour = new Date().getHours();

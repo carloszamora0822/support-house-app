@@ -9,7 +9,6 @@ import { formatDate, calculateDaysSince } from '@/utils/dateUtils';
 import { CheckInModal } from '@/features/checkin/components/CheckInModal';
 import { Toaster } from 'react-hot-toast';
 import toast from 'react-hot-toast';
-import { ASSISTANCE_TYPES } from '@/constants/assistanceTypes';
 import { documentService } from '@/services/documentService';
 import { taskService } from '@/services/taskService';
 import type { PatientDocument } from '@/services/documentService';
