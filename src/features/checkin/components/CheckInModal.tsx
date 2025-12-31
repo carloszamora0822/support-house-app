@@ -79,6 +79,7 @@ export const CheckInModal = ({
       isOpen={isOpen}
       onClose={handleClose}
       title="Check In Patient"
+      size="xl"
       footer={
         <div className="flex justify-end gap-3">
           <Button

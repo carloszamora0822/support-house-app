@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { mfaService } from '../services/mfaService';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
-import { toast } from 'sonner';
+import toast from 'react-hot-toast';
 
 interface MFASetupModalProps {
   isOpen: boolean;

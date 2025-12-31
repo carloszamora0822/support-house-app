@@ -7,9 +7,10 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
 }
 
-export const Modal = ({ isOpen, onClose, title, children, footer }: ModalProps) => {
+export const Modal = ({ isOpen, onClose, title, children, footer, size = 'md' }: ModalProps) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -40,8 +41,12 @@ export const Modal = ({ isOpen, onClose, title, children, footer }: ModalProps) 
         
         <div
           className={cn(
-            'relative bg-white rounded-lg shadow-xl max-w-md w-full',
-            'transform transition-all'
+            'relative bg-white rounded-lg shadow-xl w-full transform transition-all',
+            size === 'sm' && 'max-w-sm',
+            size === 'md' && 'max-w-md',
+            size === 'lg' && 'max-w-2xl',
+            size === 'xl' && 'max-w-4xl',
+            size === 'full' && 'max-w-7xl'
           )}
         >
           <div className="px-6 py-4 border-b border-gray-200">
