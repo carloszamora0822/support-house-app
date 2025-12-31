@@ -159,10 +159,10 @@ export const InlinePatientSearch = ({
                             <span>{formatPhone(patient.phone_primary)}</span>
                           </div>
                         )}
-                        {patient.date_of_birth && (
+                        {patient.dob && (
                           <div className="flex items-center gap-2 text-text-muted">
                             <Calendar className="h-3 w-3" />
-                            <span>{formatDate(patient.date_of_birth)}</span>
+                            <span>{formatDate(patient.dob)}</span>
                           </div>
                         )}
                         {(patient.city || patient.state) && (
