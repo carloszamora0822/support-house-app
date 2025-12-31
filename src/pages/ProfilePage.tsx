@@ -15,7 +15,7 @@ import { notify } from '@/lib/services';
 import { User, Shield, Trash2, MessageSquare, AlertTriangle } from 'lucide-react';
 
 export const ProfilePage = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [isEditMode, setIsEditMode] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showTicketModal, setShowTicketModal] = useState(false);
