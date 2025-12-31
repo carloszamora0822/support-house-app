@@ -48,6 +48,8 @@ export const InlinePatientSearch = ({
     try {
       const searchTerm = `%${searchQuery}%`;
       
+      console.log('🔍 Searching for:', searchQuery);
+      
       // Search by name, phone, or DOB
       const { data, error } = await supabase
         .from('patients')
@@ -56,11 +58,15 @@ export const InlinePatientSearch = ({
         .order('last_name')
         .limit(10);
 
+      console.log('📊 Search results:', data);
+      console.log('❌ Search error:', error);
+
       if (error) throw error;
 
       setResults(data || []);
+      console.log('✅ Results set, count:', data?.length || 0);
     } catch (error) {
-      console.error('Search error:', error);
+      console.error('💥 Search error:', error);
       setResults([]);
     } finally {
       setIsSearching(false);
@@ -141,7 +147,7 @@ export const InlinePatientSearch = ({
 
       {/* Results Dropdown */}
       {showResults && (
-        <Card className="absolute top-full left-0 right-0 mt-2 max-h-[500px] overflow-y-auto shadow-2xl border-2 border-primary-200 z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 max-h-[500px] overflow-y-auto shadow-2xl border-2 border-primary-200 z-50 bg-white rounded-xl">
           {results.length > 0 ? (
             <div className="divide-y divide-border">
               {results.map((patient) => (
@@ -219,7 +225,7 @@ export const InlinePatientSearch = ({
               <p className="text-text-muted">Type at least 2 characters to search</p>
             </div>
           )}
-        </Card>
+        </div>
       )}
 
       {/* Keyboard Hint */}
