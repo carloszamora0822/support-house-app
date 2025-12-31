@@ -4,18 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Search, User, Phone, Calendar, MapPin, Loader2 } from 'lucide-react';
 import { optimizedSearchService } from '@/features/lookup/services/optimizedSearchService';
 import { cn } from '@/lib/utils/cn';
-
-interface Patient {
-  id: string;
-  first_name: string;
-  last_name: string;
-  phone_primary: string | null;
-  date_of_birth: string | null;
-  diagnosis_primary: string | null;
-  city: string | null;
-  state: string | null;
-  visit_count: number;
-}
+import type { Patient } from '@/types';
 
 interface InlinePatientSearchProps {
   onPatientSelect?: (patientId: string) => void;
