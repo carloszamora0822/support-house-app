@@ -46,15 +46,29 @@ export const DashboardPage = () => {
     try {
       setIsLoading(true);
 
-      // Get today's check-ins by this user
+      // Get today's check-ins (all check-ins today, not just by this user)
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
       const { count: todayCheckIns } = await supabase
         .from('visits')
         .select('*', { count: 'exact', head: true })
-        .eq('checked_in_by', user.id)
         .gte('check_in_timestamp', today.toISOString());
+
+      console.log('Today check-ins:', todayCheckIns);
+
+      // Get recent search activity (last 7 days)
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const { count: recentSearchCount } = await supabase
+        .from('audit_logs')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('event_type', 'patient_search')
+        .gte('created_at', sevenDaysAgo.toISOString());
+
+      console.log('Recent searches:', recentSearchCount);
 
       // Get recent patients (last 5 viewed/searched)
       const { data: recentActivity } = await supabase
@@ -63,7 +77,9 @@ export const DashboardPage = () => {
         .eq('user_id', user.id)
         .in('event_type', ['patient_view', 'patient_search'])
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(10);
+
+      console.log('Recent activity:', recentActivity);
 
       // Extract unique patient IDs
       const patientIds = (recentActivity
@@ -71,6 +87,8 @@ export const DashboardPage = () => {
         .filter((id): id is string => !!id) || [])
         .filter((id, index, self) => self.indexOf(id) === index)
         .slice(0, 5);
+
+      console.log('Patient IDs:', patientIds);
 
       if (patientIds.length > 0) {
         const { data: patients } = await supabase
@@ -83,15 +101,17 @@ export const DashboardPage = () => {
           last_visit: null
         })) || [];
         setRecentPatients(formattedPatients);
+        console.log('Recent patients:', formattedPatients);
       }
 
       setStats({
         todayCheckIns: todayCheckIns || 0,
         pendingForms: 0, // TODO: Track incomplete forms
-        recentSearches: recentActivity?.length || 0,
+        recentSearches: recentSearchCount || 0,
       });
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
+      console.error('Error details:', error);
     } finally {
       setIsLoading(false);
     }
