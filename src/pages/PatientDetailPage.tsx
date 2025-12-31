@@ -124,7 +124,7 @@ export const PatientDetailPage = () => {
         <Card className="max-w-md">
           <h2 className="text-xl font-bold text-red-600 mb-2">Error</h2>
           <p className="text-gray-600 mb-4">{error || 'Patient not found'}</p>
-          <Button onClick={() => navigate('/search')}>Back to Search</Button>
+          <Button onClick={() => navigate('/dashboard')}>Back to Dashboard</Button>
         </Card>
       </div>
     );
@@ -137,8 +137,8 @@ export const PatientDetailPage = () => {
       <nav className="bg-white/80 backdrop-blur-md border-b border-purple-100 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
-            <Button variant="outline" onClick={() => navigate('/search')}>
-              ← Back to Search
+            <Button variant="outline" onClick={() => navigate('/dashboard')}>
+              ← Back to Dashboard
             </Button>
             <div className="flex items-center gap-4">
               <div className="text-right">
