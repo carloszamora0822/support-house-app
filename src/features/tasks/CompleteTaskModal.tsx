@@ -505,7 +505,7 @@ export const CompleteTaskModal = ({ isOpen, onClose, task, patientName, patientI
           <Button
             onClick={handleComplete}
             disabled={isUploading || !uploadedFile}
-            className="bg-purple-600 hover:bg-purple-700"
+            variant="primary"
           >
             {isUploading ? '⏳ Processing...' : '✅ Complete Task'}
           </Button>

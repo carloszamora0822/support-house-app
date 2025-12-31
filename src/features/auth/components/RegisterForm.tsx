@@ -354,7 +354,8 @@ export function RegisterForm() {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-purple-600 hover:bg-purple-700"
+            variant="primary"
+            className="w-full"
           >
             {isSubmitting ? 'Submitting...' : 'Submit Registration'}
           </Button>

@@ -169,7 +169,7 @@ export const PatientDetailPage = () => {
             <div>
               <Button 
                 onClick={() => setIsCheckInModalOpen(true)}
-                className="bg-purple-600 hover:bg-purple-700"
+                variant="primary"
               >
                 ✅ Check In
               </Button>
@@ -300,7 +300,7 @@ export const PatientDetailPage = () => {
                             <Button
                               size="sm"
                               onClick={() => handleDownloadDocument(doc)}
-                              className="bg-purple-600 hover:bg-purple-700"
+                              variant="primary"
                             >
                               📥 Download
                             </Button>

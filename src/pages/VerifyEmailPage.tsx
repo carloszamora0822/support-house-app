@@ -86,7 +86,8 @@ export default function VerifyEmailPage() {
                 </div>
                 <Button
                   onClick={() => navigate('/login')}
-                  className="w-full bg-purple-600 hover:bg-purple-700"
+                  variant="primary"
+                  className="w-full"
                 >
                   Go to Login
                 </Button>
@@ -101,7 +102,8 @@ export default function VerifyEmailPage() {
                 <div className="space-y-3">
                   <Button
                     onClick={() => navigate('/register')}
-                    className="w-full bg-purple-600 hover:bg-purple-700"
+                    variant="primary"
+                    className="w-full"
                   >
                     Try Registering Again
                   </Button>

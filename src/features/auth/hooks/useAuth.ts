@@ -32,6 +32,7 @@ export const useAuth = () => {
       setError(null);
       const loggedInUser = await authService.login(credentials);
       setUser(loggedInUser);
+      return loggedInUser;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Login failed';
       setError(errorMessage);

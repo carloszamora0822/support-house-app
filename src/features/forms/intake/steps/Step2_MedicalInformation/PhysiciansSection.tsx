@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/common/Button';
-import { Input } from '@/components/common/Input';
+import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
 import { FormField } from '@/components/forms/FormField';
 import {
@@ -89,20 +88,22 @@ const CustomPhysicianForm: React.FC<{
                 placeholder="Enter new location"
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
-              <button
+              <Button
                 type="button"
                 onClick={handleAddCustomLocation}
-                className="px-3 py-2 bg-purple-600 text-white text-sm rounded-md hover:bg-purple-700"
+                variant="primary"
+                size="sm"
               >
                 Add
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => setShowCustomLocation(false)}
-                className="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300"
+                variant="outline"
+                size="sm"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           )}
           {errors[`custom_physicians.${index}.location`] && (
@@ -133,13 +134,14 @@ const CustomPhysicianForm: React.FC<{
           </>
         )}
       </div>
-      <button
+      <Button
         type="button"
         onClick={() => onRemove(index)}
-        className="px-4 py-2 text-sm font-medium text-red-700 bg-red-50 border border-red-300 rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+        variant="danger"
+        size="sm"
       >
         Remove Physician
-      </button>
+      </Button>
     </div>
   );
 };
@@ -299,13 +301,15 @@ export const PhysiciansSection: React.FC<PhysiciansSectionProps> = ({
           ))}
         </div>
 
-        <button
+        <Button
           type="button"
           onClick={handleAddCustomPhysician}
-          className="mt-4 px-6 py-3 bg-purple-600 text-white font-medium rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          variant="primary"
+          size="md"
+          className="mt-4"
         >
           + Add Other Physician
-        </button>
+        </Button>
       </div>
     </div>
   );

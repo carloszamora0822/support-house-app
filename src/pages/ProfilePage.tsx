@@ -69,7 +69,17 @@ export const ProfilePage = () => {
                   Account Information
                 </h3>
                 {!isEditMode ? (
-                  <Button variant="outline" size="sm" onClick={() => setIsEditMode(true)}>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      setFormData({
+                        full_name: user?.full_name || '',
+                        email: user?.email || '',
+                      });
+                      setIsEditMode(true);
+                    }}
+                  >
                     Edit Profile
                   </Button>
                 ) : (

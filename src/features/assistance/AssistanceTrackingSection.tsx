@@ -311,7 +311,7 @@ export function AssistanceTrackingSection({
               <Button
                 type="button"
                 onClick={handleAddItem}
-                className="bg-purple-600 hover:bg-purple-700"
+                variant="primary"
               >
                 Add Item
               </Button>

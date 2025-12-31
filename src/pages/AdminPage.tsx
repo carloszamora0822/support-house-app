@@ -2,12 +2,15 @@ import { useState } from 'react';
 import { UserApprovalDashboard } from '@/features/admin/components/UserApprovalDashboard';
 import { UserActivityDashboard } from '@/features/admin/components/UserActivityDashboard';
 import { AuditLogViewer } from '@/features/admin/components/AuditLogViewer';
+import { SystemMetricsOverview } from '@/features/admin/components/SystemMetricsOverview';
+import { UserActivityMetrics } from '@/features/admin/components/UserActivityMetrics';
 import { PageShell } from '@/components/patterns/page-shell';
 import { AppHeader } from '@/components/patterns/app-header';
 import { PageContent } from '@/components/patterns/page-content';
 import { SectionHeader } from '@/components/patterns/section-header';
 import { Card } from '@/components/ui/card';
-import { Users, Activity, FileText, Shield } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Users, Activity, FileText, Shield, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 type TabType = 'approvals' | 'activity' | 'audit' | 'overview';
@@ -57,8 +60,20 @@ export default function AdminPage() {
         {/* Content */}
         <div>
           {activeTab === 'overview' && (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-8">
+              {/* Real-time System Metrics */}
+              <SystemMetricsOverview />
+
+              {/* User Activity Leaderboard */}
+              <UserActivityMetrics />
+
+              {/* Quick Actions */}
+              <Card className="p-6">
+                <h3 className="text-heading-md text-text mb-4 flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary-600" />
+                  Quick Actions
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="p-6">
                   <div className="flex items-center gap-3 mb-2">
                     <Users className="h-8 w-8 text-purple-600" />
@@ -67,12 +82,13 @@ export default function AdminPage() {
                   <p className="text-gray-600 text-sm mb-4">
                     Review and approve new user registrations. All users require admin approval before accessing the system.
                   </p>
-                  <button
+                  <Button
                     onClick={() => setActiveTab('approvals')}
-                    className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+                    variant="outline"
+                    size="sm"
                   >
                     View Pending Approvals →
-                  </button>
+                  </Button>
                 </Card>
 
                 <Card className="p-6">
@@ -83,12 +99,13 @@ export default function AdminPage() {
                   <p className="text-gray-600 text-sm mb-4">
                     Monitor all user actions including patient views, edits, searches, and document access.
                   </p>
-                  <button
+                  <Button
                     onClick={() => setActiveTab('activity')}
-                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    variant="outline"
+                    size="sm"
                   >
                     View Activity Dashboard →
-                  </button>
+                  </Button>
                 </Card>
 
                 <Card className="p-6">
@@ -99,15 +116,18 @@ export default function AdminPage() {
                   <p className="text-gray-600 text-sm mb-4">
                     HIPAA-compliant audit trail of all PHI access, login attempts, and system events.
                   </p>
-                  <button
+                  <Button
                     onClick={() => setActiveTab('audit')}
-                    className="text-green-600 hover:text-green-700 text-sm font-medium"
+                    variant="outline"
+                    size="sm"
                   >
                     View Audit Logs →
-                  </button>
+                  </Button>
                 </Card>
-              </div>
+                </div>
+              </Card>
 
+              {/* System Info */}
               <Card className="p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Security Features</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

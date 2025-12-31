@@ -10,8 +10,14 @@ export const LoginPage = () => {
   const { login } = useAuth();
 
   const handleLogin = async (credentials: { email: string; password: string }) => {
-    await login(credentials);
-    navigate('/dashboard');
+    const loggedInUser = await login(credentials);
+    
+    // Redirect based on user role
+    if (loggedInUser?.role === 'admin') {
+      navigate('/admin');
+    } else {
+      navigate('/dashboard');
+    }
   };
 
   return (
