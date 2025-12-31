@@ -18,23 +18,10 @@ export const optimizedSearchService = {
     }
 
     const sanitizedTerm = term.trim();
-    const phoneSearch = sanitizedTerm.replace(/\D/g, '');
-
-    // Use full-text search with ranking
-    const { data, error } = await supabase
-      .rpc('search_patients_fts', {
-        search_term: sanitizedTerm,
-        phone_term: phoneSearch,
-        result_limit: limit
-      });
-
-    if (error) {
-      console.error('Full-text search error:', error.message);
-      // Fallback to regular search if FTS fails
-      return this.fallbackSearch(sanitizedTerm, limit);
-    }
-
-    return (data as Patient[]) || [];
+    
+    // FTS function has issues - use fallback search directly
+    console.log('Using fallback search for:', sanitizedTerm);
+    return this.fallbackSearch(sanitizedTerm, limit);
   },
 
   /**
