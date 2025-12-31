@@ -6,7 +6,7 @@ import { AppHeader } from '@/components/patterns/app-header';
 import { PageContent } from '@/components/patterns/page-content';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { FileText, CheckCircle, Users } from 'lucide-react';
+import { Search, FileText, CheckCircle, Users } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { InlinePatientSearch } from '@/features/lookup/components/InlinePatientSearch';
 
