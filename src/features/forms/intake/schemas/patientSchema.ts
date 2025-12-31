@@ -14,15 +14,15 @@ const minorChildSchema = z.object({
   name: z.string().optional(),
 });
 
-// Emergency contact schema
+// Emergency contact schema - all fields optional but validate format if provided
 const emergencyContactSchema = z.object({
-  name: z.string().min(1, 'Emergency contact name is required'),
-  relationship: z.string().min(1, 'Relationship is required'),
-  address: z.string().min(1, 'Address is required'),
-  city: z.string().min(1, 'City is required'),
-  state: z.string().min(1, 'State is required'),
-  zip: z.string().regex(zipRegex, 'Invalid ZIP code format'),
-  phone: z.string().regex(phoneRegex, 'Invalid phone number').min(10, 'Phone number must be at least 10 digits'),
+  name: z.string().optional().or(z.literal('')),
+  relationship: z.string().optional().or(z.literal('')),
+  address: z.string().optional().or(z.literal('')),
+  city: z.string().optional().or(z.literal('')),
+  state: z.string().optional().or(z.literal('')),
+  zip: z.string().optional().or(z.literal('')).refine((val) => !val || zipRegex.test(val), 'Invalid ZIP code format'),
+  phone: z.string().optional().or(z.literal('')).refine((val) => !val || phoneRegex.test(val), 'Invalid phone number'),
 });
 
 // Base patient information schema
@@ -38,10 +38,10 @@ export const patientInformationSchema = z.object({
   }, 'Date of birth must be a valid date in the past'),
   
   // Contact
-  email: z.string().email('Invalid email format').optional().or(z.literal('')),
-  phone_primary: z.string().regex(phoneRegex, 'Invalid phone number').min(10, 'Phone number must be at least 10 digits'),
-  phone_second: z.string().regex(phoneRegex, 'Invalid phone number').optional().or(z.literal('')),
-  phone_other: z.string().regex(phoneRegex, 'Invalid phone number').optional().or(z.literal('')),
+  email: z.string().optional().or(z.literal('')).refine((val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), 'Invalid email format'),
+  phone_primary: z.string().min(1, 'Primary phone is required').refine((val) => phoneRegex.test(val), 'Invalid phone number format (use: 555-123-4567)'),
+  phone_second: z.string().optional().or(z.literal('')).refine((val) => !val || phoneRegex.test(val), 'Invalid phone number format'),
+  phone_other: z.string().optional().or(z.literal('')).refine((val) => !val || phoneRegex.test(val), 'Invalid phone number format'),
   
   // Address
   address: z.string().min(1, 'Address is required'),
@@ -91,19 +91,19 @@ export const patientInformationSchema = z.object({
   emergency_contact: emergencyContactSchema,
   
   // Referral
-  referral_source: z.string().min(1, 'Referral source is required'),
+  referral_source: z.string().optional().or(z.literal('')),
   referral_other: z.string().optional(),
   
   // Assistance
   assistance_types: z.array(z.string()).default([]),
   assistance_other: z.string().optional(),
   
-  // Certification
-  patient_signature: z.string().min(1, 'Patient signature is required'),
-  patient_printed_name: z.string().min(1, 'Printed name is required'),
-  patient_signature_date: z.string().min(1, 'Signature date is required'),
-  interviewed_by: z.string().min(1, 'Interviewer name is required'),
-  interviewed_date: z.string().min(1, 'Interview date is required'),
+  // Certification - optional for step 1, can be filled later
+  patient_signature: z.string().optional().or(z.literal('')),
+  patient_printed_name: z.string().optional().or(z.literal('')),
+  patient_signature_date: z.string().optional().or(z.literal('')),
+  interviewed_by: z.string().optional().or(z.literal('')),
+  interviewed_date: z.string().optional().or(z.literal('')),
 }).refine((data) => {
   // Conditional validation: guardian required if status is child
   if (data.status === 'child') {

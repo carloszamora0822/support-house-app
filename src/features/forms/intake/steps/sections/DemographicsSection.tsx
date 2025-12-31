@@ -4,6 +4,7 @@ import { SelectField } from '@/components/forms/SelectField';
 import { RadioGroup } from '@/components/forms/RadioGroup';
 import { CheckboxGroup } from '@/components/forms/CheckboxGroup';
 import { ConditionalSection } from '@/components/forms/ConditionalSection';
+import { Select } from '@/components/ui/select';
 import { EDUCATION_LEVELS } from '@/constants/educationLevels';
 import { RELATIONSHIPS } from '@/constants/relationships';
 
@@ -56,23 +57,26 @@ export const DemographicsSection: React.FC<DemographicsSectionProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900">Demographics</h3>
+    <div className="space-y-8">
+      <h3 className="text-xl md:text-2xl font-semibold text-gray-900">Demographics</h3>
 
       {/* Status */}
-      <RadioGroup
-        label="Status"
-        options={STATUS_OPTIONS}
-        value={formData.status}
-        onChange={(value) => onChange('status', value)}
-        required
-        error={errors.status}
-        horizontal
-      />
+      <div className="space-y-3">
+        <RadioGroup
+          label="Status"
+          options={STATUS_OPTIONS}
+          value={formData.status}
+          onChange={(value) => onChange('status', value)}
+          required
+          error={errors.status}
+          horizontal
+          className="text-base md:text-lg"
+        />
+      </div>
 
       {/* Conditional Guardian Fields */}
       <ConditionalSection condition={formData.status === 'child'}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 rounded-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
           <FormField
             label="Guardian Name"
             name="guardian_name"
@@ -80,6 +84,7 @@ export const DemographicsSection: React.FC<DemographicsSectionProps> = ({
             onChange={handleInputChange}
             required
             error={errors.guardian_name}
+            className="text-base md:text-lg p-4"
           />
           <SelectField
             label="Guardian Relationship"
@@ -90,77 +95,76 @@ export const DemographicsSection: React.FC<DemographicsSectionProps> = ({
             placeholder="Select Relationship"
             required
             error={errors.guardian_relationship}
+            className="text-base md:text-lg p-4"
           />
         </div>
       </ConditionalSection>
 
       {/* Ethnicity */}
-      <CheckboxGroup
-        label="Ethnicity"
-        options={ETHNICITY_OPTIONS}
-        value={formData.ethnicity}
-        onChange={(selected) => onChange('ethnicity', selected)}
-        required
-        error={errors.ethnicity}
-      />
+      <div className="space-y-3">
+        <CheckboxGroup
+          label="Ethnicity (Select all that apply)"
+          options={ETHNICITY_OPTIONS}
+          value={formData.ethnicity || []}
+          onChange={(selected) => onChange('ethnicity', selected)}
+          required
+          error={errors.ethnicity}
+          className="text-base md:text-lg"
+        />
+      </div>
 
       {/* Ethnicity Other */}
-      <ConditionalSection condition={formData.ethnicity.includes('other')}>
+      <ConditionalSection condition={(formData.ethnicity || []).includes('other')}>
         <FormField
-          label="Other Ethnicity"
+          label="Other Ethnicity (Please Specify)"
           name="ethnicity_other"
           value={formData.ethnicity_other || ''}
           onChange={handleInputChange}
           error={errors.ethnicity_other}
+          className="text-base md:text-lg p-4"
         />
       </ConditionalSection>
 
       {/* Language */}
-      <CheckboxGroup
-        label="Language"
-        options={LANGUAGE_OPTIONS}
-        value={formData.language}
-        onChange={(selected) => onChange('language', selected)}
-        required
-        error={errors.language}
-      />
+      <div className="space-y-3">
+        <CheckboxGroup
+          label="Language (Select all that apply)"
+          options={LANGUAGE_OPTIONS}
+          value={formData.language || []}
+          onChange={(selected) => onChange('language', selected)}
+          required
+          error={errors.language}
+          className="text-base md:text-lg"
+        />
+      </div>
 
       {/* Language Other */}
-      <ConditionalSection condition={formData.language.includes('other')}>
+      <ConditionalSection condition={(formData.language || []).includes('other')}>
         <FormField
-          label="Other Language"
+          label="Other Language (Please Specify)"
           name="language_other"
           value={formData.language_other || ''}
           onChange={handleInputChange}
           error={errors.language_other}
+          className="text-base md:text-lg p-4"
         />
       </ConditionalSection>
 
       {/* Education */}
-      <div>
-        <label htmlFor="education" className="block text-sm font-medium text-gray-700 mb-1">
-          Education Level
-        </label>
-        <select
-          id="education"
-          name="education"
-          value={formData.education || ''}
-          onChange={handleInputChange}
-          className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.education ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
-          }`}
-          aria-invalid={errors.education ? 'true' : 'false'}
-          aria-describedby={errors.education ? 'education-error' : undefined}
-        >
-          <option value="">Select Education Level</option>
-          {EDUCATION_LEVELS.map((level) => (
-            <option key={level.value} value={level.value}>
-              {level.label}
-            </option>
+      <Select
+        label="Education Level"
+        id="education"
+        name="education"
+        value={formData.education || ''}
+        onChange={onChange}
+        selectSize="lg"
+        placeholder="Select Education Level"
+        options={EDUCATION_LEVELS.map(level => ({ value: level.value, label: level.label }))}
+      />
           ))}
         </select>
         {errors.education && (
-          <p id="education-error" className="mt-1 text-sm text-red-600" role="alert">
+          <p id="education-error" className="mt-2 text-sm md:text-base text-red-600" role="alert">
             {errors.education}
           </p>
         )}

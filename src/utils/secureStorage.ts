@@ -1,27 +1,66 @@
 // Secure storage utility with encryption for sensitive data
-// Addresses Security Issue #4: Sensitive PII in localStorage
+// SECURITY: Uses session-based key derivation to prevent unauthorized decryption
+// Keys are derived from authenticated user session + random salt
+// Data automatically expires after 24 hours
 
-const ENCRYPTION_KEY = 'support-house-encryption-key-v1';
 const EXPIRATION_HOURS = 24;
+const PBKDF2_ITERATIONS = 100000; // OWASP recommended minimum
 
 interface EncryptedData {
   data: string; // encrypted data
   timestamp: number;
   iv: string; // initialization vector
+  salt: string; // random salt used for key derivation
+  userId: string; // user who encrypted this data (for validation)
 }
 
 /**
- * Simple encryption using Web Crypto API
- * Note: This provides basic obfuscation. For production, consider using a proper encryption library.
+ * Get session-based encryption key material
+ * SECURITY: Derives key from user session to prevent unauthorized decryption
  */
-async function encrypt(text: string): Promise<{ encrypted: string; iv: string }> {
+async function getSessionKeyMaterial(): Promise<string> {
+  // Get current session token from Supabase
+  const { supabase } = await import('@/lib/supabase');
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if (!session?.access_token) {
+    throw new Error('No active session - cannot encrypt/decrypt PHI');
+  }
+  
+  // Use session token + user ID as key material
+  // This ensures only the authenticated user can decrypt their session data
+  return `${session.access_token}-${session.user.id}`;
+}
+
+/**
+ * Generate cryptographically secure random salt
+ */
+function generateSalt(): Uint8Array {
+  return crypto.getRandomValues(new Uint8Array(32));
+}
+
+/**
+ * Encryption using Web Crypto API with session-based keys
+ * SECURITY IMPROVEMENTS:
+ * - Key derived from active user session (not hardcoded)
+ * - Random salt per encryption operation
+ * - AES-256-GCM authenticated encryption
+ * - Prevents decryption without valid session
+ */
+async function encrypt(text: string): Promise<{ encrypted: string; iv: string; salt: string }> {
   const encoder = new TextEncoder();
   const data = encoder.encode(text);
   
-  // Generate a key from our encryption key
+  // Get session-based key material
+  const sessionKey = await getSessionKeyMaterial();
+  
+  // Generate random salt for this encryption
+  const salt = generateSalt();
+  
+  // Generate a key from session material
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
-    encoder.encode(ENCRYPTION_KEY),
+    encoder.encode(sessionKey),
     { name: 'PBKDF2' },
     false,
     ['deriveBits', 'deriveKey']
@@ -30,8 +69,8 @@ async function encrypt(text: string): Promise<{ encrypted: string; iv: string }>
   const key = await crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt: encoder.encode('support-house-salt'),
-      iterations: 100000,
+      salt: salt as BufferSource,
+      iterations: PBKDF2_ITERATIONS,
       hash: 'SHA-256',
     },
     keyMaterial,
@@ -57,19 +96,29 @@ async function encrypt(text: string): Promise<{ encrypted: string; iv: string }>
   const ivArray = Array.from(iv);
   const ivBase64 = btoa(String.fromCharCode(...ivArray));
   
-  return { encrypted: encryptedBase64, iv: ivBase64 };
+  const saltArray = Array.from(salt);
+  const saltBase64 = btoa(String.fromCharCode(...saltArray));
+  
+  return { encrypted: encryptedBase64, iv: ivBase64, salt: saltBase64 };
 }
 
 /**
- * Decrypt data using Web Crypto API
+ * Decrypt data using Web Crypto API with session-based keys
+ * SECURITY: Requires active authenticated session to decrypt
  */
-async function decrypt(encryptedBase64: string, ivBase64: string): Promise<string> {
+async function decrypt(encryptedBase64: string, ivBase64: string, saltBase64: string): Promise<string> {
   const encoder = new TextEncoder();
   
-  // Generate the same key
+  // Get session-based key material
+  const sessionKey = await getSessionKeyMaterial();
+  
+  // Convert salt from base64
+  const salt = Uint8Array.from(atob(saltBase64), c => c.charCodeAt(0));
+  
+  // Generate the same key using stored salt
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
-    encoder.encode(ENCRYPTION_KEY),
+    encoder.encode(sessionKey),
     { name: 'PBKDF2' },
     false,
     ['deriveBits', 'deriveKey']
@@ -78,8 +127,8 @@ async function decrypt(encryptedBase64: string, ivBase64: string): Promise<strin
   const key = await crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt: encoder.encode('support-house-salt'),
-      iterations: 100000,
+      salt: salt as BufferSource,
+      iterations: PBKDF2_ITERATIONS,
       hash: 'SHA-256',
     },
     keyMaterial,
@@ -117,13 +166,23 @@ export const secureStorage = {
    */
   async setItem<T>(key: string, value: T): Promise<boolean> {
     try {
+      const { supabase } = await import('@/lib/supabase');
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user?.id) {
+        console.error('Cannot encrypt: No active session');
+        return false;
+      }
+      
       const jsonString = JSON.stringify(value);
-      const { encrypted, iv } = await encrypt(jsonString);
+      const { encrypted, iv, salt } = await encrypt(jsonString);
       
       const encryptedData: EncryptedData = {
         data: encrypted,
         timestamp: Date.now(),
         iv,
+        salt,
+        userId: session.user.id,
       };
       
       localStorage.setItem(key, JSON.stringify(encryptedData));
@@ -140,6 +199,14 @@ export const secureStorage = {
    */
   async getItem<T>(key: string): Promise<T | null> {
     try {
+      const { supabase } = await import('@/lib/supabase');
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session?.user?.id) {
+        console.error('Cannot decrypt: No active session');
+        return null;
+      }
+      
       const stored = localStorage.getItem(key);
       if (!stored) {
         return null;
@@ -147,13 +214,20 @@ export const secureStorage = {
 
       const encryptedData: EncryptedData = JSON.parse(stored);
       
+      // Validate user owns this data
+      if (encryptedData.userId !== session.user.id) {
+        console.error('Cannot decrypt: Data belongs to different user');
+        localStorage.removeItem(key);
+        return null;
+      }
+      
       // Check expiration
       if (isExpired(encryptedData.timestamp)) {
         localStorage.removeItem(key);
         return null;
       }
 
-      const decrypted = await decrypt(encryptedData.data, encryptedData.iv);
+      const decrypted = await decrypt(encryptedData.data, encryptedData.iv, encryptedData.salt);
       return JSON.parse(decrypted) as T;
     } catch (error) {
       console.error('Failed to load encrypted data:', error);

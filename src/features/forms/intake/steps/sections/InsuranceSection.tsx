@@ -30,40 +30,52 @@ export const InsuranceSection: React.FC<InsuranceSectionProps> = ({
   onChange,
   errors,
 }) => {
+  // Ensure boolean values are never undefined
+  const hasInsurance = formData.has_insurance ?? false;
+  const isVeteran = formData.is_veteran ?? false;
+  const insuranceTypes = formData.insurance_type || [];
+
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900">Insurance</h3>
+    <div className="space-y-8">
+      <h3 className="text-xl md:text-2xl font-semibold text-gray-900">Insurance & Veteran Status</h3>
 
-      <RadioGroup
-        label="Do you have insurance?"
-        options={YES_NO_OPTIONS}
-        value={formData.has_insurance ? 'true' : 'false'}
-        onChange={(value) => onChange('has_insurance', value === 'true')}
-        error={errors.has_insurance}
-        horizontal
-      />
+      <div className="space-y-3">
+        <RadioGroup
+          label="Do you have insurance?"
+          options={YES_NO_OPTIONS}
+          value={hasInsurance ? 'true' : 'false'}
+          onChange={(value) => onChange('has_insurance', value === 'true')}
+          error={errors.has_insurance}
+          horizontal
+          className="text-base md:text-lg"
+        />
+      </div>
 
-      <ConditionalSection condition={formData.has_insurance}>
-        <div className="p-4 bg-blue-50 rounded-md">
+      <ConditionalSection condition={hasInsurance}>
+        <div className="p-6 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
           <CheckboxGroup
-            label="Insurance Type"
+            label="Insurance Type (Select all that apply)"
             options={INSURANCE_TYPES}
-            value={formData.insurance_type || []}
+            value={insuranceTypes}
             onChange={(selected) => onChange('insurance_type', selected)}
             error={errors.insurance_type}
+            className="text-base md:text-lg"
           />
         </div>
       </ConditionalSection>
 
-      <div className="border-t pt-6">
-        <RadioGroup
-          label="Are you a veteran?"
-          options={YES_NO_OPTIONS}
-          value={formData.is_veteran ? 'true' : 'false'}
-          onChange={(value) => onChange('is_veteran', value === 'true')}
-          error={errors.is_veteran}
-          horizontal
-        />
+      <div className="border-t-2 border-gray-200 pt-8">
+        <div className="space-y-3">
+          <RadioGroup
+            label="Are you a veteran?"
+            options={YES_NO_OPTIONS}
+            value={isVeteran ? 'true' : 'false'}
+            onChange={(value) => onChange('is_veteran', value === 'true')}
+            error={errors.is_veteran}
+            horizontal
+            className="text-base md:text-lg"
+          />
+        </div>
       </div>
     </div>
   );

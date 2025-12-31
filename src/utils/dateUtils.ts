@@ -11,15 +11,25 @@ export const calculateAge = (dob: string | Date): number => {
   return age;
 };
 
-export const calculateDaysSince = (date: string | Date | null): number | null => {
-  if (!date) return null;
-  
-  const pastDate = typeof date === 'string' ? new Date(date) : date;
+export const calculateDaysSince = (date: string | Date): number => {
+  const targetDate = typeof date === 'string' ? new Date(date) : date;
   const today = new Date();
-  const diffTime = today.getTime() - pastDate.getTime();
-  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
+  const diffTime = Math.abs(today.getTime() - targetDate.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays;
+};
+
+export const formatDuration = (startTime: string | Date, endTime: string | Date): string => {
+  const start = typeof startTime === 'string' ? new Date(startTime) : startTime;
+  const end = typeof endTime === 'string' ? new Date(endTime) : endTime;
+  const diffMs = end.getTime() - start.getTime();
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+  return `${minutes}m`;
 };
 
 export const formatDate = (date: string | Date | null): string => {

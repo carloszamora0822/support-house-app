@@ -116,6 +116,11 @@ export interface Patient {
   visit_count: number;
   
   patient_status: 'active' | 'inactive' | 'deceased';
+  
+  // Medical release tracking
+  has_received_medical_release: boolean | null;
+  medical_release_sent_date: string | null;
+  medical_release_received_date: string | null;
 }
 
 export interface Visit {

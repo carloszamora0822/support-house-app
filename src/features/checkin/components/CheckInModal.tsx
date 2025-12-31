@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Modal } from '@/components/common/Modal';
 import { Button } from '@/components/common/Button';
-import { AssistanceSelector } from './AssistanceSelector';
+import { AssistanceTrackingSection } from '@/features/assistance/AssistanceTrackingSection';
 import { useCheckIn } from '../hooks/useCheckIn';
 import { calculateDaysSince } from '@/utils/dateUtils';
+import { assistanceItemService, type AssistanceItemInput } from '@/services/assistanceItemService';
 import toast from 'react-hot-toast';
 
 interface CheckInModalProps {
@@ -23,8 +24,7 @@ export const CheckInModal = ({
   lastVisitDate,
   onSuccess,
 }: CheckInModalProps) => {
-  const [selectedAssistance, setSelectedAssistance] = useState<string[]>([]);
-  const [otherText, setOtherText] = useState('');
+  const [assistanceItems, setAssistanceItems] = useState<AssistanceItemInput[]>([]);
   const [notes, setNotes] = useState('');
 
   const { checkIn, isLoading, error } = useCheckIn({
@@ -38,25 +38,34 @@ export const CheckInModal = ({
   });
 
   const handleClose = () => {
-    setSelectedAssistance([]);
-    setOtherText('');
+    setAssistanceItems([]);
     setNotes('');
     onClose();
   };
 
   const handleSubmit = async () => {
-    if (selectedAssistance.length === 0) {
-      toast.error('Please select at least one assistance type');
+    if (assistanceItems.length === 0) {
+      toast.error('Please add at least one assistance item');
       return;
     }
 
     try {
-      await checkIn({
+      // Create visit with check-in
+      const visit = await checkIn({
         patient_id: patientId,
-        assistance_requested: selectedAssistance,
+        assistance_requested: assistanceItems.map(item => item.assistance_type),
         visit_notes: notes || undefined,
       });
-    } catch (err) {
+
+      // If visit created successfully, save detailed assistance items
+      if (visit?.id) {
+        await assistanceItemService.createAssistanceItems(
+          visit.id,
+          patientId,
+          assistanceItems
+        );
+      }
+    } catch {
       toast.error(error || 'Failed to check in patient');
     }
   };
@@ -81,7 +90,7 @@ export const CheckInModal = ({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={isLoading || selectedAssistance.length === 0}
+            disabled={isLoading || assistanceItems.length === 0}
           >
             {isLoading ? 'Checking In...' : 'Confirm Check-In'}
           </Button>
@@ -99,25 +108,16 @@ export const CheckInModal = ({
           )}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Assistance Requested *
-          </label>
-          <AssistanceSelector
-            selected={selectedAssistance}
-            onChange={(selected, other) => {
-              setSelectedAssistance(selected);
-              if (other !== undefined) {
-                setOtherText(other);
-              }
-            }}
-            otherText={otherText}
-          />
-        </div>
+        <AssistanceTrackingSection
+          items={assistanceItems}
+          onChange={setAssistanceItems}
+          title="Assistance Provided Today"
+          description="Track items and services provided during this visit"
+        />
 
         <div>
           <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
-            Notes (Optional)
+            Visit Notes (Optional)
           </label>
           <textarea
             id="notes"

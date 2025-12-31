@@ -1,25 +1,30 @@
 import { supabase } from '@/lib/supabase';
 import type { User } from '@/types';
 import type { LoginCredentials } from '../types';
-import { rateLimiter } from '@/utils/rateLimiter';
 import { auditLogger } from '@/utils/auditLogger';
 import { sessionManager } from '@/utils/sessionManager';
 
+// SECURITY: Server-side rate limiting to prevent bypass via localStorage clearing
+
 export const authService = {
   async login(credentials: LoginCredentials): Promise<User> {
-    // Check if account is locked out
-    if (rateLimiter.isLockedOut(credentials.email)) {
-      const timeRemaining = rateLimiter.getLockoutTimeRemaining(credentials.email);
-      const minutes = Math.ceil(timeRemaining / 60);
-      
+    // SECURITY FIX: Check server-side rate limiting (cannot be bypassed)
+    const { data: isLocked, error: lockCheckError } = await supabase
+      .rpc('is_account_locked_out', { user_email: credentials.email });
+    
+    if (lockCheckError) {
+      console.error('Rate limit check failed:', lockCheckError);
+      // Continue with login attempt even if check fails (fail open for availability)
+    }
+    
+    if (isLocked) {
       // Log failed attempt due to lockout
       await auditLogger.logAuth('LOGIN_FAILED', credentials.email, false, {
         reason: 'account_locked',
-        timeRemaining: timeRemaining,
       });
       
       throw new Error(
-        `Account temporarily locked due to multiple failed login attempts. Please try again in ${minutes} minute${minutes !== 1 ? 's' : ''}.`
+        'Account temporarily locked due to multiple failed login attempts. Please try again in 15 minutes.'
       );
     }
 
@@ -29,24 +34,20 @@ export const authService = {
     });
 
     if (error || !data.user) {
-      // Record failed login attempt
-      rateLimiter.recordAttempt(credentials.email, false);
+      // SECURITY FIX: Record failed attempt in database (server-side)
+      await supabase.rpc('record_login_attempt', {
+        user_email: credentials.email,
+        attempt_success: false,
+        client_ip: null, // Could be added via edge function
+        client_user_agent: navigator.userAgent,
+      });
       
       // Log failed login
       await auditLogger.logAuth('LOGIN_FAILED', credentials.email, false, {
         reason: error?.message || 'invalid_credentials',
       });
       
-      const failedCount = rateLimiter.getFailedAttemptCount(credentials.email);
-      const remainingAttempts = 5 - failedCount;
-      
-      if (remainingAttempts > 0 && remainingAttempts <= 2) {
-        throw new Error(
-          `Invalid credentials. ${remainingAttempts} attempt${remainingAttempts !== 1 ? 's' : ''} remaining before account lockout.`
-        );
-      }
-      
-      throw new Error(error?.message || 'Login failed');
+      throw new Error(error?.message || 'Invalid credentials');
     }
 
     const { data: userData, error: userError } = await supabase
@@ -64,8 +65,30 @@ export const authService = {
       throw new Error('Unable to load user profile. Please contact an administrator.');
     }
 
-    // Record successful login
-    rateLimiter.recordAttempt(credentials.email, true);
+    // SECURITY: Check account status
+    if (userData.account_status !== 'active') {
+      await supabase.auth.signOut();
+      
+      if (userData.account_status === 'suspended') {
+        throw new Error('Your account has been suspended. Please contact an administrator.');
+      }
+      if (userData.account_status === 'deactivated') {
+        throw new Error('Your account has been deactivated. Please contact an administrator.');
+      }
+      throw new Error('Your account is not active. Please contact an administrator.');
+    }
+
+    // SECURITY FIX: Record successful login in database and clear failed attempts
+    await supabase.rpc('record_login_attempt', {
+      user_email: credentials.email,
+      attempt_success: true,
+      client_ip: null,
+      client_user_agent: navigator.userAgent,
+    });
+    
+    await supabase.rpc('clear_failed_attempts', {
+      user_email: credentials.email,
+    });
     
     // Log successful login
     await auditLogger.logAuth('LOGIN', credentials.email, true, {

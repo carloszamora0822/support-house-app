@@ -3,11 +3,11 @@
 
 export const PDF_CONSTANTS = {
   // Header
-  ORGANIZATION_NAME: 'Support House',
-  FORM_TITLE: 'Authorization to Disclose Protected Health Information',
+  ORGANIZATION_NAME: 'Reynolds Cancer Support House',
+  FORM_TITLE: 'Authorization to Disclose Medical Information',
   
   // Disclosure Text
-  DISCLOSURE_PURPOSE: 'I authorize Support House to obtain and disclose my protected health information for the purpose of coordinating cancer treatment support services.',
+  DISCLOSURE_PURPOSE: 'I authorize the release of relevant medical information to Reynolds Cancer Support House so they can coordinate services and resources to assist me during my cancer treatment.',
   
   DISCLOSURE_SCOPE: 'This authorization permits Support House to:',
   DISCLOSURE_ITEMS: [
@@ -38,32 +38,54 @@ export const PDF_CONSTANTS = {
   RECEIVED_DATE_LABEL: 'Date Received',
   
   // Footer
-  FOOTER_TEXT: 'Support House is a 501(c)(3) nonprofit organization providing support services to cancer patients in Northwest Arkansas.',
-  CONTACT_INFO: 'For questions, contact Support House at (479) 555-0100 or info@supporthouse.org',
+  FOOTER_TEXT: 'Reynolds Cancer Support House is a 501(c)(3) nonprofit organization providing support services to cancer patients in Northwest Arkansas.',
+  CONTACT_INFO: 'Questions: (479) 555-0100 | info@supporthouse.org',
+  FAX_NUMBER: '479.785.9065',
+  RETURN_EMAIL: 'carla@reynoldscancersupporthouse.org',
+  FAX_RETURN_TEXT: 'PLEASE RETURN FAX TO:',
+  THANK_YOU_TEXT: 'Thank you for your assistance!',
   
   // Medical Information Labels
-  DIAGNOSIS_LABEL: 'Primary Diagnosis',
-  STAGE_LABEL: 'Cancer Stage',
+  DIAGNOSIS_LABEL: "Patient's Diagnosis",
+  STAGE_LABEL: 'Stage',
   TREATMENT_PLAN_LABEL: 'Treatment Plan',
   EXPECTED_TREATMENTS_LABEL: 'Expected Number of Treatments',
   TREATMENT_START_LABEL: 'Treatment Start Date',
-  TREATMENT_END_LABEL: 'Expected Treatment End Date',
+  TREATMENT_END_LABEL: 'Treatment End Date',
+  MEDICAL_STAFF_ONLY: '**** TO BE COMPLETED BY MEDICAL OFFICE STAFF ONLY ****',
   
   // Chemotherapy Labels
-  CHEMO_TITLE: 'Chemotherapy Details',
+  CHEMO_TITLE: 'Chemo Treatment:',
   CHEMO_TYPE_LABEL: 'Type',
-  CHEMO_FREQUENCY_LABEL: 'Frequency',
+  CHEMO_FREQUENCY_LABEL: 'Frequency:',
   
   // Radiation Labels
-  RADIATION_TITLE: 'Radiation Therapy Details',
-  RADIATION_FREQUENCY_LABEL: 'Frequency',
+  RADIATION_TITLE: 'Radiation Treatment:',
+  RADIATION_FREQUENCY_LABEL: 'Frequency:',
   
   // Status Labels
-  STATUS_TITLE: 'Treatment Status',
-  STATUS_NOT_IN_TREATMENT: 'Not currently in treatment',
-  STATUS_PENDING: 'Treatment pending',
-  STATUS_TERMINAL: 'Terminal diagnosis',
-  STATUS_ENDED: 'Treatment ended',
+  STATUS_TITLE: 'Status:',
+  STATUS_NOT_IN_TREATMENT: 'Not In Treatment',
+  STATUS_PENDING: 'Treatment Pending',
+  STATUS_TERMINAL: 'Terminal Prognosis',
+  STATUS_ENDED: 'Treatment Ended',
+  
+  // Patient Consent
+  PATIENT_CONSENT_TITLE: 'PATIENT CONSENT',
+  CONSENT_BULLETS: [
+    'I may revoke this authorization at any time by written request.',
+    'My treatment will not be conditioned on signing this authorization.',
+    'Information disclosed may be re-disclosed and no longer protected.',
+    'This authorization expires one year from date signed or completion of services.',
+  ],
+  
+  // Signature Labels
+  PATIENT_SIG_LABEL: 'Patient or Representative Signature:',
+  PRINTED_NAME_LABEL: 'Printed Name:',
+  RELATIONSHIP_LABEL: 'Relationship:',
+  STAFF_SIG_LABEL: 'Medical Office Staff Signature:',
+  DIGITAL_SIG_METHOD: 'Signed electronically by',
+  SIG_METHOD_DRAWN: 'Method: Drawn',
 } as const;
 
 export type PDFConstantsKey = keyof typeof PDF_CONSTANTS;

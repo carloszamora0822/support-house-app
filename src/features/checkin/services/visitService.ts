@@ -29,10 +29,20 @@ export const visitService = {
       throw new Error('Patient has already checked in today');
     }
 
+    // Check if this is the patient's first visit
+    const { data: existingVisits } = await supabase
+      .from('visits')
+      .select('id')
+      .eq('patient_id', input.patient_id)
+      .limit(1)
+      .maybeSingle();
+    
+    const isFirstVisit = !existingVisits;
+    
     // Create visit record
     const visitData = {
       patient_id: input.patient_id,
-      visit_type: 'returning' as const,
+      visit_type: isFirstVisit ? ('intake' as const) : ('returning' as const),
       check_in_timestamp: new Date().toISOString(),
       staff_user_id: staffUser.id,
       staff_name: staffUser.full_name,
@@ -51,6 +61,46 @@ export const visitService = {
     }
 
     return visit as Visit;
+  },
+
+  // Check out a patient
+  async checkOutPatient(visitId: string, notes?: string): Promise<Visit> {
+    const checkOutTime = new Date().toISOString();
+    
+    const { data, error } = await supabase
+      .from('visits')
+      .update({
+        check_out_timestamp: checkOutTime,
+        visit_notes: notes || null,
+      })
+      .eq('id', visitId)
+      .select()
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message || 'Failed to check out patient');
+    }
+
+    return data as Visit;
+  },
+
+  // Get active visit for a patient (not checked out)
+  async getActiveVisit(patientId: string): Promise<Visit | null> {
+    const { data, error } = await supabase
+      .from('visits')
+      .select('*')
+      .eq('patient_id', patientId)
+      .is('check_out_timestamp', null)
+      .order('check_in_timestamp', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching active visit:', error.message);
+      return null;
+    }
+
+    return data as Visit | null;
   },
 
   // Check if patient has already checked in today

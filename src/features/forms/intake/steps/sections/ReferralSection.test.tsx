@@ -34,7 +34,7 @@ describe('ReferralSection', () => {
       />
     );
 
-    expect(screen.getByLabelText(/referral source/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/how did you hear about us/i)).toBeInTheDocument();
   });
 
   it('renders assistance types checkboxes', () => {
@@ -46,7 +46,7 @@ describe('ReferralSection', () => {
       />
     );
 
-    expect(screen.getByText(/assistance types/i)).toBeInTheDocument();
+    expect(screen.getByText(/what assistance are you seeking/i)).toBeInTheDocument();
   });
 
   it('shows other field when referral_source is other', () => {

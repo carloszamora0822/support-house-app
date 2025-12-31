@@ -26,10 +26,10 @@ export const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = (
   };
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900">Emergency Contact</h3>
+    <div className="space-y-8">
+      <h3 className="text-xl md:text-2xl font-semibold text-gray-900">Emergency Contact</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           label="Name"
           name="emergency_contact.name"
@@ -37,6 +37,7 @@ export const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = (
           onChange={(e) => handleFieldChange('name', e.target.value)}
           required
           error={errors['emergency_contact.name']}
+          className="text-base md:text-lg p-4"
         />
         <SelectField
           label="Relationship"
@@ -47,6 +48,7 @@ export const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = (
           placeholder="Select Relationship"
           required
           error={errors['emergency_contact.relationship']}
+          className="text-base md:text-lg p-4"
         />
       </div>
 
@@ -57,9 +59,10 @@ export const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = (
         onChange={(e) => handleFieldChange('address', e.target.value)}
         required
         error={errors['emergency_contact.address']}
+        className="text-base md:text-lg p-4"
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <FormField
           label="City"
           name="emergency_contact.city"
@@ -67,6 +70,7 @@ export const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = (
           onChange={(e) => handleFieldChange('city', e.target.value)}
           required
           error={errors['emergency_contact.city']}
+          className="text-base md:text-lg p-4"
         />
         <SelectField
           label="State"
@@ -77,6 +81,7 @@ export const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = (
           placeholder="Select State"
           required
           error={errors['emergency_contact.state']}
+          className="text-base md:text-lg p-4"
         />
         <FormField
           label="ZIP"
@@ -85,6 +90,7 @@ export const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = (
           onChange={(e) => handleFieldChange('zip', e.target.value)}
           required
           error={errors['emergency_contact.zip']}
+          className="text-base md:text-lg p-4"
         />
         <FormField
           label="Phone"
@@ -94,6 +100,8 @@ export const EmergencyContactSection: React.FC<EmergencyContactSectionProps> = (
           onChange={(e) => handleFieldChange('phone', e.target.value)}
           required
           error={errors['emergency_contact.phone']}
+          placeholder="555-123-4567"
+          className="text-base md:text-lg p-4"
         />
       </div>
     </div>

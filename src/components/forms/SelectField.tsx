@@ -1,4 +1,5 @@
 import React from 'react';
+import { Select } from '@/components/ui/select';
 
 interface SelectOption {
   value: string;
@@ -19,6 +20,10 @@ interface SelectFieldProps {
   className?: string;
 }
 
+/**
+ * SelectField - Wrapper around the design system Select component
+ * Provides backward compatibility for existing form code while using the new design system
+ */
 export const SelectField: React.FC<SelectFieldProps> = ({
   label,
   name,
@@ -32,50 +37,22 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   helperText,
   className = '',
 }) => {
-  const selectClasses = `
-    w-full px-3 py-2 border rounded-md
-    focus:outline-none focus:ring-2 focus:ring-blue-500
-    disabled:bg-gray-100 disabled:cursor-not-allowed
-    ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}
-  `.trim().replace(/\s+/g, ' ');
-
   return (
     <div className={className}>
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
-      </label>
-      
-      <select
+      <Select
+        label={label}
         id={name}
         name={name}
         value={value}
         onChange={onChange}
+        options={options.map(opt => ({ value: opt.value, label: opt.label }))}
+        placeholder={placeholder}
         required={required}
         disabled={disabled}
-        className={selectClasses}
-        aria-invalid={error ? 'true' : 'false'}
-        aria-describedby={error ? `${name}-error` : helperText ? `${name}-helper` : undefined}
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      
-      {error && (
-        <p id={`${name}-error`} className="mt-1 text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      )}
-      
-      {!error && helperText && (
-        <p id={`${name}-helper`} className="mt-1 text-sm text-gray-500">
-          {helperText}
-        </p>
-      )}
+        error={!!error}
+        hint={error || helperText}
+        selectSize="lg"
+      />
     </div>
   );
 };

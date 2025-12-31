@@ -1,9 +1,13 @@
 import React from 'react';
+import { AssistanceTrackingSection } from '@/features/assistance/AssistanceTrackingSection';
+import type { AssistanceItemInput } from '@/services/assistanceItemService';
 
 interface Step4Props {
   patientData: any;
   medicalData: any;
   disclosureData: any;
+  assistanceItems: AssistanceItemInput[];
+  onAssistanceChange: (items: AssistanceItemInput[]) => void;
   onSubmit: () => void;
   onEdit: (step: number) => void;
   isSubmitting: boolean;
@@ -13,6 +17,8 @@ export const Step4_ReviewSubmit: React.FC<Step4Props> = ({
   patientData,
   medicalData,
   disclosureData,
+  assistanceItems,
+  onAssistanceChange,
   onSubmit,
   onEdit,
   isSubmitting,
@@ -84,17 +90,23 @@ export const Step4_ReviewSubmit: React.FC<Step4Props> = ({
             Edit Disclosure Info
           </button>
         </div>
+
+        {/* Assistance Tracking */}
+        <div>
+          <AssistanceTrackingSection
+            items={assistanceItems}
+            onChange={onAssistanceChange}
+            title="Initial Assistance Provided"
+            description="Track items and services provided during intake"
+          />
+        </div>
       </div>
 
-      {/* Submit Button */}
-      <div className="flex justify-end pt-6 border-t">
-        <button
-          onClick={onSubmit}
-          disabled={isSubmitting}
-          className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
-        >
-          {isSubmitting ? 'Submitting...' : 'Submit Intake Form'}
-        </button>
+      {/* Note: Submit button is in the navigation bar below */}
+      <div className="pt-6 border-t">
+        <p className="text-sm text-gray-600 text-center">
+          Click the "Submit Intake Form" button below to complete the intake process.
+        </p>
       </div>
     </div>
   );

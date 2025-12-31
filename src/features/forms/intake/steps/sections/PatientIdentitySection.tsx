@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormField } from '@/components/forms/FormField';
+import { Select } from '@/components/ui/select';
 import { STATES } from '@/constants/states';
 
 interface PatientIdentitySectionProps {
@@ -9,6 +10,10 @@ interface PatientIdentitySectionProps {
     last_name: string;
     goes_by?: string;
     dob: string;
+    email?: string;
+    phone_primary?: string;
+    phone_second?: string;
+    phone_other?: string;
     address: string;
     city: string;
     county: string;
@@ -29,11 +34,11 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900">Patient Identity</h3>
+    <div className="space-y-8">
+      <h3 className="text-xl md:text-2xl font-semibold text-gray-900">Patient Identity</h3>
 
       {/* Name Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <FormField
           label="First Name"
           name="first_name"
@@ -41,6 +46,7 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           required
           error={errors.first_name}
+          className="text-base md:text-lg p-4"
         />
         <FormField
           label="Middle Name"
@@ -48,6 +54,7 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           value={formData.middle_name || ''}
           onChange={handleChange}
           error={errors.middle_name}
+          className="text-base md:text-lg p-4"
         />
         <FormField
           label="Last Name"
@@ -56,11 +63,12 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           required
           error={errors.last_name}
+          className="text-base md:text-lg p-4"
         />
       </div>
 
       {/* Goes By & DOB */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           label="Goes By"
           name="goes_by"
@@ -68,6 +76,7 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           error={errors.goes_by}
           helperText="Preferred name or nickname"
+          className="text-base md:text-lg p-4"
         />
         <FormField
           label="Date of Birth"
@@ -77,11 +86,53 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           required
           error={errors.dob}
+          className="text-base md:text-lg p-4"
+        />
+      </div>
+
+      {/* Contact Information */}
+      <div className="space-y-4">
+        <h4 className="text-md font-medium text-gray-800">Contact Information</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormField
+            label="Primary Phone"
+            name="phone_primary"
+            type="tel"
+            value={formData.phone_primary || ''}
+            onChange={handleChange}
+            required
+            error={errors.phone_primary}
+            helperText="555-123-4567"
+          />
+          <FormField
+            label="Secondary Phone"
+            name="phone_second"
+            type="tel"
+            value={formData.phone_second || ''}
+            onChange={handleChange}
+            error={errors.phone_second}
+          />
+          <FormField
+            label="Other Phone"
+            name="phone_other"
+            type="tel"
+            value={formData.phone_other || ''}
+            onChange={handleChange}
+            error={errors.phone_other}
+          />
+        </div>
+        <FormField
+          label="Email"
+          name="email"
+          type="email"
+          value={formData.email || ''}
+          onChange={handleChange}
+          error={errors.email}
         />
       </div>
 
       {/* Address */}
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-6">
         <FormField
           label="Address"
           name="address"
@@ -89,11 +140,12 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           required
           error={errors.address}
+          className="text-base md:text-lg p-4"
         />
       </div>
 
       {/* City, County, State, ZIP */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <FormField
           label="City"
           name="city"
@@ -101,6 +153,7 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           required
           error={errors.city}
+          className="text-base md:text-lg p-4"
         />
         <FormField
           label="County"
@@ -109,32 +162,24 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           required
           error={errors.county}
+          className="text-base md:text-lg p-4"
         />
-        <div>
-          <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
-            State <span className="text-red-500 ml-1">*</span>
-          </label>
-          <select
-            id="state"
-            name="state"
-            value={formData.state}
-            onChange={handleChange}
-            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              errors.state ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'
-            }`}
-            required
-            aria-invalid={errors.state ? 'true' : 'false'}
-            aria-describedby={errors.state ? 'state-error' : undefined}
-          >
-            <option value="">Select State</option>
-            {STATES.map((state) => (
-              <option key={state.value} value={state.value}>
-                {state.label}
-              </option>
-            ))}
+        <Select
+          label="State"
+          id="state"
+          name="state"
+          value={formData.state}
+          onChange={onChange}
+          required
+          selectSize="lg"
+          placeholder="Select State"
+          error={!!errors.state}
+          hint={errors.state}
+          options={STATES.map((state) => ({ value: state.value, label: state.label }))}
+        />
           </select>
           {errors.state && (
-            <p id="state-error" className="mt-1 text-sm text-red-600" role="alert">
+            <p id="state-error" className="mt-2 text-sm md:text-base text-red-600" role="alert">
               {errors.state}
             </p>
           )}
@@ -146,6 +191,7 @@ export const PatientIdentitySection: React.FC<PatientIdentitySectionProps> = ({
           onChange={handleChange}
           required
           error={errors.zip}
+          className="text-base md:text-lg p-4"
         />
       </div>
     </div>

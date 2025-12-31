@@ -61,9 +61,40 @@ export const patientService = {
       throw new Error('Unable to load visit history. Please try again.');
     }
 
+    // Fetch physicians
+    const { data: physicians } = await supabase
+      .from('patient_physicians')
+      .select('*')
+      .eq('patient_id', patientId);
+
+    // Fetch surgeries
+    const { data: surgeries } = await supabase
+      .from('surgeries')
+      .select('*')
+      .eq('patient_id', patientId)
+      .order('date', { ascending: false });
+
+    // Fetch chemo cycles
+    const { data: chemoCycles } = await supabase
+      .from('chemo_cycles')
+      .select('*')
+      .eq('patient_id', patientId)
+      .order('start_date', { ascending: false });
+
+    // Fetch radiation treatments
+    const { data: radiationTreatments } = await supabase
+      .from('radiation_treatments')
+      .select('*')
+      .eq('patient_id', patientId)
+      .order('start_date', { ascending: false });
+
     return {
       ...patient,
       visits: (visits as Visit[]) || [],
+      physicians: physicians || [],
+      surgeries: surgeries || [],
+      chemo_cycles: chemoCycles || [],
+      radiation_treatments: radiationTreatments || [],
     };
   },
 };

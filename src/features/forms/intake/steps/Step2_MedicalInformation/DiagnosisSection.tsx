@@ -21,8 +21,8 @@ export const DiagnosisSection: React.FC<DiagnosisSectionProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900">Diagnosis Information</h3>
+    <div className="space-y-8">
+      <h3 className="text-xl md:text-2xl font-semibold text-gray-900">Diagnosis Information</h3>
 
       <FormField
         label="Primary Diagnosis"
@@ -31,10 +31,11 @@ export const DiagnosisSection: React.FC<DiagnosisSectionProps> = ({
         onChange={handleInputChange}
         required
         error={errors.diagnosis_primary}
-        helperText="Enter the primary cancer diagnosis"
+        helperText="Enter the primary cancer diagnosis (e.g., Breast Cancer, Lung Cancer)"
+        className="text-base md:text-lg p-4"
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           label="Diagnosis Date"
           name="diagnosis_date"
@@ -43,14 +44,16 @@ export const DiagnosisSection: React.FC<DiagnosisSectionProps> = ({
           onChange={handleInputChange}
           required
           error={errors.diagnosis_date}
+          className="text-base md:text-lg p-4"
         />
         <FormField
-          label="Metastasis To"
+          label="Metastasis To (Optional)"
           name="mets_to"
           value={formData.mets_to || ''}
           onChange={handleInputChange}
           error={errors.mets_to}
           helperText="If applicable, where has it spread?"
+          className="text-base md:text-lg p-4"
         />
       </div>
     </div>

@@ -83,6 +83,18 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
       <Button type="submit" className="w-full" loading={isLoading}>
         {isLoading ? 'Signing in...' : 'Sign in'}
       </Button>
+
+      <div className="text-center mt-4">
+        <p className="text-sm text-gray-600">
+          Don't have an account?{' '}
+          <a href="/register" className="text-purple-600 hover:text-purple-700 font-medium">
+            Request Access
+          </a>
+        </p>
+        <p className="text-xs text-gray-500 mt-2">
+          New users require admin approval
+        </p>
+      </div>
     </form>
   );
 };

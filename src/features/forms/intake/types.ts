@@ -6,6 +6,37 @@ export interface MinorChild {
   name?: string;
 }
 
+export interface Surgery {
+  date: string;
+  notes?: string;
+}
+
+export interface ChemoCycle {
+  start_date: string;
+  end_date: string;
+  notes?: string;
+}
+
+export interface RadiationTreatment {
+  start_date: string;
+  end_date: string;
+  notes?: string;
+}
+
+export interface SelectedPhysician {
+  name: string;
+  location: string;
+  phone: string;
+  fax: string;
+}
+
+export interface CustomPhysician {
+  name: string;
+  location: string;
+  phone?: string;
+  fax?: string;
+}
+
 export interface EmergencyContact {
   name: string;
   relationship: string;

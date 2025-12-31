@@ -80,8 +80,8 @@ function generateId(): string {
  */
 async function getClientIP(): Promise<string | undefined> {
   // In production, this would come from server-side
-  // For now, we'll just note it's client-side
-  return 'client-side';
+  // For now, return undefined (null in database) since we can't get real IP client-side
+  return undefined;
 }
 
 /**

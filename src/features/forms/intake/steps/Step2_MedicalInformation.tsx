@@ -1,14 +1,13 @@
 import React from 'react';
 import { DiagnosisSection } from './Step2_MedicalInformation/DiagnosisSection';
-import { OncologistSection } from './Step2_MedicalInformation/OncologistSection';
-import { RadiationOncologistSection } from './Step2_MedicalInformation/RadiationOncologistSection';
-import { ProviderDetailsSection } from './Step2_MedicalInformation/ProviderDetailsSection';
-import { TreatmentHistorySection } from './Step2_MedicalInformation/TreatmentHistorySection';
-import type { MedicalInformationInput } from './schemas/medicalSchema';
+import { PhysiciansSection } from './Step2_MedicalInformation/PhysiciansSection';
+import { TreatmentHistorySection } from './Step2_MedicalInformation/TreatmentHistorySectionNew';
+import type { MedicalInformationInput } from '../schemas/medicalSchema';
+import type { Surgery, ChemoCycle, RadiationTreatment, SelectedPhysician, CustomPhysician } from '../types';
 
 interface Step2Props {
   formData: MedicalInformationInput;
-  onChange: (field: string, value: string | string[]) => void;
+  onChange: (field: string, value: string | string[] | Surgery[] | ChemoCycle[] | RadiationTreatment[] | SelectedPhysician[] | CustomPhysician[]) => void;
   errors: Record<string, string>;
 }
 
@@ -32,23 +31,7 @@ export const Step2_MedicalInformation: React.FC<Step2Props> = ({
         />
 
         <div className="pt-8">
-          <OncologistSection
-            formData={formData}
-            onChange={onChange}
-            errors={errors}
-          />
-        </div>
-
-        <div className="pt-8">
-          <RadiationOncologistSection
-            formData={formData}
-            onChange={onChange}
-            errors={errors}
-          />
-        </div>
-
-        <div className="pt-8">
-          <ProviderDetailsSection
+          <PhysiciansSection
             formData={formData}
             onChange={onChange}
             errors={errors}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDebounce } from 'use-debounce';
-import { searchService } from '../services/searchService';
+import { optimizedSearchService as searchService } from '../services/optimizedSearchService';
 import type { Patient } from '@/types';
 
 export const usePatientSearch = (initialTerm: string = '') => {

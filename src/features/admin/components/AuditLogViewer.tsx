@@ -1,8 +1,10 @@
 // Admin dashboard component for viewing audit logs
 // HIPAA Compliance: Provides visibility into all PHI access
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, memo } from 'react';
 import { supabase } from '@/lib/supabase';
+import { Select } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import type { AuditEventType } from '@/utils/auditLogger';
 
 interface AuditLog {
@@ -26,19 +28,14 @@ interface AuditStats {
   failed_logins: number;
 }
 
-export function AuditLogViewer() {
+export const AuditLogViewer = memo(() => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [stats, setStats] = useState<AuditStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<AuditEventType | 'ALL'>('ALL');
   const [timeRange, setTimeRange] = useState<number>(24); // hours
 
-  useEffect(() => {
-    loadLogs();
-    loadStats();
-  }, [filter, timeRange]);
-
-  const loadLogs = async () => {
+  const loadLogs = useCallback(async () => {
     setLoading(true);
     try {
       let query = supabase
@@ -61,9 +58,9 @@ export function AuditLogViewer() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, timeRange]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const { data, error } = await supabase.rpc('get_audit_statistics', {
         hours_back: timeRange,
@@ -76,7 +73,12 @@ export function AuditLogViewer() {
     } catch (error) {
       console.error('Failed to load audit statistics:', error);
     }
-  };
+  }, [timeRange]);
+
+  useEffect(() => {
+    loadLogs();
+    loadStats();
+  }, [loadLogs, loadStats]);
 
   const getEventColor = (eventType: AuditEventType, success: boolean) => {
     if (!success) return 'text-red-600 bg-red-50';
@@ -138,51 +140,48 @@ export function AuditLogViewer() {
       )}
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg border border-gray-200">
-        <div className="flex gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Event Type
-            </label>
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value as AuditEventType | 'ALL')}
-              className="border border-gray-300 rounded-md px-3 py-2"
-            >
-              <option value="ALL">All Events</option>
-              <option value="LOGIN">Logins</option>
-              <option value="LOGIN_FAILED">Failed Logins</option>
-              <option value="PATIENT_VIEWED">Patient Views</option>
-              <option value="PATIENT_CREATED">Patient Created</option>
-              <option value="PATIENT_UPDATED">Patient Updated</option>
-              <option value="PATIENT_DELETED">Patient Deleted</option>
-              <option value="UNAUTHORIZED_ACCESS">Unauthorized Access</option>
-            </select>
-          </div>
+      <div className="bg-gradient-to-br from-white to-purple-50 p-5 rounded-xl border border-purple-100 shadow-sm">
+        <div className="flex flex-wrap gap-4">
+          <Select
+            label="Event Type"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value as AuditEventType | 'ALL')}
+            selectSize="md"
+            variant="default"
+            options={[
+              { value: 'ALL', label: 'All Events' },
+              { value: 'LOGIN', label: 'Logins' },
+              { value: 'LOGIN_FAILED', label: 'Failed Logins' },
+              { value: 'PATIENT_VIEWED', label: 'Patient Views' },
+              { value: 'PATIENT_CREATED', label: 'Patient Created' },
+              { value: 'PATIENT_UPDATED', label: 'Patient Updated' },
+              { value: 'PATIENT_DELETED', label: 'Patient Deleted' },
+              { value: 'UNAUTHORIZED_ACCESS', label: 'Unauthorized Access' },
+            ]}
+          />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Time Range
-            </label>
-            <select
-              value={timeRange}
-              onChange={(e) => setTimeRange(Number(e.target.value))}
-              className="border border-gray-300 rounded-md px-3 py-2"
-            >
-              <option value={1}>Last Hour</option>
-              <option value={24}>Last 24 Hours</option>
-              <option value={168}>Last Week</option>
-              <option value={720}>Last 30 Days</option>
-            </select>
-          </div>
+          <Select
+            label="Time Range"
+            value={timeRange.toString()}
+            onChange={(e) => setTimeRange(Number(e.target.value))}
+            selectSize="md"
+            variant="default"
+            options={[
+              { value: '1', label: 'Last Hour' },
+              { value: '24', label: 'Last 24 Hours' },
+              { value: '168', label: 'Last Week' },
+              { value: '720', label: 'Last 30 Days' },
+            ]}
+          />
 
           <div className="flex items-end">
-            <button
+            <Button
               onClick={loadLogs}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              variant="primary"
+              size="md"
             >
               Refresh
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -287,4 +286,6 @@ export function AuditLogViewer() {
       </div>
     </div>
   );
-}
+});
+
+AuditLogViewer.displayName = 'AuditLogViewer';

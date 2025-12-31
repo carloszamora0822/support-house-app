@@ -35,11 +35,11 @@ export const ReferralSection: React.FC<ReferralSectionProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900">Referral & Assistance</h3>
+    <div className="space-y-8">
+      <h3 className="text-xl md:text-2xl font-semibold text-gray-900">Referral & Assistance</h3>
 
       <SelectField
-        label="Referral Source"
+        label="How did you hear about us?"
         name="referral_source"
         value={formData.referral_source}
         onChange={handleInputChange}
@@ -47,34 +47,40 @@ export const ReferralSection: React.FC<ReferralSectionProps> = ({
         placeholder="Select Referral Source"
         required
         error={errors.referral_source}
+        className="text-base md:text-lg p-4"
       />
 
       <ConditionalSection condition={formData.referral_source === 'other'}>
         <FormField
-          label="Other Referral Source"
+          label="Other Referral Source (Please Specify)"
           name="referral_other"
           value={formData.referral_other || ''}
           onChange={handleInputChange}
           error={errors.referral_other}
+          className="text-base md:text-lg p-4"
         />
       </ConditionalSection>
 
-      <CheckboxGroup
-        label="Assistance Types"
-        options={ASSISTANCE_TYPES}
-        value={formData.assistance_types}
-        onChange={(selected) => onChange('assistance_types', selected)}
-        required
-        error={errors.assistance_types}
-      />
+      <div className="space-y-3">
+        <CheckboxGroup
+          label="What assistance are you seeking? (Select all that apply)"
+          options={ASSISTANCE_TYPES}
+          value={formData.assistance_types || []}
+          onChange={(selected) => onChange('assistance_types', selected)}
+          required
+          error={errors.assistance_types}
+          className="text-base md:text-lg"
+        />
+      </div>
 
-      <ConditionalSection condition={formData.assistance_types.includes('other')}>
+      <ConditionalSection condition={(formData.assistance_types || []).includes('other')}>
         <FormField
-          label="Other Assistance Type"
+          label="Other Assistance Type (Please Specify)"
           name="assistance_other"
           value={formData.assistance_other || ''}
           onChange={handleInputChange}
           error={errors.assistance_other}
+          className="text-base md:text-lg p-4"
         />
       </ConditionalSection>
     </div>

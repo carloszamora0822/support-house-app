@@ -20,18 +20,20 @@ interface CheckboxGroupProps {
 export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
   label,
   options,
-  value,
+  value = [],
   onChange,
   required = false,
   disabled = false,
   error,
   className = '',
 }) => {
+  const safeValue = value ?? [];
+  
   const handleChange = (optionValue: string, checked: boolean) => {
     if (checked) {
-      onChange([...value, optionValue]);
+      onChange([...safeValue, optionValue]);
     } else {
-      onChange(value.filter(v => v !== optionValue));
+      onChange(safeValue.filter(v => v !== optionValue));
     }
   };
 
@@ -47,7 +49,7 @@ export const CheckboxGroup: React.FC<CheckboxGroupProps> = ({
           <div key={option.value} className="flex items-center">
             <Checkbox
               id={option.value}
-              checked={value.includes(option.value)}
+              checked={safeValue.includes(option.value)}
               onChange={(e) => handleChange(option.value, e.target.checked)}
               disabled={disabled}
             />

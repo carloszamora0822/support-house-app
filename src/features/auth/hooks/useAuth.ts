@@ -24,7 +24,7 @@ export const useAuth = () => {
 
   useEffect(() => {
     refreshUser();
-  }, [refreshUser]);
+  }, []);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     try {
@@ -47,6 +47,9 @@ export const useAuth = () => {
       setError(null);
       await authService.logout();
       setUser(null);
+      
+      // Redirect to login page after logout
+      window.location.href = '/login';
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Logout failed');
       throw err;
