@@ -232,7 +232,7 @@ export const ProfilePage = () => {
         <ul className="list-disc list-inside text-body-sm text-text-muted mt-2 space-y-1">
           <li>Remove all your personal information</li>
           <li>Revoke access to the system</li>
-          <li>Require admin approval for deletion</li>
+          <li>Log you out immediately</li>
         </ul>
       </Modal>
 
