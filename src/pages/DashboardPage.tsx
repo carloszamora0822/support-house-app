@@ -8,7 +8,6 @@ import { SectionHeader } from '@/components/patterns/section-header';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Search, FileText, CheckCircle, TrendingUp, Users } from 'lucide-react';
-import { animations } from '@/lib/tokens/animations';
 import { cn } from '@/lib/utils/cn';
 import { supabase } from '@/lib/supabase';
 
@@ -67,11 +66,11 @@ export const DashboardPage = () => {
         .limit(5);
 
       // Extract unique patient IDs
-      const patientIds = recentActivity
+      const patientIds = (recentActivity
         ?.map((log: { metadata?: { patient_id?: string } }) => log.metadata?.patient_id)
-        .filter((id: string | undefined) => id)
-        .filter((id: string, index: number, self: string[]) => self.indexOf(id) === index)
-        .slice(0, 5) || [];
+        .filter((id): id is string => !!id) || [])
+        .filter((id, index, self) => self.indexOf(id) === index)
+        .slice(0, 5);
 
       if (patientIds.length > 0) {
         const { data: patients } = await supabase
