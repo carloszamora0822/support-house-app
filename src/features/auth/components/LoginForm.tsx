@@ -5,6 +5,8 @@ import { z } from 'zod';
 import { Button } from '@/components/common/Button';
 import { Input } from '@/components/common/Input';
 import { Alert } from '@/components/common/Alert';
+import { MFAVerificationModal } from './MFAVerificationModal';
+import { mfaService } from '../services/mfaService';
 import type { LoginCredentials } from '../types';
 
 const loginSchema = z.object({
@@ -19,6 +21,8 @@ interface LoginFormProps {
 export const LoginForm = ({ onSubmit }: LoginFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showMFAModal, setShowMFAModal] = useState(false);
+  const [pendingCredentials, setPendingCredentials] = useState<LoginCredentials | null>(null);
 
   const {
     register,
@@ -32,11 +36,42 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
     try {
       setIsLoading(true);
       setError(null);
+      
+      // First, attempt login with password
       await onSubmit(data);
+      
+      // Check if user has MFA enabled
+      const mfaEnabled = await mfaService.isMFAEnabled();
+      
+      if (mfaEnabled) {
+        // Store credentials and show MFA modal
+        setPendingCredentials(data);
+        setShowMFAModal(true);
+        setIsLoading(false);
+      }
+      // If no MFA, login is complete (onSubmit already succeeded)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
-    } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleMFASuccess = () => {
+    setShowMFAModal(false);
+    setPendingCredentials(null);
+    // Login complete - user is already authenticated
+  };
+
+  const handleMFACancel = async () => {
+    setShowMFAModal(false);
+    setPendingCredentials(null);
+    setError('2FA verification required to complete login');
+    // Log out since MFA was not completed
+    try {
+      const { supabase } = await import('@/lib/supabase');
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.error('Failed to sign out after MFA cancel:', err);
     }
   };
 
@@ -95,6 +130,12 @@ export const LoginForm = ({ onSubmit }: LoginFormProps) => {
           New users require admin approval
         </p>
       </div>
+
+      <MFAVerificationModal
+        isOpen={showMFAModal}
+        onSuccess={handleMFASuccess}
+        onCancel={handleMFACancel}
+      />
     </form>
   );
 };

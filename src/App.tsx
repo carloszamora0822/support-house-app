@@ -4,9 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { queryClient } from '@/lib/queryClient';
 import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
-import { SearchPage } from '@/pages/SearchPage';
 import { PatientDetailPage } from '@/pages/PatientDetailPage';
-import { PatientIntakePage } from '@/pages/PatientIntakePage';
 import { ProfilePage } from '@/pages/ProfilePage';
 import { IntakeFormContainer } from '@/features/forms/intake/IntakeFormContainer';
 import { RegisterForm } from '@/features/auth/components/RegisterForm';
@@ -41,26 +39,10 @@ function App() {
             }
           />
           <Route
-            path="/search"
-            element={
-              <ProtectedRoute>
-                <SearchPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/patients/:patientId"
             element={
               <ProtectedRoute>
                 <PatientDetailPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/intake"
-            element={
-              <ProtectedRoute>
-                <PatientIntakePage />
               </ProtectedRoute>
             }
           />
