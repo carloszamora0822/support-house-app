@@ -215,7 +215,15 @@ export const patientUpdateService = {
       patient_signature_date?: string | null;
       interviewed_by?: string | null;
       interviewed_date?: string | null;
-      emergency_contact?: any;
+      emergency_contact?: {
+        name?: string;
+        relationship?: string;
+        address?: string;
+        city?: string;
+        state?: string;
+        zip?: string;
+        phone?: string;
+      };
     }
   ): Promise<{ success: boolean; error?: string }> {
     try {

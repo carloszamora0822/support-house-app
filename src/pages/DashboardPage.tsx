@@ -108,7 +108,7 @@ export const DashboardPage = () => {
 
   useEffect(() => {
     loadDashboardData();
-  }, [user, loadDashboardData]);
+  }, [loadDashboardData]);
 
   const getGreeting = () => {
     const hour = new Date().getHours();

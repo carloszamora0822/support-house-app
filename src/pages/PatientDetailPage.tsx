@@ -5,8 +5,7 @@ import type { PatientWithVisits } from '@/features/patients/types';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { formatPhoneNumber } from '@/utils/formatters';
-import { formatDate, formatDateTime, calculateDaysSince } from '@/utils/dateUtils';
+import { formatDate, calculateDaysSince } from '@/utils/dateUtils';
 import { CheckInModal } from '@/features/checkin/components/CheckInModal';
 import { Toaster } from 'react-hot-toast';
 import toast from 'react-hot-toast';
@@ -37,10 +36,6 @@ export const PatientDetailPage = () => {
   const [selectedDocument, setSelectedDocument] = useState<PatientDocument | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string>('');
 
-  const formatAssistanceType = (value: string): string => {
-    const type = ASSISTANCE_TYPES.find(t => t.value === value);
-    return type ? type.label : value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-  };
 
   const loadPatient = async () => {
     if (!patientId) return;
@@ -78,28 +73,26 @@ export const PatientDetailPage = () => {
   };
 
   const handleDownloadDocument = async (doc: PatientDocument) => {
-    try {
-      const result = await documentService.downloadDocument(doc.file_path);
-      if (result.success && result.blob) {
-        const url = URL.createObjectURL(result.blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = doc.document_name + '.pdf';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        toast.success('Document downloaded!');
-      } else {
-        toast.error(result.error || 'Failed to download document');
-      }
-    } catch (error) {
-      toast.error('Failed to download document');
+    const result = await documentService.downloadDocument(doc.id, doc.file_name);
+    if (!result.success) {
+      toast.error(result.error || 'Failed to download document');
+    }
+  };
+
+  const handlePreviewDocument = async (doc: PatientDocument) => {
+    const result = await documentService.getDocumentUrl(doc.id);
+    if (result.success && result.url) {
+      setSelectedDocument(doc);
+      setPdfUrl(result.url);
+      setIsPDFPreviewOpen(true);
+    } else {
+      toast.error(result.error || 'Failed to load document preview');
     }
   };
 
   useEffect(() => {
     loadPatient();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId]);
 
   const handleLogout = async () => {
