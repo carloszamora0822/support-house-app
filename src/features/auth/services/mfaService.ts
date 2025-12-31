@@ -20,31 +20,34 @@ export const mfaService = {
    */
   async enrollMFA(): Promise<MFAEnrollmentResponse> {
     try {
+      // Verify user is authenticated first
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        console.error('User not authenticated:', userError);
+        return { 
+          success: false, 
+          error: 'You must be logged in to enable MFA. Please refresh and try again.' 
+        };
+      }
+
+      console.log('Enrolling MFA for user:', user.id);
+
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: 'totp',
       });
 
       if (error) {
         console.error('MFA enrollment error:', error);
-        return {
-          success: false,
-          error: error.message || 'Failed to enroll in MFA',
-        };
+        return { success: false, error: error.message };
       }
 
       if (!data) {
-        return {
-          success: false,
-          error: 'No enrollment data returned',
-        };
+        return { success: false, error: 'No enrollment data returned' };
       }
 
-      const user = await supabase.auth.getUser();
-      if (user.data.user) {
-        await auditService.logAuth('2FA_ENABLED', user.data.user.email || '', true, {
-          userId: user.data.user.id,
-        });
-      }
+      // Log MFA enrollment
+      await auditService.logAuth('MFA_ENROLLED', 'User enrolled in MFA');
 
       return {
         success: true,
@@ -52,10 +55,10 @@ export const mfaService = {
         secret: data.totp.secret,
       };
     } catch (error) {
-      console.error('MFA enrollment exception:', error);
+      console.error('MFA enrollment error:', error);
       return {
         success: false,
-        error: 'An unexpected error occurred during MFA enrollment',
+        error: error instanceof Error ? error.message : 'Failed to enroll in MFA',
       };
     }
   },
@@ -64,17 +67,24 @@ export const mfaService = {
    * Verify MFA code during enrollment
    * Must be called after enrollMFA to complete setup
    */
-  async verifyEnrollment(code: string, factorId: string): Promise<MFAVerificationResponse> {
+  async verifyMFA(factorId: string, code: string): Promise<MFAVerificationResponse> {
     try {
+      // Verify user is authenticated
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        return { 
+          success: false, 
+          error: 'You must be logged in to verify MFA. Please refresh and try again.' 
+        };
+      }
+
       const { data, error } = await supabase.auth.mfa.challenge({
         factorId,
       });
 
       if (error || !data) {
-        return {
-          success: false,
-          error: 'Failed to create MFA challenge',
-        };
+        return { success: false, error: 'Failed to create MFA challenge' };
       }
 
       const { error: verifyError } = await supabase.auth.mfa.verify({
@@ -84,25 +94,19 @@ export const mfaService = {
       });
 
       if (verifyError) {
-        return {
-          success: false,
-          error: 'Invalid verification code',
-        };
+        console.error('MFA verification error:', verifyError);
+        return { success: false, error: verifyError.message };
       }
 
-      const user = await supabase.auth.getUser();
-      if (user.data.user) {
-        await auditService.logAuth('2FA_VERIFIED', user.data.user.email || '', true, {
-          userId: user.data.user.id,
-        });
-      }
+      // Log successful MFA verification
+      await auditService.logAuth('MFA_VERIFIED', 'User verified MFA code');
 
       return { success: true };
     } catch (error) {
-      console.error('MFA verification exception:', error);
+      console.error('MFA verification error:', error);
       return {
         success: false,
-        error: 'An unexpected error occurred during verification',
+        error: error instanceof Error ? error.message : 'Failed to verify MFA',
       };
     }
   },
