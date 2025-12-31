@@ -195,7 +195,7 @@ export const auditLogger = {
    * Log authentication events
    */
   async logAuth(
-    eventType: 'LOGIN' | 'LOGOUT' | 'LOGIN_FAILED' | 'SESSION_TIMEOUT',
+    eventType: 'LOGIN' | 'LOGOUT' | 'LOGIN_FAILED' | 'SESSION_TIMEOUT' | '2FA_ENABLED' | '2FA_DISABLED' | '2FA_VERIFIED',
     email: string,
     success: boolean,
     details?: Record<string, unknown>

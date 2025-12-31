@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Search, User, Phone, Calendar, MapPin, Loader2 } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { optimizedSearchService } from '@/features/lookup/services/optimizedSearchService';
 import { cn } from '@/lib/utils/cn';
 
 interface Patient {
@@ -34,7 +34,7 @@ export const InlinePatientSearch = ({
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  const searchPatients = useCallback(async (searchQuery: string) => {
+  const searchPatients = async (searchQuery: string) => {
     if (!searchQuery || searchQuery.length < 2) {
       setResults([]);
       setShowResults(false);
@@ -45,32 +45,22 @@ export const InlinePatientSearch = ({
     setShowResults(true);
 
     try {
-      const searchTerm = `%${searchQuery}%`;
-      
       console.log('🔍 Searching for:', searchQuery);
       
-      // Search by name, phone, or DOB
-      const { data, error } = await supabase
-        .from('patients')
-        .select('id, first_name, last_name, phone_primary, date_of_birth, diagnosis_primary, city, state, visit_count')
-        .or(`first_name.ilike.${searchTerm},last_name.ilike.${searchTerm},phone_primary.ilike.${searchTerm},date_of_birth.ilike.${searchTerm}`)
-        .order('last_name')
-        .limit(10);
+      // Use optimized search service (same as SearchPage)
+      const data = await optimizedSearchService.quickSearch(searchQuery);
 
       console.log('📊 Search results:', data);
-      console.log('❌ Search error:', error);
-
-      if (error) throw error;
+      console.log('✅ Results count:', data?.length || 0);
 
       setResults(data || []);
-      console.log('✅ Results set, count:', data?.length || 0);
     } catch (error) {
       console.error('💥 Search error:', error);
       setResults([]);
     } finally {
       setIsSearching(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
@@ -78,7 +68,7 @@ export const InlinePatientSearch = ({
     }, 300);
 
     return () => clearTimeout(debounceTimer);
-  }, [query, searchPatients]);
+  }, [query]);
 
   const handlePatientClick = (patientId: string) => {
     if (onPatientSelect) {
