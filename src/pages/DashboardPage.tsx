@@ -6,8 +6,9 @@ import { AppHeader } from '@/components/patterns/app-header';
 import { PageContent } from '@/components/patterns/page-content';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Search, FileText, CheckCircle, Users } from 'lucide-react';
+import { FileText, CheckCircle, Users } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { InlinePatientSearch } from '@/features/lookup/components/InlinePatientSearch';
 
 interface RecentPatient {
   id: string;
@@ -136,36 +137,24 @@ export const DashboardPage = () => {
             <Badge variant="secondary">{user?.role}</Badge>
           </div>
 
-          {/* DOMINANT PRIMARY ACTION */}
-          <Card className="p-6 bg-gradient-to-br from-primary-500 to-primary-600 border-primary-600 shadow-xl">
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-white mb-2">Quick Patient Lookup</h2>
-                <p className="text-primary-100 text-sm mb-4">Search by name, phone, or date of birth</p>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => navigate('/search')}
-                    className="flex-1 bg-white text-primary-600 px-6 py-4 rounded-lg font-semibold hover:bg-primary-50 transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-                  >
-                    <Search className="h-5 w-5" />
-                    Search Patient
-                  </button>
-                  <button
-                    onClick={() => navigate('/intake/new')}
-                    className="bg-primary-700 text-white px-6 py-4 rounded-lg font-semibold hover:bg-primary-800 transition-all flex items-center justify-center gap-2"
-                  >
-                    <FileText className="h-5 w-5" />
-                    New Intake
-                  </button>
-                </div>
+          {/* DOMINANT PRIMARY ACTION - INLINE SEARCH */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-heading-xl text-text mb-1">Patient Lookup</h2>
+                <p className="text-sm text-text-muted">Start typing to search instantly</p>
               </div>
-              <div className="hidden lg:block">
-                <div className="h-24 w-24 rounded-full bg-white/10 flex items-center justify-center">
-                  <Search className="h-12 w-12 text-white" />
-                </div>
-              </div>
+              <button
+                onClick={() => navigate('/intake/new')}
+                className="bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition-all flex items-center gap-2 shadow-lg"
+              >
+                <FileText className="h-5 w-5" />
+                New Intake
+              </button>
             </div>
-          </Card>
+            
+            <InlinePatientSearch />
+          </div>
         </div>
 
         {/* Actionable Stats - Compressed */}
