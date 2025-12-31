@@ -14,7 +14,7 @@ interface InlinePatientSearchProps {
 
 export const InlinePatientSearch = ({ 
   onPatientSelect, 
-  placeholder = "Search by name, phone, or date of birth...",
+  placeholder = "Search by name, phone, email, or ZIP code...",
   autoFocus = true 
 }: InlinePatientSearchProps) => {
   const navigate = useNavigate();
